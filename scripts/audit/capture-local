@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Capture the local PAW implementation (screenshot + trace + diagnostics).
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
+export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
+node audit/lib/capture.mjs --target local "$@"

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Start the native local stack for the Open WebUI fork:
+#   - backend (FastAPI)        :8080
+#   - frontend (SvelteKit/Vite):5173
+#   - upstream reference       :3001  (unmodified Open WebUI via uv tool, optional)
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
+export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
+mkdir -p .local/logs
+
+is_up() { curl -fsS -m 2 -o /dev/null "$1" 2>/dev/null; }
+
+# --- Backend (slim: USE_SLIM_DOCKER avoids the chromadb/pgvector requirement) ---
+if is_up http://127.0.0.1:8080/health; then
+  echo "[ok] backend already running on :8080"
+else
+  echo "[..] starting Open WebUI backend on :8080"
+  ( cd backend && \
+    USE_SLIM_DOCKER=true \
+    WEBUI_SECRET_KEY="${WEBUI_SECRET_KEY:-localdev_$(openssl rand -hex 16)}" \
+    CORS_ALLOW_ORIGIN="http://localhost:5173;http://localhost:8080" \
+    SCARF_NO_ANALYTICS=true DO_NOT_TRACK=true ANONYMIZED_TELEMETRY=false \
+    ENABLE_VERSION_UPDATE_CHECK=false \
+    nohup ../.venv/bin/uvicorn open_webui.main:app \
+      --host 127.0.0.1 --port 8080 --forwarded-allow-ips '*' \
+      --ws-per-message-deflate true > "$REPO_ROOT/.local/logs/owui-backend.log" 2>&1 & )
+fi
+
+# --- Frontend ---
+if is_up http://127.0.0.1:5173/; then
+  echo "[ok] frontend already running on :5173"
+else
+  echo "[..] starting Open WebUI frontend (Vite) on :5173"
+  nohup npm run dev > .local/logs/owui-frontend.log 2>&1 &
+fi
+
+# --- Upstream unmodified Open WebUI reference (optional) ---
+if [ -x "$HOME/.local/bin/open-webui" ]; then
+  if is_up http://127.0.0.1:3001/health; then
+    echo "[ok] upstream Open WebUI reference already running on :3001"
+  else
+    echo "[..] starting upstream Open WebUI reference on :3001"
+    DATA_DIR="$REPO_ROOT/.local/openwebui-data" \
+    WEBUI_SECRET_KEY="${WEBUI_SECRET_KEY:-localdev_$(openssl rand -hex 16)}" \
+    ENABLE_SIGNUP=true SCARF_NO_ANALYTICS=true DO_NOT_TRACK=true \
+    ANONYMIZED_TELEMETRY=false ENABLE_VERSION_UPDATE_CHECK=false \
+    nohup "$HOME/.local/bin/open-webui" serve --host 127.0.0.1 --port 3001 \
+      > .local/logs/upstream-openwebui.log 2>&1 &
+  fi
+else
+  echo "[--] upstream reference (uv tool 'open-webui') not installed; skipping :3001"
+fi
+
+echo "[..] waiting for services..."
+for _ in $(seq 1 30); do
+  is_up http://127.0.0.1:8080/health && is_up http://127.0.0.1:5173/ && break
+  sleep 2
+done
+echo "[done] fork frontend :5173  fork backend :8080  upstream ref :3001"

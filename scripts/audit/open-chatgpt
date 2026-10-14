@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Open ChatGPT in a headed browser with a persistent, gitignored profile so you
+# can log in manually. The session is reused by later capture runs.
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
+export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
+node audit/lib/open-chatgpt.mjs "$@"

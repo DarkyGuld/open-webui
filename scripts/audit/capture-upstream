@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Capture the upstream Open WebUI visual foundation (login page / shell).
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
+export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
+node audit/lib/capture.mjs --target upstream "$@"

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Compare two screenshots and emit a diff image + similarity score.
+# Usage: ./visual-diff <baseline.png> <candidate.png> [out_diff.png]
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
+PY="$REPO_ROOT/.venv/bin/python"
+[ -x "$PY" ] || PY="python3"
+exec "$PY" "$REPO_ROOT/scripts/audit/visual_diff.py" "$@"

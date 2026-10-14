@@ -1,0 +1,21 @@
+{
+  "name": "paw-ui-audit",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Playwright-based UI/UX auditing harness for Personal AI Workspace (ChatGPT vs local vs upstream Open WebUI).",
+  "scripts": {
+    "install:browsers": "playwright install chromium",
+    "test": "playwright test",
+    "smoke": "playwright test tests/smoke.spec.ts",
+    "report": "playwright show-report",
+    "capture:local": "node lib/capture.mjs --target local",
+    "capture:chatgpt": "node lib/capture.mjs --target chatgpt",
+    "capture:upstream": "node lib/capture.mjs --target upstream",
+    "open:chatgpt": "node lib/open-chatgpt.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "playwright": "^1.56.0"
+  }
+}

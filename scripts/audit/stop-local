@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Stop the native local stack for the Open WebUI fork (does not touch other checkouts).
+set -uo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+pkill -f "$REPO_ROOT/.venv/bin/uvicorn open_webui.main:app" 2>/dev/null \
+  && echo "[x] stopped fork backend" || echo "[ ] fork backend not running"
+
+pkill -f "$REPO_ROOT/node_modules/.bin/vite" 2>/dev/null \
+  && echo "[x] stopped fork frontend" || echo "[ ] fork frontend not running"
+
+# Upstream reference (uv tool) is shared; stop only if requested explicitly.
+if [ "${1:-}" = "--with-upstream" ]; then
+  pkill -f "open-webui serve" 2>/dev/null && echo "[x] stopped upstream reference" || echo "[ ] upstream not running"
+fi
+exit 0

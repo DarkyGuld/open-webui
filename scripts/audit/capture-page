@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Capture an arbitrary page: ./capture-page --target local --url http://localhost:3000/chat --viewport mobile-390
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
+export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
+node audit/lib/capture.mjs "$@"

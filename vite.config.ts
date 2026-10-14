@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { resolveBuildInfo } from './scripts/build-info.js';
@@ -59,6 +60,17 @@ export default defineConfig({
 	},
 	worker: {
 		format: 'es'
+	},
+	test: {
+		// Keep the Playwright UI-audit harness (audit/) out of the SvelteKit vitest run.
+		exclude: [
+			'**/node_modules/**',
+			'**/dist/**',
+			'**/build/**',
+			'**/.svelte-kit/**',
+			'audit/**',
+			'research/**'
+		]
 	},
 	esbuild: {
 		pure: process.env.ENV === 'dev' ? [] : ['console.log', 'console.debug', 'console.error']

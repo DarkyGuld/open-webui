@@ -1,0 +1,1 @@
+root = Comparison("VPS comparison", [{name:"Basic",attributes:["1 vCPU","1 GB RAM","20 GB SSD"]},{name:"Pro",attributes:["2 vCPU","4 GB RAM","80 GB SSD"]}])

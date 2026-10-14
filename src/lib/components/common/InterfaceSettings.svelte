@@ -45,6 +45,7 @@
 	let showUsername = false;
 
 	let highContrastMode = false;
+	let intelligentUi = false;
 
 	let detectArtifacts = true;
 	let displayMultiModelResponsesInTabs = false;
@@ -317,6 +318,7 @@
 		autoFollowUps = currentSettings?.autoFollowUps ?? true;
 
 		highContrastMode = currentSettings?.highContrastMode ?? false;
+		intelligentUi = currentSettings?.intelligentUi ?? false;
 
 		detectArtifacts = currentSettings?.detectArtifacts ?? true;
 		responseAutoCopy = currentSettings?.responseAutoCopy ?? false;
@@ -604,6 +606,28 @@
 		</div>
 		<p class={settingDescriptionClass}>
 			{$i18n.t('settings.personal.interface.accessibilityMode.description')}
+		</p>
+	</div>
+
+	<div>
+		<div class={settingRowClass}>
+			<div id="intelligent-ui-label" class={settingLabelClass}>Intelligent UI</div>
+
+			<div class={settingControlClass}>
+				<Switch
+					ariaLabelledbyId="intelligent-ui-label"
+					tooltip={true}
+					bind:state={intelligentUi}
+					inherited={isDefaultSetting('intelligentUi')}
+					on:change={() => {
+						saveSettings({ intelligentUi });
+					}}
+				/>
+			</div>
+		</div>
+		<p class={settingDescriptionClass}>
+			Allow the model to render richer, interactive answers (tables, comparisons, metrics)
+			when helpful. Requires your administrator to enable Intelligent UI.
 		</p>
 	</div>
 

@@ -9,7 +9,7 @@
 	import FileItem from '$lib/components/common/FileItem.svelte';
 	import Collapsible from '$lib/components/common/Collapsible.svelte';
 
-	import { user, settings } from '$lib/stores';
+	import { user, settings, config } from '$lib/stores';
 	export let models = [];
 	export let chatFiles = [];
 	export let params = {};
@@ -28,6 +28,7 @@
 	let showValves = getOpen('valves', false);
 	let showSystemPrompt = getOpen('systemPrompt');
 	let showAdvancedParams = getOpen('advancedParams');
+	let showIntelligentUi = getOpen('intelligentUi', true);
 
 	const compactSectionButtonClass =
 		'w-full py-1 text-xs font-normal text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition cursor-pointer select-none';
@@ -124,6 +125,41 @@
 							rows="3"
 							placeholder={$i18n.t('Enter system prompt')}
 						/>
+					</div>
+				</Collapsible>
+			{/if}
+
+			{#if $config?.features?.enable_intelligent_ui === true && ($settings?.intelligentUi ?? false) === true}
+				<Collapsible
+					title={$i18n.t('Intelligent UI')}
+					bind:open={showIntelligentUi}
+					onChange={setOpen('intelligentUi')}
+					buttonClassName={compactSectionButtonClass}
+					chevronClassName="size-2.5"
+					chevronStrokeWidth="2"
+				>
+					<div class="pt-1 pb-1" slot="content">
+						<div
+							class="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 text-xs dark:bg-gray-850"
+						>
+							{#each [['auto', $i18n.t('Auto')], ['on', $i18n.t('On')], ['off', $i18n.t('Off')]] as [value, label] (value)}
+								<button
+									type="button"
+									class="flex-1 cursor-pointer rounded-md px-2 py-1 transition-colors {(params.intelligent_ui ??
+										'auto') === value
+										? 'bg-white font-medium text-gray-900 shadow-sm dark:bg-gray-800 dark:text-white'
+										: 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}"
+									on:click={() => (params.intelligent_ui = value)}
+								>
+									{label}
+								</button>
+							{/each}
+						</div>
+						<p class="mt-1 text-[0.6875rem] text-gray-400 dark:text-gray-600">
+							{$i18n.t('Auto')}: {$i18n.t('the model decides')} · {$i18n.t('On')}: {$i18n.t(
+								'encourage richer UI'
+							)} · {$i18n.t('Off')}: {$i18n.t('plain Markdown')}
+						</p>
 					</div>
 				</Collapsible>
 			{/if}

@@ -1,0 +1,1 @@
+root = Metric("Monthly cost", "5 294 kr", "Estimated for 60 months")

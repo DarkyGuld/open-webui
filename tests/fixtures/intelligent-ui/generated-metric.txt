@@ -1,0 +1,1 @@
+root = Metric("Monthly payment", "4 695 kr", "250 000 kr loan, 0.4% monthly interest, 60 months. Total interest ~31 696 kr.")

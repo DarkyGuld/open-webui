@@ -55,6 +55,7 @@ log = logging.getLogger(__name__)
 router = APIRouter()
 
 CHAT_CONFIG_KEYS = {
+    'ENABLE_INTELLIGENT_UI': 'intelligent_ui.enable',
     'CONTEXT_COMPACTION_MODEL': 'chat.context_compaction.model',
     'ENABLE_CONTEXT_COMPACTION': 'chat.context_compaction.enable',
     'CONTEXT_COMPACTION_TOKEN_THRESHOLD': 'chat.context_compaction.token_threshold',
@@ -199,6 +200,7 @@ async def get_folder_unread_counts(user_id: str, db: AsyncSession | None = None)
 
 
 class ChatConfigForm(BaseModel):
+    ENABLE_INTELLIGENT_UI: bool = False
     CONTEXT_COMPACTION_MODEL: str | None = ''
     ENABLE_CONTEXT_COMPACTION: bool
     CONTEXT_COMPACTION_TOKEN_THRESHOLD: int | None = None

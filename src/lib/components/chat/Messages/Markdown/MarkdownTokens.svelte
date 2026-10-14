@@ -27,6 +27,7 @@
 	import HtmlToken from './HTMLToken.svelte';
 	import Clipboard from '$lib/components/icons/Clipboard.svelte';
 	import ColonFenceBlock from './ColonFenceBlock.svelte';
+	import IntelligentUIBlock from '$lib/intelligent-ui/components/IntelligentUIBlock.svelte';
 
 	export let id: string;
 	export let chatId = '';
@@ -629,17 +630,21 @@
 			<KatexRenderer content={token.text} displayMode={token?.displayMode ?? false} />
 		{/if}
 	{:else if token.type === 'colonFence'}
-		<ColonFenceBlock
-			id={`${id}-${tokenIdx}`}
-			{token}
-			{tokenIdx}
-			{done}
-			{allowEmbeds}
-			{editCodeBlock}
-			{sourceIds}
-			{onTaskClick}
-			{onSourceClick}
-		/>
+		{#if token.fenceType === 'intelligent-ui'}
+			<IntelligentUIBlock id={`${id}-${tokenIdx}`} {token} {done} />
+		{:else}
+			<ColonFenceBlock
+				id={`${id}-${tokenIdx}`}
+				{token}
+				{tokenIdx}
+				{done}
+				{allowEmbeds}
+				{editCodeBlock}
+				{sourceIds}
+				{onTaskClick}
+				{onSourceClick}
+			/>
+		{/if}
 	{:else if token.type === 'space'}
 		<!-- skip -->
 	{:else}

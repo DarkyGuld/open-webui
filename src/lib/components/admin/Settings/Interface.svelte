@@ -44,6 +44,7 @@
 	};
 
 	let chatConfig = {
+		ENABLE_INTELLIGENT_UI: false,
 		CONTEXT_COMPACTION_MODEL: '',
 		ENABLE_CONTEXT_COMPACTION: false,
 		CONTEXT_COMPACTION_TOKEN_THRESHOLD: 80000,
@@ -97,7 +98,8 @@
 						features: {
 							...current.features,
 							enable_context_compaction: chatConfig.ENABLE_CONTEXT_COMPACTION,
-							enable_tool_permissions: chatConfig.ENABLE_TOOL_PERMISSIONS
+							enable_tool_permissions: chatConfig.ENABLE_TOOL_PERMISSIONS,
+							enable_intelligent_ui: chatConfig.ENABLE_INTELLIGENT_UI
 						}
 					}
 				: current
@@ -294,6 +296,14 @@
 					let:labelId
 				>
 					<Switch bind:state={chatConfig.ENABLE_CONTEXT_COMPACTION} ariaLabelledbyId={labelId} />
+				</AdminSettingRow>
+
+				<AdminSettingRow
+					label="Intelligent UI"
+					description="Allow the model to choose richer, interactive answer formats (tables, comparisons, metrics, charts) rendered with native Open WebUI components. Off = stock Open WebUI. Per-user and per-chat Auto/On/Off apply only when this is on."
+					let:labelId
+				>
+					<Switch bind:state={chatConfig.ENABLE_INTELLIGENT_UI} ariaLabelledbyId={labelId} />
 				</AdminSettingRow>
 
 				{#if chatConfig.ENABLE_CONTEXT_COMPACTION}

@@ -1,0 +1,1 @@
+{"version":2,"catalog_version":1,"content":"root = Metric(\"Monthly cost\", \"5 294 kr\")"}

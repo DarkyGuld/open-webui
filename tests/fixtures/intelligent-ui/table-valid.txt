@@ -1,0 +1,1 @@
+root = Table("Monthly costs", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"],["Backup","300 kr"]])

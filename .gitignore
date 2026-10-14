@@ -311,3 +311,35 @@ cypress/videos
 cypress/screenshots
 .vscode/settings.json
 .cptr
+
+# --- Local AI-agent / UI-audit workspace (never commit) ---
+.local/
+.local/browser-profiles/
+browser-profiles/
+
+audit/node_modules/
+audit/test-results/
+audit/playwright-report/
+audit/chatgpt/*
+audit/local/*
+audit/upstream-openwebui/*
+audit/recordings/*
+audit/traces/*
+audit/screenshots/*
+audit/diffs/*
+!audit/**/.gitkeep
+
+# Curated Intelligent UI screenshots ARE committed (documentation), but only
+# these milestone folders — never raw ChatGPT captures or scratch screenshots.
+!audit/local/intelligent-ui/
+!audit/local/intelligent-ui/**
+
+design/mockups/*
+!design/mockups/.gitkeep
+storybook-static/
+
+# Research clones (local only)
+research/
+
+# Never commit OS junk even inside allow-listed dirs
+.DS_Store

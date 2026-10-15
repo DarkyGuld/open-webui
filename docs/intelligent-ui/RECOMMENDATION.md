@@ -104,6 +104,12 @@ in Milestone 2.
 - **Historical rendering preserved**: persisted widgets render if present (generation gated).
 - Native Intelligent UI is independently usable.
 
+## Implemented local declarative actions (Milestone 9.2, Phase A)
+
+- `Button` + `@Set`/`@Reset` via lang-core `ActionStep` → normalized `OpenUIAction` → store (+ reactive
+  re-evaluation). `@ToAssistant`/`@OpenUrl` supported. No model call. See `LOGIC_ACTIONS.md`.
+- Phase B (Query/Mutation/tool bindings) is designed but deferred: `QUERY_MUTATION.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

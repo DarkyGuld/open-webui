@@ -197,3 +197,10 @@ New files (ours): `intelligent-ui-html-extension.ts`, `RichWidget.svelte`.
 Backend (ours): `mode.py`, `filter.py`, `catalog_prompt.py` (generated).
 
 **Cumulative M1–M9.1:** ~20 core files, ~235 lines.
+
+## Milestone 9.2 — actual upstream/core changes
+
+**None.** Phase A (@Set/@Reset + `Button`) is entirely our own files. No new dependencies.
+Phase B (Query/Mutation) not implemented (designed in `QUERY_MUTATION.md`).
+
+**Cumulative M1–M9.2:** still ~20 core files, ~235 lines.

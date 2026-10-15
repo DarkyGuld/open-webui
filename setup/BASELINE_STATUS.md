@@ -166,6 +166,16 @@ introduced here.
 - Rich widgets: global + user + chat gating; default global **OFF**; historical render preserved.
   Cumulative ~20 core files, ~235 lines.
 
+### Milestone 9.2 (local declarative actions @Set/@Reset) addendum
+
+- `vitest run` → **60 passed** (adds @Set/@Reset normalization; catalog/registry updated to 16 components).
+- `pytest tests/intelligent_ui` → **46 passed**.
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 3 screenshots under `audit/local/intelligent-ui/tool-bindings/`; pricing calculator
+  `232 → 290 → 580 → 1450 → Reset 232`, 0 errors, no model call.
+- **No new dependencies; no core files.** Phase B (Query/Mutation/tool bindings) deferred by design
+  (see `QUERY_MUTATION.md`).
+
 ## Reproduce
 
 ```bash

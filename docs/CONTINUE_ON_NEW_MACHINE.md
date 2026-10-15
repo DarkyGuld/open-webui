@@ -19,7 +19,9 @@ Before doing anything, read, in order:
 5. docs/intelligent-ui/MILESTONE_2_REPORT.md
 6. docs/intelligent-ui/MILESTONE_3_REPORT.md
 7. docs/intelligent-ui/MILESTONE_4_REPORT.md
-8. docs/FRESH_MACHINE_SETUP.md
+8. docs/intelligent-ui/MILESTONE_9_2_REPORT.md (and the other M5–M9.x reports)
+9. docs/intelligent-ui/QUERY_MUTATION.md (next milestone: Phase B)
+10. docs/FRESH_MACHINE_SETUP.md
 
 Then:
 - Inspect git history (git log --oneline -20) and the current branch/commit.

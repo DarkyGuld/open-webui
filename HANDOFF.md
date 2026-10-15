@@ -25,6 +25,7 @@ A customized Open WebUI product aiming for:
 | 4 — interaction/state/output/i18n | ✅ complete | safe actions + confirmation, durable local state, `output[]` artifacts, i18n |
 | 5 — layout composition | ✅ complete | recursive native layouts (stack/row/grid/section/card/divider/badge); 10 components |
 | 6 — logic/state layer | ✅ complete | lang-core runtime: `$state`, expressions, ternary, two-way binding; inputs; 15 components |
+| 7 — incremental streaming | ✅ complete | open/closed fence tokenizer + `createStreamingParser`; progressive render; last-good tree |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:
@@ -167,14 +168,11 @@ Details: `setup/mcp/MCP_INVENTORY.md`. Restart OpenCode after editing `opencode.
 Never commit values. `.env`, `backend/data/`, `.local/`, browser profiles, and `research/` are
 gitignored.
 
-## Next recommended milestone (Milestone 7)
+## Next recommended milestone (Milestone 8)
 
-**Incremental streaming** using `createStreamingParser` (already in lang-core) — render structure as
-tokens arrive instead of waiting for the closing `:::`; keep state across recompiles; hold the
-last-good tree on parse errors. Also fold in `@Each` loops and `@Set`/`@Reset` → store.
-
-Then: M8 server normalization + data/tool bindings + fallbackMarkdown, M9 optional AppBlock sandbox,
-M10 planner/router only if needed. Remaining M5 component families (tabs/charts/media) alongside.
+**Server normalization + data/tool bindings + fallbackMarkdown** (Filter, Python), plus folding in
+`@Each` loops and `@Set`/`@Reset` action steps → store. Then M9 optional AppBlock sandbox, M10
+planner/router only if needed. Remaining M5 component families (tabs/charts/media) alongside.
 
 **Requirement:** do NOT implement a parallel engine if lang-core already provides the primitive —
 wrap and expose the existing runtime.

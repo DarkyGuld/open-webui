@@ -151,3 +151,14 @@ prompt, tests). lang-core is already a dependency; no new packages. No changes t
 middleware, streaming, or the message DB model.
 
 **Cumulative M1–M6:** still ~11 core files, ~150 lines.
+
+## Milestone 7 — actual upstream/core changes
+
+| File | Purpose | ~Lines | Merge risk |
+|---|---|---|---|
+| `chat/Messages/Markdown.svelte` | register the Intelligent UI extension before colonFence | +2 | Low |
+| `chat/Messages/Markdown/MarkdownTokens.svelte` | dispatch the `intelligentUi` token | +8 | Low-Med (busy switch) |
+
+New file (ours): `src/lib/utils/marked/intelligent-ui-extension.ts`.
+
+**Cumulative M1–M7:** ~13 core files, ~160 lines.

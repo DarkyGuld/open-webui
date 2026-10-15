@@ -126,6 +126,16 @@ introduced here.
   calculator verified (`232` → slider 20 → `580`) with **no model call**; 0 errors.
 - **No new dependencies; no core files touched.**
 
+### Milestone 7 (incremental streaming) addendum
+
+- `vitest run` → **56 passed** (adds `streaming.test.ts`).
+- `pytest tests/intelligent_ui` → **36 passed**.
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 4 screenshots under `audit/local/intelligent-ui/milestone-7/`; an **open** fence
+  renders the partial tree (no raw OpenUI Lang leak); 0 errors.
+- Core edits: `Markdown.svelte` (+2), `MarkdownTokens.svelte` (+8); new util
+  `intelligent-ui-extension.ts`. Cumulative ~13 core files, ~160 lines.
+
 ## Reproduce
 
 ```bash

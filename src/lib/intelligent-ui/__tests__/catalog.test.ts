@@ -12,6 +12,7 @@ describe('intelligent-ui catalog — single source of truth', () => {
 	it('exposes the full component set', () => {
 		expect([...catalogComponentNames].sort()).toEqual([
 			'Badge',
+			'Button',
 			'Card',
 			'Checkbox',
 			'Comparison',

@@ -5,6 +5,7 @@ describe('intelligent-ui registry — strict allow-list', () => {
 	it('supports the full allow-list (leaves + containers)', () => {
 		expect([...SUPPORTED_COMPONENTS].sort()).toEqual([
 			'badge',
+			'button',
 			'card',
 			'checkbox',
 			'comparison',

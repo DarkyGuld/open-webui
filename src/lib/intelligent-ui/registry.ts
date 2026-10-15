@@ -4,6 +4,7 @@ import Comparison from './components/Comparison.svelte';
 import Table from './components/Table.svelte';
 import Badge from './components/Badge.svelte';
 import Divider from './components/Divider.svelte';
+import Button from './components/Button.svelte';
 import Slider from './components/Slider.svelte';
 import Select from './components/Select.svelte';
 import Switch from './components/Switch.svelte';
@@ -22,6 +23,7 @@ export const leafRegistry: Partial<Record<UINodeType, Component<any>>> = {
 	table: Table,
 	badge: Badge,
 	divider: Divider,
+	button: Button,
 	slider: Slider,
 	select: Select,
 	switch: Switch,
@@ -37,6 +39,7 @@ export const SUPPORTED_COMPONENTS: UINodeType[] = [
 	'table',
 	'badge',
 	'divider',
+	'button',
 	'slider',
 	'select',
 	'switch',

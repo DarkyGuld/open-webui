@@ -8,7 +8,7 @@
 	} from '$lib/intelligent-ui/adapter';
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
 	import { loadState, saveState } from '$lib/intelligent-ui/state';
-	import type { UIAction, UINode } from '$lib/intelligent-ui/types';
+	import type { OpenUIAction, UIAction, UINode } from '$lib/intelligent-ui/types';
 	import NodeRenderer from '$lib/intelligent-ui/components/NodeRenderer.svelte';
 	import IntelligentUIFallback from '$lib/intelligent-ui/components/IntelligentUIFallback.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
@@ -102,10 +102,38 @@
 		runtime?.setState(name, value);
 		tree = runtime?.evaluate() ?? tree;
 	}
+
+	// OpenUI actions (@Set / @Reset / @ToAssistant / @OpenUrl), already normalized
+	// and allow-listed by the engine. No model call.
+	async function handleOpenUIAction(action: OpenUIAction | OpenUIAction[]) {
+		const steps = Array.isArray(action) ? action : [action];
+		for (const step of steps) {
+			if (step.type === 'set') {
+				runtime?.setState(step.target, step.value);
+			} else if (step.type === 'reset') {
+				runtime?.resetState(step.targets);
+			} else if (step.type === 'send_prompt') {
+				window.postMessage(
+					{ type: 'input:prompt:submit', text: step.prompt },
+					window.location.origin
+				);
+			} else if (step.type === 'open_url') {
+				const approved = await confirm({ message: step.url });
+				if (approved) window.open(step.url, '_blank', 'noopener');
+			}
+		}
+		tree = runtime?.evaluate() ?? tree;
+	}
 </script>
 
 {#if tree}
-	<NodeRenderer node={tree} onAction={handleAction} {selected} onBind={handleBind} />
+	<NodeRenderer
+		node={tree}
+		onAction={handleAction}
+		{selected}
+		onBind={handleBind}
+		onOpenUIAction={handleOpenUIAction}
+	/>
 {:else if !partial && fallbackReason !== null}
 	<IntelligentUIFallback content={token?.text ?? ''} reason={fallbackReason} />
 {/if}

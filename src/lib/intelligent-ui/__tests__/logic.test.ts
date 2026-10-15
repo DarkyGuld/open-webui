@@ -63,6 +63,33 @@ l1 = Section("Items", [@Each($items, item, Badge(item))])`;
 		}
 	});
 
+	it('normalizes @Set button actions', () => {
+		const prog = `$seats = 8
+root = Stack([b1, m1])
+b1 = Button("20 seats", @Set($seats, 20))
+m1 = Metric("Monthly", total)
+total = $seats * 29`;
+		const out = parseIntelligentUI({ version: '1', content: prog });
+		expect(out.ok).toBe(true);
+		if (out.ok && out.node.type === 'stack') {
+			const b = out.node.children[0];
+			expect(b.type).toBe('button');
+			if (b.type === 'button') expect(b.action).toMatchObject({ type: 'set', target: '$seats', value: 20 });
+		}
+	});
+
+	it('normalizes @Reset button actions', () => {
+		const prog = `$seats = 8
+root = Stack([br])
+br = Button("Reset", @Reset($seats))`;
+		const out = parseIntelligentUI({ version: '1', content: prog });
+		expect(out.ok).toBe(true);
+		if (out.ok && out.node.type === 'stack') {
+			const b = out.node.children[0];
+			if (b.type === 'button') expect(b.action).toMatchObject({ type: 'reset', targets: ['$seats'] });
+		}
+	});
+
 	it('rejects malformed logic safely (no throw)', () => {
 		const out = parseIntelligentUI({ version: '1', content: 'root = Metric("x", $undefinedVar)' });
 		expect(typeof out.ok).toBe('boolean');

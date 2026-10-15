@@ -49,6 +49,21 @@ export const badgeSchema = z
 
 export const dividerSchema = z.object({ type: z.literal('divider') }).strict();
 
+export const openUiActionSchema = z.discriminatedUnion('type', [
+	z.object({ type: z.literal('set'), target: z.string().max(120), value: z.unknown() }),
+	z.object({ type: z.literal('reset'), targets: z.array(z.string().max(120)).max(24) }),
+	z.object({ type: z.literal('send_prompt'), prompt: z.string().max(LIMITS.MAX_ACTION_PROMPT_LENGTH) }),
+	z.object({ type: z.literal('open_url'), url: z.string().max(LIMITS.MAX_STRING_LENGTH) })
+]);
+
+export const buttonSchema = z
+	.object({
+		type: z.literal('button'),
+		label: str(),
+		action: z.union([openUiActionSchema, z.array(openUiActionSchema).max(24)]).optional()
+	})
+	.strict();
+
 const binding = () => z.string().max(120).optional();
 
 export const sliderSchema = z
@@ -110,6 +125,7 @@ export const uiNodeSchema: z.ZodTypeAny = z.lazy(() =>
 		tableSchema,
 		badgeSchema,
 		dividerSchema,
+		buttonSchema,
 		sliderSchema,
 		selectSchema,
 		switchSchema,

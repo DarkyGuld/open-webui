@@ -98,6 +98,7 @@ export function parseIntelligentUIPartial(input: ParseInput): ParseOutcome {
 export interface IntelligentUIRuntime {
 	getState(): Record<string, unknown>;
 	setState(name: string, value: unknown): void;
+	resetState(names: string[]): void;
 	subscribe(cb: () => void): () => void;
 	evaluate(): UINode;
 }
@@ -128,6 +129,7 @@ export function createIntelligentUIRuntime(
 				runtime: {
 					getState: () => rt.store.getSnapshot(),
 					setState: (name, value) => rt.store.set(name, value),
+					resetState: (names) => rt.resetState(names),
 					subscribe: (cb) => rt.store.subscribe(cb),
 					evaluate: () => rt.evaluate()
 				}

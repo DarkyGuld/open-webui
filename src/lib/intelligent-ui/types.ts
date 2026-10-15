@@ -101,6 +101,19 @@ export interface InputNode {
 	binding?: string;
 }
 
+/** Host-executed OpenUI actions (from `@Set`/`@Reset`/`@ToAssistant`/`@OpenUrl`). */
+export type OpenUIAction =
+	| { type: 'set'; target: string; value: unknown }
+	| { type: 'reset'; targets: string[] }
+	| { type: 'send_prompt'; prompt: string }
+	| { type: 'open_url'; url: string };
+
+export interface ButtonNode {
+	type: 'button';
+	label: string;
+	action?: OpenUIAction | OpenUIAction[];
+}
+
 export type ContainerType = 'stack' | 'row' | 'grid' | 'section' | 'card';
 
 export interface ContainerNode {
@@ -118,6 +131,7 @@ export type UINode =
 	| TableNode
 	| BadgeNode
 	| DividerNode
+	| ButtonNode
 	| SliderNode
 	| SelectNode
 	| SwitchNode

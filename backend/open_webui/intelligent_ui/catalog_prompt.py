@@ -31,16 +31,17 @@ Comparison(title?: string, items: {name: string, attributes: string[]}[], select
 Table(title?: string, columns: string[], rows: string[][], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A simple data table with columns and rows.
 Badge(label: string, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A small inline label/tag (status, category).
 Divider() — A horizontal separator between sections.
+Button(label: string, action?: any) — A clickable button. The second argument is an action such as @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query).
 Slider(label: string, value: $binding<number>, min: number, max: number, step?: number) — A numeric slider bound to a $state variable.
 Select(label: string, value: $binding<string>, options: string[]) — A dropdown bound to a $state variable.
 Switch(label: string, value: $binding<boolean>) — An on/off switch bound to a $state variable.
 Checkbox(label: string, value: $binding<boolean>) — A checkbox bound to a $state variable.
 Input(label: string, value: $binding<string>, placeholder?: string) — A single-line text input bound to a $state variable.
-Card(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input)[], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A titled surface that groups child components.
-Stack(children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid | Section)[]) — Vertical layout container. Use as the root for most responses.
-Row(children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card)[]) — Horizontal layout container (wraps on small screens).
-Grid(children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card | Row)[]) — Responsive grid of 2-3 columns. Use for side-by-side cards.
-Section(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid)[]) — A titled section that groups children (no card chrome).
+Card(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input)[], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A titled surface that groups child components.
+Stack(children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid | Section)[]) — Vertical layout container. Use as the root for most responses.
+Row(children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card)[]) — Horizontal layout container (wraps on small screens).
+Grid(children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row)[]) — Responsive grid of 2-3 columns. Use for side-by-side cards.
+Section(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid)[]) — A titled section that groups children (no card chrome).
 
 ## Hoisting & Streaming (CRITICAL)
 
@@ -89,6 +90,20 @@ m1 = Metric("Monthly price", total, "Incl. VAT")
 total = $seats * 29
 :::
 
+User: Make a pricing calculator with quick buttons.
+
+:::intelligent-ui{v="1"}
+$seats = 8
+root = Stack([row1, m1])
+row1 = Row([b10, b20, b50, br])
+b10 = Button("10 seats", @Set($seats, 10))
+b20 = Button("20 seats", @Set($seats, 20))
+b50 = Button("50 seats", @Set($seats, 50))
+br = Button("Reset", @Reset($seats))
+m1 = Metric("Monthly price", total, "Incl. VAT")
+total = $seats * 29
+:::
+
 User: Give me a small dashboard of the key numbers.
 
 :::intelligent-ui{v="1"}
@@ -121,6 +136,8 @@ Before finishing, walk your output and verify:
 - Put leaf components (Metric, Comparison, Table, Badge, Divider, inputs) inside containers. Do not nest Stack inside Stack.
 - Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input, and reference `$name` in expressions elsewhere. Inputs update the UI without a model call.
 - You may compute derived values (`total = $seats * 29`) and use a ternary (`$flag ? a : b`) in any prop.
+- Buttons take an action as the second argument: @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query). Actions run locally with no model call.
+- Example: Button("20 seats", @Set($seats, 20)) sets $seats to 20 and updates dependent values.
 - When you use UI, wrap the OpenUI Lang in a fenced block on its own lines:
 - :::intelligent-ui{v="1"}
 - <openui lang here>

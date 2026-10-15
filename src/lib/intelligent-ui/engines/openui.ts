@@ -16,6 +16,7 @@ import {
 	createParser,
 	createStreamingParser,
 	createStore,
+	evaluate,
 	evaluateElementProps,
 	isReactiveAssign
 } from '@openuidev/lang-core';
@@ -36,6 +37,42 @@ function flattenChildren(children: any): any[] {
 		else if (child && child.type === 'element') out.push(child);
 	}
 	return out;
+}
+
+/**
+ * Normalize a lang-core ActionStep (or ActionPlan / array) into our safe,
+ * serializable OpenUIAction. Only allow-listed step types survive; anything
+ * else (e.g. `@Run`) is dropped.
+ */
+function normalizeAction(action: any, store: Store | null): unknown {
+	if (!action) return undefined;
+	const steps = Array.isArray(action) ? action : action.steps ? action.steps : [action];
+	const ctx = {
+		getState: (n: string) => (store ? store.get(n) : undefined),
+		resolveRef: (n: string) => (store ? store.get(n) : undefined)
+	};
+	const out: any[] = [];
+	for (const s of steps) {
+		if (!s || typeof s !== 'object') continue;
+		if (s.type === 'set') {
+			let value: unknown;
+			try {
+				value = evaluate(s.valueAST, ctx as any);
+			} catch {
+				value = undefined;
+			}
+			out.push({ type: 'set', target: String(s.target), value });
+		} else if (s.type === 'reset') {
+			out.push({ type: 'reset', targets: (s.targets ?? []).map(String) });
+		} else if (s.type === 'continue_conversation') {
+			out.push({ type: 'send_prompt', prompt: String(s.message) });
+		} else if (s.type === 'open_url') {
+			out.push({ type: 'open_url', url: String(s.url) });
+		}
+		// 'run' (query/mutation) handled in the query phase; dropped here.
+	}
+	if (!out.length) return undefined;
+	return out.length === 1 ? out[0] : out;
 }
 
 function bound(value: unknown, store: Store | null): { value: unknown; binding?: string } {
@@ -82,6 +119,10 @@ function mapNode(element: ElementNode, store: Store | null): UINode {
 			return { type: 'badge', label: String(p.label), ...(p.action != null ? { action: p.action } : {}) };
 		case 'divider':
 			return { type: 'divider' };
+		case 'button': {
+			const action = normalizeAction(p.action, store);
+			return { type: 'button', label: String(p.label), ...(action ? { action } : {}) };
+		}
 		case 'slider': {
 			const b = bound(p.value, store);
 			return {
@@ -152,6 +193,7 @@ export interface OpenUIRuntime {
 	store: Store;
 	state: Record<string, unknown>;
 	evaluate(): UINode;
+	resetState(names: string[]): void;
 }
 
 export function createOpenUIRuntime(content: string): OpenUIRuntime {
@@ -183,7 +225,11 @@ export function createOpenUIRuntime(content: string): OpenUIRuntime {
 		return mapNode(evaluated, store);
 	};
 
-	return { store, state, evaluate };
+	const resetState = (names: string[]): void => {
+		for (const name of names ?? []) store.set(name, name in state ? state[name] : null);
+	};
+
+	return { store, state, evaluate, resetState };
 }
 
 export const openuiEngine: IntelligentUIEngine = {

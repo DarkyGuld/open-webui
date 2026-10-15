@@ -128,12 +128,24 @@ for (const def of [SliderDef, SelectDef, SwitchDef, CheckboxDef, InputDef]) {
 	markReactive((def.props as any).shape.value);
 }
 
+// Button with a host-executed action (e.g. `@Set($x, 20)`, `@Reset($x)`,
+// `@ToAssistant("...")`, `@Run(query)`). lang-core parses the action into an
+// ActionStep; we normalize it in the engine.
+const ButtonDef = defineComponent({
+	name: 'Button',
+	description:
+		'A clickable button. The second argument is an action such as @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query).',
+	props: z.object({ label: str(), action: z.any().optional() }),
+	...placeholder
+});
+
 const leafRefs = [
 	MetricDef.ref,
 	ComparisonDef.ref,
 	TableDef.ref,
 	BadgeDef.ref,
 	DividerDef.ref,
+	ButtonDef.ref,
 	SliderDef.ref,
 	SelectDef.ref,
 	SwitchDef.ref,
@@ -199,6 +211,7 @@ export const openuiLibrary = createLibrary({
 		TableDef,
 		BadgeDef,
 		DividerDef,
+		ButtonDef,
 		SliderDef,
 		SelectDef,
 		SwitchDef,
@@ -218,6 +231,7 @@ export const catalogComponentNames = [
 	'Table',
 	'Badge',
 	'Divider',
+	'Button',
 	'Slider',
 	'Select',
 	'Switch',
@@ -237,6 +251,7 @@ export const COMPONENT_TYPE_MAP: Record<string, string> = {
 	Table: 'table',
 	Badge: 'badge',
 	Divider: 'divider',
+	Button: 'button',
 	Slider: 'slider',
 	Select: 'select',
 	Switch: 'switch',

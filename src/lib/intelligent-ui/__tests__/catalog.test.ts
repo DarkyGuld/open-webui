@@ -16,6 +16,7 @@ describe('intelligent-ui catalog — single source of truth', () => {
 			'Card',
 			'Checkbox',
 			'Comparison',
+			'Data',
 			'Divider',
 			'Grid',
 			'Input',

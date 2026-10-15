@@ -135,11 +135,24 @@ const ButtonDef = defineComponent({
 	name: 'Button',
 	description:
 		'A clickable button. The second argument is an action such as @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query).',
-	props: z.object({ label: str(), action: z.any().optional() }),
+	props: z.object({ label: str(), action: z.any().optional(), args: z.any().optional() }),
+	...placeholder
+});
+
+// Read-only data view bound to an allow-listed query source (see queries.ts).
+const DataDef = defineComponent({
+	name: 'Data',
+	description:
+		'A read-only data table bound to an allow-listed source. Sources: conversation.notes, library.files, knowledge.collections.',
+	props: z.object({
+		source: str(),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional()
+	}),
 	...placeholder
 });
 
 const leafRefs = [
+	DataDef.ref,
 	MetricDef.ref,
 	ComparisonDef.ref,
 	TableDef.ref,
@@ -206,6 +219,7 @@ const StackDef = defineComponent({
 
 export const openuiLibrary = createLibrary({
 	components: [
+		DataDef,
 		MetricDef,
 		ComparisonDef,
 		TableDef,
@@ -226,6 +240,7 @@ export const openuiLibrary = createLibrary({
 });
 
 export const catalogComponentNames = [
+	'Data',
 	'Metric',
 	'Comparison',
 	'Table',
@@ -246,6 +261,7 @@ export const catalogComponentNames = [
 
 /** OpenUI component name -> canonical node type. */
 export const COMPONENT_TYPE_MAP: Record<string, string> = {
+	Data: 'data',
 	Metric: 'metric',
 	Comparison: 'comparison',
 	Table: 'table',

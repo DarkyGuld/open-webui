@@ -119,8 +119,25 @@ function mapNode(element: ElementNode, store: Store | null): UINode {
 			return { type: 'badge', label: String(p.label), ...(p.action != null ? { action: p.action } : {}) };
 		case 'divider':
 			return { type: 'divider' };
+		case 'data':
+			return {
+				type: 'data',
+				source: String(p.source),
+				...(p.title != null ? { title: String(p.title) } : {})
+			};
 		case 'button': {
-			const action = normalizeAction(p.action, store);
+			// A plain string action is a registered query/mutation id (run); otherwise
+			// it is an OpenUI @Set/@Reset/@ToAssistant/@OpenUrl step.
+			let action: unknown;
+			if (typeof p.action === 'string') {
+				action = {
+					type: 'run',
+					id: p.action,
+					args: p.args && typeof p.args === 'object' ? p.args : {}
+				};
+			} else {
+				action = normalizeAction(p.action, store);
+			}
 			return { type: 'button', label: String(p.label), ...(action ? { action } : {}) };
 		}
 		case 'slider': {

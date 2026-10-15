@@ -7,6 +7,7 @@
 		type IntelligentUIRuntime
 	} from '$lib/intelligent-ui/adapter';
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
+	import { getMutation } from '$lib/intelligent-ui/mutations';
 	import { loadState, saveState } from '$lib/intelligent-ui/state';
 	import type { OpenUIAction, UIAction, UINode } from '$lib/intelligent-ui/types';
 	import NodeRenderer from '$lib/intelligent-ui/components/NodeRenderer.svelte';
@@ -120,6 +121,22 @@
 			} else if (step.type === 'open_url') {
 				const approved = await confirm({ message: step.url });
 				if (approved) window.open(step.url, '_blank', 'noopener');
+			} else if (step.type === 'run') {
+				// Registered mutation only; unknown id is rejected. Runs solely from a
+				// user click (never on render/reload), after native confirmation.
+				const mutation = getMutation(step.id);
+				if (!mutation) {
+					console.debug('[intelligent-ui] unknown mutation id:', step.id);
+					continue;
+				}
+				const approved = await confirm({ message: mutation.description(step.args) });
+				if (!approved) continue;
+				try {
+					const token = typeof localStorage !== 'undefined' ? localStorage.token : '';
+					await mutation.run(token, step.args);
+				} catch (e) {
+					console.debug('[intelligent-ui] mutation failed:', (e as Error).message);
+				}
 			}
 		}
 		tree = runtime?.evaluate() ?? tree;

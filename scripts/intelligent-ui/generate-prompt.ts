@@ -29,6 +29,8 @@ const prompt = openuiLibrary.prompt({
 		'You may compute derived values (`total = $seats * 29`) and use a ternary (`$flag ? a : b`) in any prop.',
 		'Buttons take an action as the second argument: @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query). Actions run locally with no model call.',
 		'Example: Button("20 seats", @Set($seats, 20)) sets $seats to 20 and updates dependent values.',
+		'For read-only data, use Data(source, title?) with an allow-listed source: conversation.notes, library.files, or knowledge.collections. Example: Data("library.files", "My files").',
+		'To perform an approved action, pass a registered action id as the second Button argument, e.g. Button("Save note", "notes.create", {title:"Plan", content:"..."}). Only registered ids run, and the user must confirm.',
 		'When you use UI, wrap the OpenUI Lang in a fenced block on its own lines:',
 		':::intelligent-ui{v="1"}',
 		'<openui lang here>',
@@ -43,6 +45,8 @@ const prompt = openuiLibrary.prompt({
 		`User: Show the costs as a table.\n\n:::intelligent-ui{v="1"}\nroot = Table("Monthly costs", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])\n:::`,
 		`User: Make a small pricing calculator with a seats slider.\n\n:::intelligent-ui{v="1"}\n$seats = 8\nroot = Stack([s1, m1])\ns1 = Slider("Seats", $seats, 1, 50)\nm1 = Metric("Monthly price", total, "Incl. VAT")\ntotal = $seats * 29\n:::`,
 		`User: Make a pricing calculator with quick buttons.\n\n:::intelligent-ui{v="1"}\n$seats = 8\nroot = Stack([row1, m1])\nrow1 = Row([b10, b20, b50, br])\nb10 = Button("10 seats", @Set($seats, 10))\nb20 = Button("20 seats", @Set($seats, 20))\nb50 = Button("50 seats", @Set($seats, 50))\nbr = Button("Reset", @Reset($seats))\nm1 = Metric("Monthly price", total, "Incl. VAT")\ntotal = $seats * 29\n:::`,
+		`User: Show my knowledge collections in a table.\n\n:::intelligent-ui{v="1"}\nroot = Data("knowledge.collections", "Knowledge collections")\n:::`,
+		`User: Save a short note called "Plan".\n\n:::intelligent-ui{v="1"}\nroot = Stack([b1])\nb1 = Button("Save note", "notes.create", {title:"Plan", content:"Ship the audit."})\n:::`,
 		`User: Give me a small dashboard of the key numbers.\n\n:::intelligent-ui{v="1"}\nroot = Stack([g1, t1])\ng1 = Grid([c1, c2])\nc1 = Card("Cost", [m1])\nm1 = Metric("Monthly cost", "5 294 kr", "Incl. VAT")\nc2 = Card("Seats", [m2])\nm2 = Metric("Seats", "8")\nt1 = Section("Breakdown", [tbl])\ntbl = Table("", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])\n:::`,
 		`User: Who was Nikola Tesla?\n\nNikola Tesla was a Serbian-American inventor and electrical engineer best known for his contributions to the design of the modern alternating current (AC) electricity supply system.`
 	]

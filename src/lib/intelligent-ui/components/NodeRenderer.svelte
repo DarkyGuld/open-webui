@@ -9,6 +9,7 @@
 	import Badge from './Badge.svelte';
 	import Divider from './Divider.svelte';
 	import Button from './Button.svelte';
+	import Data from './Data.svelte';
 	import Slider from './Slider.svelte';
 	import Select from './Select.svelte';
 	import Switch from './Switch.svelte';
@@ -50,6 +51,8 @@
 	<Divider />
 {:else if node.type === 'button'}
 	<Button label={node.label} action={node.action} {onOpenUIAction} />
+{:else if node.type === 'data'}
+	<Data source={node.source} title={node.title} />
 {:else if node.type === 'slider'}
 	<Slider
 		label={node.label}

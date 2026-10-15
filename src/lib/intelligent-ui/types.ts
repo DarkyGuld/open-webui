@@ -106,7 +106,14 @@ export type OpenUIAction =
 	| { type: 'set'; target: string; value: unknown }
 	| { type: 'reset'; targets: string[] }
 	| { type: 'send_prompt'; prompt: string }
-	| { type: 'open_url'; url: string };
+	| { type: 'open_url'; url: string }
+	| { type: 'run'; id: string; args: Record<string, unknown> };
+
+export interface DataNode {
+	type: 'data';
+	source: string;
+	title?: string;
+}
 
 export interface ButtonNode {
 	type: 'button';
@@ -126,6 +133,7 @@ export interface ContainerNode {
 export type InputNodeType = 'slider' | 'select' | 'switch' | 'checkbox' | 'input';
 
 export type UINode =
+	| DataNode
 	| MetricNode
 	| ComparisonNode
 	| TableNode

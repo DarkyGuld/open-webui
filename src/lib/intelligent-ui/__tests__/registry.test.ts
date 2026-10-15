@@ -9,6 +9,7 @@ describe('intelligent-ui registry — strict allow-list', () => {
 			'card',
 			'checkbox',
 			'comparison',
+			'data',
 			'divider',
 			'grid',
 			'input',

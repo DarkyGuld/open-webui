@@ -26,22 +26,23 @@ PROMPT = r"""You may optionally present part of your answer as structured, inter
 Arguments marked with ? are optional. Sub-components can be inline or referenced; prefer references for better streaming.
 Props marked `$binding<type>` accept a `$variable` reference for two-way binding.
 
+Data(source: string, title?: string) — A read-only data table bound to an allow-listed source. Sources: conversation.notes, library.files, knowledge.collections.
 Metric(label: string, value: string, description?: string, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A single important number (cost, total, count) with a short label and optional note.
 Comparison(title?: string, items: {name: string, attributes: string[]}[], selectable?: boolean, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — Compare 2-4 options side by side by name, each with a list of attributes.
 Table(title?: string, columns: string[], rows: string[][], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A simple data table with columns and rows.
 Badge(label: string, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A small inline label/tag (status, category).
 Divider() — A horizontal separator between sections.
-Button(label: string, action?: any) — A clickable button. The second argument is an action such as @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query).
+Button(label: string, action?: any, args?: any) — A clickable button. The second argument is an action such as @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query).
 Slider(label: string, value: $binding<number>, min: number, max: number, step?: number) — A numeric slider bound to a $state variable.
 Select(label: string, value: $binding<string>, options: string[]) — A dropdown bound to a $state variable.
 Switch(label: string, value: $binding<boolean>) — An on/off switch bound to a $state variable.
 Checkbox(label: string, value: $binding<boolean>) — A checkbox bound to a $state variable.
 Input(label: string, value: $binding<string>, placeholder?: string) — A single-line text input bound to a $state variable.
-Card(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input)[], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A titled surface that groups child components.
-Stack(children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid | Section)[]) — Vertical layout container. Use as the root for most responses.
-Row(children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card)[]) — Horizontal layout container (wraps on small screens).
-Grid(children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row)[]) — Responsive grid of 2-3 columns. Use for side-by-side cards.
-Section(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid)[]) — A titled section that groups children (no card chrome).
+Card(title?: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input)[], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A titled surface that groups child components.
+Stack(children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid | Section)[]) — Vertical layout container. Use as the root for most responses.
+Row(children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card)[]) — Horizontal layout container (wraps on small screens).
+Grid(children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row)[]) — Responsive grid of 2-3 columns. Use for side-by-side cards.
+Section(title?: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid)[]) — A titled section that groups children (no card chrome).
 
 ## Hoisting & Streaming (CRITICAL)
 
@@ -104,6 +105,19 @@ m1 = Metric("Monthly price", total, "Incl. VAT")
 total = $seats * 29
 :::
 
+User: Show my knowledge collections in a table.
+
+:::intelligent-ui{v="1"}
+root = Data("knowledge.collections", "Knowledge collections")
+:::
+
+User: Save a short note called "Plan".
+
+:::intelligent-ui{v="1"}
+root = Stack([b1])
+b1 = Button("Save note", "notes.create", {title:"Plan", content:"Ship the audit."})
+:::
+
 User: Give me a small dashboard of the key numbers.
 
 :::intelligent-ui{v="1"}
@@ -138,6 +152,8 @@ Before finishing, walk your output and verify:
 - You may compute derived values (`total = $seats * 29`) and use a ternary (`$flag ? a : b`) in any prop.
 - Buttons take an action as the second argument: @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query). Actions run locally with no model call.
 - Example: Button("20 seats", @Set($seats, 20)) sets $seats to 20 and updates dependent values.
+- For read-only data, use Data(source, title?) with an allow-listed source: conversation.notes, library.files, or knowledge.collections. Example: Data("library.files", "My files").
+- To perform an approved action, pass a registered action id as the second Button argument, e.g. Button("Save note", "notes.create", {title:"Plan", content:"..."}). Only registered ids run, and the user must confirm.
 - When you use UI, wrap the OpenUI Lang in a fenced block on its own lines:
 - :::intelligent-ui{v="1"}
 - <openui lang here>

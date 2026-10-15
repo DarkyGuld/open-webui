@@ -53,8 +53,17 @@ export const openUiActionSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('set'), target: z.string().max(120), value: z.unknown() }),
 	z.object({ type: z.literal('reset'), targets: z.array(z.string().max(120)).max(24) }),
 	z.object({ type: z.literal('send_prompt'), prompt: z.string().max(LIMITS.MAX_ACTION_PROMPT_LENGTH) }),
-	z.object({ type: z.literal('open_url'), url: z.string().max(LIMITS.MAX_STRING_LENGTH) })
+	z.object({ type: z.literal('open_url'), url: z.string().max(LIMITS.MAX_STRING_LENGTH) }),
+	z.object({ type: z.literal('run'), id: z.string().min(1).max(120), args: z.record(z.string(), z.unknown()) })
 ]);
+
+export const dataSchema = z
+	.object({
+		type: z.literal('data'),
+		source: z.string().min(1).max(120),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional()
+	})
+	.strict();
 
 export const buttonSchema = z
 	.object({
@@ -120,6 +129,7 @@ export const containerSchema: z.ZodTypeAny = z.lazy(() =>
 
 export const uiNodeSchema: z.ZodTypeAny = z.lazy(() =>
 	z.union([
+		dataSchema,
 		metricSchema,
 		comparisonSchema,
 		tableSchema,

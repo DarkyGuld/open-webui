@@ -151,6 +151,108 @@ const DataDef = defineComponent({
 	...placeholder
 });
 
+// --- M9.4 breadth: progress / chart / timeline / gallery ---
+
+const ProgressDef = defineComponent({
+	name: 'Progress',
+	description:
+		'A bounded 0-100 progress bar with an optional label and status. The value may be an expression of $state.',
+	props: z.object({
+		label: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		value: z.number(),
+		status: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		source: z.string().max(120).optional()
+	}),
+	...placeholder
+});
+
+const ChartDef = defineComponent({
+	name: 'Chart',
+	description:
+		'A chart (line, bar, area, pie or donut) from typed data: labels plus one or more named numeric series.',
+	props: z.object({
+		chartType: z.enum(['line', 'bar', 'area', 'pie', 'donut']),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		labels: z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).max(LIMITS.MAX_CHART_POINTS),
+		series: z
+			.array(
+				z.object({
+					name: str(),
+					values: z.array(z.number()).max(LIMITS.MAX_CHART_POINTS)
+				})
+			)
+			.max(LIMITS.MAX_CHART_SERIES),
+		source: z.string().max(120).optional()
+	}),
+	...placeholder
+});
+
+const TimelineDef = defineComponent({
+	name: 'Timeline',
+	description:
+		'An ordered list of events, each with a title and optional timestamp, description and status.',
+	props: z.object({
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		items: z
+			.array(
+				z.object({
+					title: str(),
+					timestamp: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+					description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+					status: z.enum(['done', 'active', 'pending', 'error']).optional()
+				})
+			)
+			.max(LIMITS.MAX_TIMELINE_ITEMS),
+		source: z.string().max(120).optional()
+	}),
+	...placeholder
+});
+
+const GalleryDef = defineComponent({
+	name: 'Gallery',
+	description:
+		'An image gallery (single image or responsive grid) using safe Open WebUI media references.',
+	props: z.object({
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		items: z
+			.array(
+				z.object({
+					src: str(),
+					caption: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+					alt: z.string().max(LIMITS.MAX_STRING_LENGTH).optional()
+				})
+			)
+			.max(LIMITS.MAX_GALLERY_ITEMS)
+	}),
+	...placeholder
+});
+
+const TextareaDef = defineComponent({
+	name: 'Textarea',
+	description: 'A multi-line text input bound to a $state variable.',
+	props: z.object({
+		label: str(),
+		value: str(),
+		placeholder: z.string().max(LIMITS.MAX_STRING_LENGTH).optional()
+	}),
+	...placeholder
+});
+
+const RadioDef = defineComponent({
+	name: 'Radio',
+	description: 'A radio group bound to a $state variable (pick one of the options).',
+	props: z.object({
+		label: str(),
+		value: str(),
+		options: z.array(str()).min(1).max(LIMITS.MAX_RADIO_OPTIONS)
+	}),
+	...placeholder
+});
+
+for (const def of [TextareaDef, RadioDef]) {
+	markReactive((def.props as any).shape.value);
+}
+
 const leafRefs = [
 	DataDef.ref,
 	MetricDef.ref,
@@ -163,7 +265,13 @@ const leafRefs = [
 	SelectDef.ref,
 	SwitchDef.ref,
 	CheckboxDef.ref,
-	InputDef.ref
+	InputDef.ref,
+	TextareaDef.ref,
+	RadioDef.ref,
+	ProgressDef.ref,
+	ChartDef.ref,
+	TimelineDef.ref,
+	GalleryDef.ref
 ];
 
 // --- Containers ---
@@ -205,13 +313,74 @@ const SectionDef = defineComponent({
 	...placeholder
 });
 
+// --- M9.4 composition: tabs / field / form ---
+
+const TabDef = defineComponent({
+	name: 'Tab',
+	description: 'One tab panel: a label (title) and its child components. Only valid inside Tabs.',
+	props: z.object({
+		title: str(),
+		children: z
+			.array(z.union([...leafRefs, CardDef.ref, RowDef.ref, GridDef.ref, SectionDef.ref]))
+			.max(LIMITS.MAX_CHILDREN)
+	}),
+	...placeholder
+});
+
+const TabsDef = defineComponent({
+	name: 'Tabs',
+	description:
+		'A tabbed panel. Its children are Tab components; switching tabs is local and needs no model call.',
+	props: z.object({
+		children: z.array(TabDef.ref).min(1).max(LIMITS.MAX_TABS)
+	}),
+	...placeholder
+});
+
+const FieldDef = defineComponent({
+	name: 'Field',
+	description:
+		'A labelled form field: a label (title), optional description, optional validation error, and its input child.',
+	props: z.object({
+		title: str(),
+		children: z.array(z.union([...leafRefs, RowDef.ref])).max(LIMITS.MAX_CHILDREN),
+		description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		error: z.string().max(LIMITS.MAX_STRING_LENGTH).optional()
+	}),
+	...placeholder
+});
+
+const FormDef = defineComponent({
+	name: 'Form',
+	description:
+		'A form: groups Field components and inputs. Use Button with @Set/@Reset or a registered mutation for side effects.',
+	props: z.object({
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		children: z
+			.array(z.union([...leafRefs, FieldDef.ref, RowDef.ref, GridDef.ref, SectionDef.ref]))
+			.max(LIMITS.MAX_FORM_FIELDS)
+	}),
+	...placeholder
+});
+
 const StackDef = defineComponent({
 	name: 'Stack',
 	description: 'Vertical layout container. Use as the root for most responses.',
 	props: z
 		.object({
 			children: z
-				.array(z.union([...leafRefs, CardDef.ref, RowDef.ref, GridDef.ref, SectionDef.ref]))
+				.array(
+					z.union([
+						...leafRefs,
+						CardDef.ref,
+						RowDef.ref,
+						GridDef.ref,
+						SectionDef.ref,
+						TabsDef.ref,
+						FieldDef.ref,
+						FormDef.ref
+					])
+				)
 				.max(LIMITS.MAX_CHILDREN)
 		}),
 	...placeholder
@@ -231,11 +400,21 @@ export const openuiLibrary = createLibrary({
 		SwitchDef,
 		CheckboxDef,
 		InputDef,
+		TextareaDef,
+		RadioDef,
+		ProgressDef,
+		ChartDef,
+		TimelineDef,
+		GalleryDef,
 		CardDef,
 		StackDef,
 		RowDef,
 		GridDef,
-		SectionDef
+		SectionDef,
+		TabDef,
+		TabsDef,
+		FieldDef,
+		FormDef
 	]
 });
 
@@ -252,11 +431,21 @@ export const catalogComponentNames = [
 	'Switch',
 	'Checkbox',
 	'Input',
+	'Textarea',
+	'Radio',
+	'Progress',
+	'Chart',
+	'Timeline',
+	'Gallery',
 	'Card',
 	'Stack',
 	'Row',
 	'Grid',
-	'Section'
+	'Section',
+	'Tab',
+	'Tabs',
+	'Field',
+	'Form'
 ] as const;
 
 /** OpenUI component name -> canonical node type. */
@@ -273,9 +462,19 @@ export const COMPONENT_TYPE_MAP: Record<string, string> = {
 	Switch: 'switch',
 	Checkbox: 'checkbox',
 	Input: 'input',
+	Textarea: 'textarea',
+	Radio: 'radio',
+	Progress: 'progress',
+	Chart: 'chart',
+	Timeline: 'timeline',
+	Gallery: 'gallery',
 	Card: 'card',
 	Stack: 'stack',
 	Row: 'row',
 	Grid: 'grid',
-	Section: 'section'
+	Section: 'section',
+	Tab: 'tab',
+	Tabs: 'tabs',
+	Field: 'field',
+	Form: 'form'
 };

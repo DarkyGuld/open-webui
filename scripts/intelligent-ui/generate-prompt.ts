@@ -24,7 +24,11 @@ const prompt = openuiLibrary.prompt({
 		'Use Intelligent UI ONLY when it materially improves clarity: a side-by-side comparison, headline metrics, or tabular data.',
 		'Only the documented components exist. Never invent components.',
 		'Use Stack as the root for most responses. Compose layouts with Stack (vertical), Row (horizontal), Grid (2-3 columns), Section (titled group) and Card (titled surface).',
-		'Put leaf components (Metric, Comparison, Table, Badge, Divider, inputs) inside containers. Do not nest Stack inside Stack.',
+		'Put leaf components (Metric, Comparison, Table, Badge, Divider, Chart, Progress, Timeline, Gallery, inputs) inside containers. Do not nest Stack inside Stack.',
+		'Charts: Chart(chartType, title?, labels, series) where chartType is "line", "bar", "area", "pie" or "donut" and series is [{name:"...", values:[...]}] with numeric values. Keep labels and every series the same length.',
+		'Tabbed content: Tabs([t1, t2]) with t1 = Tab("Label", [ ...children ]). Switching tabs is local and needs no model call.',
+		'Timeline(title?, items) for ordered events: items are [{title, timestamp?, description?, status?}] where status is done|active|pending|error. Progress(label?, value) is a 0-100 bar. Gallery(title?, items) shows images: items are [{src, caption?, alt?}] using safe Open WebUI media paths only.',
+		'Forms: Form(title?, [f1, ...]) groups Field("Label", [input]) and inputs; add a Button with @Set/@Reset or a registered mutation id for side effects. A Field may carry a description or validation error: Field("Email", [i1], "We never share it", "Required").',
 		'Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input, and reference `$name` in expressions elsewhere. Inputs update the UI without a model call.',
 		'You may compute derived values (`total = $seats * 29`) and use a ternary (`$flag ? a : b`) in any prop.',
 		'Buttons take an action as the second argument: @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query). Actions run locally with no model call.',
@@ -48,6 +52,10 @@ const prompt = openuiLibrary.prompt({
 		`User: Show my knowledge collections in a table.\n\n:::intelligent-ui{v="1"}\nroot = Data("knowledge.collections", "Knowledge collections")\n:::`,
 		`User: Save a short note called "Plan".\n\n:::intelligent-ui{v="1"}\nroot = Stack([b1])\nb1 = Button("Save note", "notes.create", {title:"Plan", content:"Ship the audit."})\n:::`,
 		`User: Give me a small dashboard of the key numbers.\n\n:::intelligent-ui{v="1"}\nroot = Stack([g1, t1])\ng1 = Grid([c1, c2])\nc1 = Card("Cost", [m1])\nm1 = Metric("Monthly cost", "5 294 kr", "Incl. VAT")\nc2 = Card("Seats", [m2])\nm2 = Metric("Seats", "8")\nt1 = Section("Breakdown", [tbl])\ntbl = Table("", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])\n:::`,
+		`User: Chart the quarterly revenue.\n\n:::intelligent-ui{v="1"}\nroot = Chart("bar", "Quarterly revenue", ["Q1","Q2","Q3","Q4"], [{name:"Revenue", values:[120,150,170,210]}])\n:::`,
+		`User: Show tabs for specs and pricing.\n\n:::intelligent-ui{v="1"}\nroot = Stack([tabs1])\ntabs1 = Tabs([tabA, tabB])\ntabA = Tab("Specs", [tbl1])\ntbl1 = Table("", ["Item","Value"], [["CPU","4 vCPU"],["RAM","8 GB"]])\ntabB = Tab("Pricing", [m1])\nm1 = Metric("Monthly", "490 kr")\n:::`,
+		`User: Show the deploy progress and steps.\n\n:::intelligent-ui{v="1"}\nroot = Stack([p1, tl1])\np1 = Progress("Rollout", 72)\ntl1 = Timeline("Steps", [{title:"Build",status:"done"},{title:"Deploy",status:"active"},{title:"Verify",status:"pending"}])\n:::`,
+		`User: Make a feedback form.\n\n:::intelligent-ui{v="1"}\n$name = ""\n$rating = "Good"\nroot = Form("Feedback", [f1, f2])\nf1 = Field("Name", [i1])\ni1 = Input("Your name", $name)\nf2 = Field("Rating", [r1])\nr1 = Radio("How was it?", $rating, ["Great","Good","Poor"])\n:::`,
 		`User: Who was Nikola Tesla?\n\nNikola Tesla was a Serbian-American inventor and electrical engineer best known for his contributions to the design of the modern alternating current (AC) electricity supply system.`
 	]
 });

@@ -121,16 +121,109 @@ export interface ButtonNode {
 	action?: OpenUIAction | OpenUIAction[];
 }
 
-export type ContainerType = 'stack' | 'row' | 'grid' | 'section' | 'card';
+// --- M9.4 breadth: progress / chart / timeline / gallery ---
+
+export interface ProgressNode {
+	type: 'progress';
+	label?: string;
+	value: number; // 0–100
+	status?: string;
+	/** Optional allow-listed query whose first numeric cell derives the value. */
+	source?: string;
+}
+
+export type ChartType = 'line' | 'bar' | 'area' | 'pie' | 'donut';
+
+export interface ChartSeries {
+	name: string;
+	values: number[];
+}
+
+export interface ChartNode {
+	type: 'chart';
+	chartType: ChartType;
+	title?: string;
+	labels: string[];
+	series: ChartSeries[];
+	/** Optional allow-listed query: column 0 -> labels, numeric columns -> series. */
+	source?: string;
+}
+
+export type TimelineStatus = 'done' | 'active' | 'pending' | 'error';
+
+export interface TimelineItem {
+	title: string;
+	timestamp?: string;
+	description?: string;
+	status?: TimelineStatus;
+}
+
+export interface TimelineNode {
+	type: 'timeline';
+	title?: string;
+	items: TimelineItem[];
+	/** Optional allow-listed query: [title, timestamp, description, status]. */
+	source?: string;
+}
+
+export interface GalleryItem {
+	src: string;
+	caption?: string;
+	alt?: string;
+}
+
+export interface GalleryNode {
+	type: 'gallery';
+	title?: string;
+	items: GalleryItem[];
+}
+
+// --- M9.4 richer forms ---
+
+export interface TextareaNode {
+	type: 'textarea';
+	label: string;
+	value: string;
+	placeholder?: string;
+	binding?: string;
+}
+
+export interface RadioNode {
+	type: 'radio';
+	label: string;
+	value: string;
+	options: string[];
+	binding?: string;
+}
+
+export type ContainerType =
+	| 'stack'
+	| 'row'
+	| 'grid'
+	| 'section'
+	| 'card'
+	| 'tabs'
+	| 'tab'
+	| 'field'
+	| 'form';
 
 export interface ContainerNode {
 	type: ContainerType;
 	title?: string;
+	description?: string;
+	error?: string;
 	children: UINode[];
 	action?: UIAction;
 }
 
-export type InputNodeType = 'slider' | 'select' | 'switch' | 'checkbox' | 'input';
+export type InputNodeType =
+	| 'slider'
+	| 'select'
+	| 'switch'
+	| 'checkbox'
+	| 'input'
+	| 'textarea'
+	| 'radio';
 
 export type UINode =
 	| DataNode
@@ -145,10 +238,26 @@ export type UINode =
 	| SwitchNode
 	| CheckboxNode
 	| InputNode
+	| TextareaNode
+	| RadioNode
+	| ProgressNode
+	| ChartNode
+	| TimelineNode
+	| GalleryNode
 	| ContainerNode;
 export type UINodeType = UINode['type'];
 
-export const CONTAINER_TYPES: ContainerType[] = ['stack', 'row', 'grid', 'section', 'card'];
+export const CONTAINER_TYPES: ContainerType[] = [
+	'stack',
+	'row',
+	'grid',
+	'section',
+	'card',
+	'tabs',
+	'tab',
+	'field',
+	'form'
+];
 
 /** Stable internal envelope (constructed by the adapter; engine is system-chosen). */
 export interface IntelligentUIEnvelope {

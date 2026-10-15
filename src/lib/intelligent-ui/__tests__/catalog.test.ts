@@ -14,20 +14,30 @@ describe('intelligent-ui catalog — single source of truth', () => {
 			'Badge',
 			'Button',
 			'Card',
+			'Chart',
 			'Checkbox',
 			'Comparison',
 			'Data',
 			'Divider',
+			'Field',
+			'Form',
+			'Gallery',
 			'Grid',
 			'Input',
 			'Metric',
+			'Progress',
+			'Radio',
 			'Row',
 			'Section',
 			'Select',
 			'Slider',
 			'Stack',
 			'Switch',
-			'Table'
+			'Tab',
+			'Table',
+			'Tabs',
+			'Textarea',
+			'Timeline'
 		]);
 	});
 
@@ -38,8 +48,8 @@ describe('intelligent-ui catalog — single source of truth', () => {
 
 	it('generated server prompt is in sync with the catalog', () => {
 		const prompt = readFileSync(promptFile, 'utf8');
-		expect(prompt).toContain('catalog_version: 3');
-		expect(prompt).toContain('CATALOG_VERSION = 3');
+		expect(prompt).toContain('catalog_version: 4');
+		expect(prompt).toContain('CATALOG_VERSION = 4');
 		for (const name of catalogComponentNames) {
 			expect(prompt).toContain(name);
 		}

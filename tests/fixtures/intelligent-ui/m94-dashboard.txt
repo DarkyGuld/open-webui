@@ -1,0 +1,7 @@
+root = Stack([g1, c1])
+g1 = Grid([m1, m2, m3])
+m1 = Metric("Revenue", "1.2M kr", "This quarter")
+m2 = Metric("Active users", "8 420")
+m3 = Metric("Churn", "2.1%")
+c1 = Card("Revenue by quarter", [ch1])
+ch1 = Chart("bar", "", ["Q1", "Q2", "Q3", "Q4"], [{name: "Revenue", values: [210, 240, 260, 300]}])

@@ -2,33 +2,25 @@
 	// Allow-listed read-only query bound to native UI, with typed lifecycle:
 	// idle -> loading -> success | error. Unknown source -> safe error state.
 	import { getContext, onMount } from 'svelte';
-	import { runQuery, isKnownQuery, type QueryResult } from '$lib/intelligent-ui/queries';
+	import {
+		emptyBinding,
+		loadBoundQuery,
+		type QueryBinding
+	} from '$lib/intelligent-ui/query-binding';
 
 	const i18n: any = getContext('i18n');
 
 	export let source: string;
 	export let title: string | undefined = undefined;
 
-	type State = 'idle' | 'loading' | 'success' | 'error';
-	let state: State = 'idle';
-	let result: QueryResult | null = null;
-	let errorMessage = '';
+	let binding: QueryBinding = emptyBinding();
+	$: state = binding.status;
+	$: result = binding.result;
+	$: errorMessage = binding.error;
 
-	async function load() {
-		if (!isKnownQuery(source)) {
-			state = 'error';
-			errorMessage = 'unknown query';
-			return;
-		}
-		state = 'loading';
-		try {
-			const token = typeof localStorage !== 'undefined' ? localStorage.token : '';
-			result = await runQuery(source, token);
-			state = 'success';
-		} catch (e) {
-			state = 'error';
-			errorMessage = (e as Error).message;
-		}
+	function load() {
+		binding = emptyBinding();
+		loadBoundQuery(source, (b) => (binding = b));
 	}
 
 	onMount(load);

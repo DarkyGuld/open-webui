@@ -190,14 +190,82 @@ function mapNode(element: ElementNode, store: Store | null): UINode {
 				...(b.binding ? { binding: b.binding } : {})
 			};
 		}
+		case 'textarea': {
+			const b = bound(p.value, store);
+			return {
+				type: 'textarea',
+				label: String(p.label),
+				value: String(b.value ?? ''),
+				...(p.placeholder != null ? { placeholder: String(p.placeholder) } : {}),
+				...(b.binding ? { binding: b.binding } : {})
+			};
+		}
+		case 'radio': {
+			const b = bound(p.value, store);
+			return {
+				type: 'radio',
+				label: String(p.label),
+				options: (p.options ?? []).map(String),
+				value: String(b.value ?? ''),
+				...(b.binding ? { binding: b.binding } : {})
+			};
+		}
+		case 'progress':
+			return {
+				type: 'progress',
+				value: Number(p.value ?? 0),
+				...(p.label != null ? { label: String(p.label) } : {}),
+				...(p.status != null ? { status: String(p.status) } : {}),
+				...(p.source != null ? { source: String(p.source) } : {})
+			};
+		case 'chart':
+			return {
+				type: 'chart',
+				chartType: String(p.chartType) as any,
+				...(p.title != null ? { title: String(p.title) } : {}),
+				labels: (p.labels ?? []).map(String),
+				series: (p.series ?? []).map((s: any) => ({
+					name: String(s.name),
+					values: (s.values ?? []).map(Number)
+				})),
+				...(p.source != null ? { source: String(p.source) } : {})
+			};
+		case 'timeline':
+			return {
+				type: 'timeline',
+				...(p.title != null ? { title: String(p.title) } : {}),
+				items: (p.items ?? []).map((it: any) => ({
+					title: String(it.title),
+					...(it.timestamp != null ? { timestamp: String(it.timestamp) } : {}),
+					...(it.description != null ? { description: String(it.description) } : {}),
+					...(it.status != null ? { status: String(it.status) as any } : {})
+				})),
+				...(p.source != null ? { source: String(p.source) } : {})
+			};
+		case 'gallery':
+			return {
+				type: 'gallery',
+				...(p.title != null ? { title: String(p.title) } : {}),
+				items: (p.items ?? []).map((it: any) => ({
+					src: String(it.src),
+					...(it.caption != null ? { caption: String(it.caption) } : {}),
+					...(it.alt != null ? { alt: String(it.alt) } : {})
+				}))
+			};
 		case 'stack':
 		case 'row':
 		case 'grid':
 		case 'section':
 		case 'card':
+		case 'tabs':
+		case 'tab':
+		case 'field':
+		case 'form':
 			return {
-				type: type as 'stack' | 'row' | 'grid' | 'section' | 'card',
+				type: type as any,
 				...(p.title != null ? { title: String(p.title) } : {}),
+				...(p.description != null ? { description: String(p.description) } : {}),
+				...(p.error != null ? { error: String(p.error) } : {}),
 				children: flattenChildren(p.children).map((c: any) => mapNode(c, store)),
 				...(p.action != null ? { action: p.action } : {})
 			};

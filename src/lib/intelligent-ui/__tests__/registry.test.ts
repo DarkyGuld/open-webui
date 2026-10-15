@@ -7,20 +7,30 @@ describe('intelligent-ui registry — strict allow-list', () => {
 			'badge',
 			'button',
 			'card',
+			'chart',
 			'checkbox',
 			'comparison',
 			'data',
 			'divider',
+			'field',
+			'form',
+			'gallery',
 			'grid',
 			'input',
 			'metric',
+			'progress',
+			'radio',
 			'row',
 			'section',
 			'select',
 			'slider',
 			'stack',
 			'switch',
-			'table'
+			'tab',
+			'table',
+			'tabs',
+			'textarea',
+			'timeline'
 		]);
 	});
 
@@ -30,12 +40,17 @@ describe('intelligent-ui registry — strict allow-list', () => {
 		expect(getLeafComponent('table')).toBeTruthy();
 		expect(getLeafComponent('badge')).toBeTruthy();
 		expect(getLeafComponent('divider')).toBeTruthy();
+		expect(getLeafComponent('chart')).toBeTruthy();
+		expect(getLeafComponent('progress')).toBeTruthy();
+		expect(getLeafComponent('timeline')).toBeTruthy();
+		expect(getLeafComponent('gallery')).toBeTruthy();
 	});
 
 	it('rejects unknown components', () => {
-		expect(getLeafComponent('chart')).toBeNull();
-		expect(getLeafComponent('form')).toBeNull();
+		expect(getLeafComponent('html')).toBeNull();
+		expect(getLeafComponent('map')).toBeNull();
 		expect(isSupportedComponent('html')).toBe(false);
 		expect(isSupportedComponent('map')).toBe(false);
+		expect(isSupportedComponent('script')).toBe(false);
 	});
 });

@@ -11,6 +11,12 @@ import Select from './components/Select.svelte';
 import Switch from './components/Switch.svelte';
 import Checkbox from './components/Checkbox.svelte';
 import Input from './components/Input.svelte';
+import Textarea from './components/Textarea.svelte';
+import Radio from './components/Radio.svelte';
+import Progress from './components/Progress.svelte';
+import Chart from './components/Chart.svelte';
+import Timeline from './components/Timeline.svelte';
+import Gallery from './components/Gallery.svelte';
 import type { UINodeType } from './types';
 
 /**
@@ -30,10 +36,26 @@ export const leafRegistry: Partial<Record<UINodeType, Component<any>>> = {
 	select: Select,
 	switch: Switch,
 	checkbox: Checkbox,
-	input: Input
+	input: Input,
+	textarea: Textarea,
+	radio: Radio,
+	progress: Progress,
+	chart: Chart,
+	timeline: Timeline,
+	gallery: Gallery
 };
 
-export const CONTAINER_TYPES: UINodeType[] = ['stack', 'row', 'grid', 'section', 'card'];
+export const CONTAINER_TYPES: UINodeType[] = [
+	'stack',
+	'row',
+	'grid',
+	'section',
+	'card',
+	'tabs',
+	'tab',
+	'field',
+	'form'
+];
 
 export const SUPPORTED_COMPONENTS: UINodeType[] = [
 	'metric',
@@ -48,6 +70,12 @@ export const SUPPORTED_COMPONENTS: UINodeType[] = [
 	'switch',
 	'checkbox',
 	'input',
+	'textarea',
+	'radio',
+	'progress',
+	'chart',
+	'timeline',
+	'gallery',
 	...CONTAINER_TYPES
 ];
 

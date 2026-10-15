@@ -115,16 +115,117 @@ export const inputSchema = z
 	})
 	.strict();
 
+export const textareaSchema = z
+	.object({
+		type: z.literal('textarea'),
+		label: str(),
+		value: z.string().max(LIMITS.MAX_STRING_LENGTH),
+		placeholder: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		binding: binding()
+	})
+	.strict();
+
+export const radioSchema = z
+	.object({
+		type: z.literal('radio'),
+		label: str(),
+		value: z.string().max(LIMITS.MAX_STRING_LENGTH),
+		options: z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).min(1).max(LIMITS.MAX_RADIO_OPTIONS),
+		binding: binding()
+	})
+	.strict();
+
+export const progressSchema = z
+	.object({
+		type: z.literal('progress'),
+		label: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		value: z.number().min(0).max(100),
+		status: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		source: z.string().min(1).max(120).optional()
+	})
+	.strict();
+
+export const chartSeriesSchema = z
+	.object({
+		name: str(),
+		values: z.array(z.number()).max(LIMITS.MAX_CHART_POINTS)
+	})
+	.strict();
+
+export const chartSchema = z
+	.object({
+		type: z.literal('chart'),
+		chartType: z.enum(['line', 'bar', 'area', 'pie', 'donut']),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		labels: z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).max(LIMITS.MAX_CHART_POINTS),
+		series: z.array(chartSeriesSchema).max(LIMITS.MAX_CHART_SERIES),
+		source: z.string().min(1).max(120).optional()
+	})
+	.strict();
+
+export const timelineItemSchema = z
+	.object({
+		title: str(),
+		timestamp: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		status: z.enum(['done', 'active', 'pending', 'error']).optional()
+	})
+	.strict();
+
+export const timelineSchema = z
+	.object({
+		type: z.literal('timeline'),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		items: z.array(timelineItemSchema).max(LIMITS.MAX_TIMELINE_ITEMS),
+		source: z.string().min(1).max(120).optional()
+	})
+	.strict();
+
+export const galleryItemSchema = z
+	.object({
+		src: str(),
+		caption: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		alt: z.string().max(LIMITS.MAX_STRING_LENGTH).optional()
+	})
+	.strict();
+
+export const gallerySchema = z
+	.object({
+		type: z.literal('gallery'),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		items: z.array(galleryItemSchema).min(1).max(LIMITS.MAX_GALLERY_ITEMS)
+	})
+	.strict();
+
 // Recursive container schema (children are nodes).
 export const containerSchema: z.ZodTypeAny = z.lazy(() =>
 	z
 		.object({
-			type: z.enum(['stack', 'row', 'grid', 'section', 'card']),
+			type: z.enum(['stack', 'row', 'grid', 'section', 'card', 'tabs', 'tab', 'field', 'form']),
 			title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+			description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+			error: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
 			children: z.array(uiNodeSchema).max(LIMITS.MAX_CHILDREN),
 			action: actionSchema.optional()
 		})
 		.strict()
+		.superRefine((node: any, ctx) => {
+			// Tabs may only contain Tab children; Tab may only appear inside Tabs.
+			if (node.type === 'tabs') {
+				node.children?.forEach((child: any, i: number) => {
+					if (child?.type !== 'tab') {
+						ctx.addIssue({
+							code: 'custom',
+							message: 'Tabs children must be Tab',
+							path: ['children', i]
+						});
+					}
+				});
+			}
+			if (node.type === 'tab' && node.children?.length === 0) {
+				ctx.addIssue({ code: 'custom', message: 'Tab requires children', path: ['children'] });
+			}
+		})
 );
 
 export const uiNodeSchema: z.ZodTypeAny = z.lazy(() =>
@@ -141,6 +242,12 @@ export const uiNodeSchema: z.ZodTypeAny = z.lazy(() =>
 		switchSchema,
 		checkboxSchema,
 		inputSchema,
+		textareaSchema,
+		radioSchema,
+		progressSchema,
+		chartSchema,
+		timelineSchema,
+		gallerySchema,
 		containerSchema
 	])
 );

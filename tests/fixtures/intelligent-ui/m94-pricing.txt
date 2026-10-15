@@ -1,0 +1,13 @@
+$seats = 8
+root = Stack([tabs1])
+tabs1 = Tabs([tabA, tabB])
+tabA = Tab("Plans", [g1])
+g1 = Grid([c1, c2])
+c1 = Card("Basic", [m1])
+m1 = Metric("Price", "290 kr", "per month")
+c2 = Card("Pro", [m2])
+m2 = Metric("Price", "490 kr", "per month")
+tabB = Tab("Calculator", [s1, m3])
+s1 = Slider("Seats", $seats, 1, 50)
+m3 = Metric("Total", total, "per month")
+total = $seats * 49

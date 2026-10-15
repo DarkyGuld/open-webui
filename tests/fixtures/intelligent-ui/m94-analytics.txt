@@ -1,0 +1,4 @@
+root = Stack([ch1, p1, tl1])
+ch1 = Chart("bar", "Library files", [], [], "library.files")
+p1 = Progress("Storage used", 64, "64%")
+tl1 = Timeline("Recent activity", [{title: "Created workspace", timestamp: "2026-01-02", status: "done"}, {title: "Invited team", timestamp: "2026-01-05", status: "active"}, {title: "Deploy to production", status: "pending"}])

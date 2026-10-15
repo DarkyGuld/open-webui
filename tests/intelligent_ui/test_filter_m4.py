@@ -17,7 +17,7 @@ def test_build_output_items_extracts_blocks():
     it = items[0]
     assert it["type"] == "intelligent_ui"
     assert it["output_schema_version"] == 1
-    assert it["catalog_version"] == 3
+    assert it["catalog_version"] == 4
     assert it["format"] == "openui-lang"
     assert it["content"].startswith("root = Metric")
     assert it["id"].startswith("iu_")

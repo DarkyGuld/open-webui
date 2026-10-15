@@ -44,6 +44,7 @@ describe('intelligent-ui versioning', () => {
 		expect(isSupportedCatalogVersion(1)).toBe(true);
 		expect(isSupportedCatalogVersion(2)).toBe(true);
 		expect(isSupportedCatalogVersion(3)).toBe(true);
-		expect(isSupportedCatalogVersion(4)).toBe(false);
+		expect(isSupportedCatalogVersion(4)).toBe(true);
+		expect(isSupportedCatalogVersion(5)).toBe(false);
 	});
 });

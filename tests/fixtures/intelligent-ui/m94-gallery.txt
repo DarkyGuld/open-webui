@@ -1,0 +1,1 @@
+root = Gallery("Screenshots", [{src: "/favicon.png", caption: "App icon", alt: "App icon"}, {src: "/favicon.png", caption: "Second view", alt: "Second view"}])

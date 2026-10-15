@@ -4004,5 +4004,8 @@
 	"Auto lets the model decide; On encourages richer UI; Off is plain Markdown.": "Auto lar modellen bestemme; På oppfordrer til rikere UI; Av er vanlig Markdown.",
 	"Rich widget": "Rik widget",
 	"Rich widgets (custom HTML)": "Rike widgets (egendefinert HTML)",
-	"Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the \"no arbitrary HTML\" rule — enable only if you trust the models. Off = native components only.": "La modellen sende helt egendefinerte HTML/CSS/JS-widgets, rendret i en sandkasse-iframe (ingen same-origin, ingen nettverk). Dette lemper på «ingen vilkårlig HTML»-regelen — slå på bare hvis du stoler på modellene. Av = kun native komponenter."
+	"Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the \"no arbitrary HTML\" rule — enable only if you trust the models. Off = native components only.": "La modellen sende helt egendefinerte HTML/CSS/JS-widgets, rendret i en sandkasse-iframe (ingen same-origin, ingen nettverk). Dette lemper på «ingen vilkårlig HTML»-regelen — slå på bare hvis du stoler på modellene. Av = kun native komponenter.",
+	"Rich widgets": "Rike widgets",
+	"Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe. Requires your administrator to enable Rich widgets.": "La modellen sende helt egendefinerte HTML/CSS/JS-widgets, rendret i en sandkasse-iframe. Krever at administratoren har slått på Rike widgets.",
+	"Rich widgets: Auto lets the model decide; On encourages custom widgets; Off disables them.": "Rike widgets: Auto lar modellen bestemme; På oppfordrer til egendefinerte widgets; Av slår dem av."
 }

@@ -7,7 +7,6 @@
 	//   - allow-listed bridge: GenUI.sendPrompt(text) / GenUI.copy(text)
 	//   - autosize via ResizeObserver -> iframe:height
 	import { getContext } from 'svelte';
-	import { config } from '$lib/stores';
 	import FullHeightIframe from '$lib/components/common/FullHeightIframe.svelte';
 	import IntelligentUIFallback from '$lib/intelligent-ui/components/IntelligentUIFallback.svelte';
 
@@ -59,11 +58,12 @@ html,body{margin:0;background:transparent;color:var(--viz-text);font-family:ui-s
 		);
 	}
 
-	$: enabled = $config?.features?.enable_intelligent_ui_html === true;
+	// Historical rendering: a persisted rich widget renders whenever the fence is
+	// present (generation is gated server-side by the Filter). Sandboxed always.
 	$: doc = html ? buildDoc(html) : '';
 </script>
 
-{#if enabled && html}
+{#if html}
 	<div class="my-3 overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800">
 		<div
 			class="border-b border-gray-100 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400"
@@ -82,8 +82,5 @@ html,body{margin:0;background:transparent;color:var(--viz-text);font-family:ui-s
 		/>
 	</div>
 {:else}
-	<IntelligentUIFallback
-		content={html}
-		reason={enabled ? 'empty widget' : 'rich widgets disabled'}
-	/>
+	<IntelligentUIFallback content={html} reason="empty widget" />
 {/if}

@@ -74,6 +74,7 @@ class InterfaceSettings(BaseModel):
     highContrastMode: bool | None = None
     detectArtifacts: bool | None = None
     intelligentUi: bool | None = None
+    intelligentUiHtml: bool | None = None
     responseAutoCopy: bool | None = None
     showUsername: bool | None = None
     showUpdateToast: bool | None = None

@@ -29,6 +29,7 @@
 	let showSystemPrompt = getOpen('systemPrompt');
 	let showAdvancedParams = getOpen('advancedParams');
 	let showIntelligentUi = getOpen('intelligentUi', true);
+	let showRichWidgets = getOpen('richWidgets', true);
 
 	const compactSectionButtonClass =
 		'w-full py-1 text-xs font-normal text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition cursor-pointer select-none';
@@ -157,6 +158,41 @@
 						</div>
 						<p class="mt-1 text-[0.6875rem] text-gray-400 dark:text-gray-600">
 							{$i18n.t('Auto lets the model decide; On encourages richer UI; Off is plain Markdown.')}
+						</p>
+					</div>
+				</Collapsible>
+			{/if}
+
+			{#if $config?.features?.enable_intelligent_ui_html === true && ($settings?.intelligentUiHtml ?? false) === true}
+				<Collapsible
+					title={$i18n.t('Rich widgets')}
+					bind:open={showRichWidgets}
+					onChange={setOpen('richWidgets')}
+					buttonClassName={compactSectionButtonClass}
+					chevronClassName="size-2.5"
+					chevronStrokeWidth="2"
+				>
+					<div class="pt-1 pb-1" slot="content">
+						<div
+							class="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 text-xs dark:bg-gray-850"
+						>
+							{#each [['auto', $i18n.t('Auto')], ['on', $i18n.t('On')], ['off', $i18n.t('Off')]] as [value, label] (value)}
+								<button
+									type="button"
+									class="flex-1 cursor-pointer rounded-md px-2 py-1 transition-colors {(params.intelligent_ui_html ??
+										'auto') === value
+										? 'bg-white font-medium text-gray-900 shadow-sm dark:bg-gray-800 dark:text-white'
+										: 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}"
+									on:click={() => (params.intelligent_ui_html = value)}
+								>
+									{label}
+								</button>
+							{/each}
+						</div>
+						<p class="mt-1 text-[0.6875rem] text-gray-400 dark:text-gray-600">
+							{$i18n.t(
+								'Rich widgets: Auto lets the model decide; On encourages custom widgets; Off disables them.'
+							)}
 						</p>
 					</div>
 				</Collapsible>

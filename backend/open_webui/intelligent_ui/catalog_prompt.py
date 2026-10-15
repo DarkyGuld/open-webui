@@ -128,3 +128,16 @@ Before finishing, walk your output and verify:
 - The fenced block must contain ONLY valid OpenUI Lang. You may write normal Markdown before and after it.
 - Keep values short and plain text. Never emit HTML, scripts, CSS, URLs, or event handlers.
 - If unsure whether UI helps, answer with normal Markdown."""
+
+RICH_PROMPT = r"""You may also render a FULLY CUSTOM widget with HTML/CSS/JS when the native components are not enough (for example 3D scenes, custom canvas, maps, or bespoke mini-apps). Emit it in a fenced block:
+
+:::intelligent-ui-html{v="1"}
+<html/css/js here>
+:::
+
+Rules for rich widgets:
+- Self-contained: no external network requests and no external images or scripts (a strict CSP blocks them).
+- Style with the provided theme variables: --viz-text, --viz-muted, --viz-panel, --viz-card, --viz-border, --viz-accent.
+- To send a follow-up message use window.GenUI.sendPrompt("..."); to copy use window.GenUI.copy("...").
+- Keep it small and responsive; it renders in a sandboxed iframe.
+- Prefer native components when they suffice; use a rich widget only when it is clearly better."""

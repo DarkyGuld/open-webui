@@ -46,6 +46,7 @@
 
 	let highContrastMode = false;
 	let intelligentUi = false;
+	let intelligentUiHtml = false;
 
 	let detectArtifacts = true;
 	let displayMultiModelResponsesInTabs = false;
@@ -319,6 +320,7 @@
 
 		highContrastMode = currentSettings?.highContrastMode ?? false;
 		intelligentUi = currentSettings?.intelligentUi ?? false;
+		intelligentUiHtml = currentSettings?.intelligentUiHtml ?? false;
 
 		detectArtifacts = currentSettings?.detectArtifacts ?? true;
 		responseAutoCopy = currentSettings?.responseAutoCopy ?? false;
@@ -628,6 +630,31 @@
 		<p class={settingDescriptionClass}>
 			{$i18n.t(
 				'Allow the model to render richer, interactive answers (tables, comparisons, metrics) when helpful. Requires your administrator to enable Intelligent UI.'
+			)}
+		</p>
+	</div>
+
+	<div>
+		<div class={settingRowClass}>
+			<div id="rich-widgets-label" class={settingLabelClass}>
+				{$i18n.t('Rich widgets (custom HTML)')}
+			</div>
+
+			<div class={settingControlClass}>
+				<Switch
+					ariaLabelledbyId="rich-widgets-label"
+					tooltip={true}
+					bind:state={intelligentUiHtml}
+					inherited={isDefaultSetting('intelligentUiHtml')}
+					on:change={() => {
+						saveSettings({ intelligentUiHtml });
+					}}
+				/>
+			</div>
+		</div>
+		<p class={settingDescriptionClass}>
+			{$i18n.t(
+				'Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe. Requires your administrator to enable Rich widgets.'
 			)}
 		</p>
 	</div>

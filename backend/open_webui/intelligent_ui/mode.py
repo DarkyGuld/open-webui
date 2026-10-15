@@ -91,7 +91,16 @@ def resolve_intelligent_ui_mode(
     return normalize_chat_mode(chat_mode)
 
 
+def rich_user_enabled_from_settings(user_settings: Optional[Any]) -> bool:
+    """Per-user Rich Widget toggle (``ui.intelligentUiHtml``)."""
+    return _ui_flag(user_settings, "intelligentUiHtml")
+
+
 def user_enabled_from_settings(user_settings: Optional[Any]) -> bool:
+    return _ui_flag(user_settings, "intelligentUi")
+
+
+def _ui_flag(user_settings: Optional[Any], key: str) -> bool:
     """Extract the per-user Intelligent UI toggle from a user settings object/dict."""
     if user_settings is None:
         return False
@@ -105,8 +114,53 @@ def user_enabled_from_settings(user_settings: Optional[Any]) -> bool:
     if ui is None:
         return False
     if isinstance(ui, Mapping):
-        return bool(ui.get("intelligentUi", False))
-    return bool(getattr(ui, "intelligentUi", False))
+        return bool(ui.get(key, False))
+    return bool(getattr(ui, key, False))
+
+
+def resolve_rich_widget_mode(
+    *,
+    global_enabled: bool,
+    user_enabled: bool,
+    chat_mode: Any,
+    native_ui_enabled: bool,
+) -> IntelligentUIMode:
+    """Resolve the effective Rich Widget mode (generation gating).
+
+    Precedence:
+        global OFF                    -> OFF
+        user OFF                      -> OFF
+        chat OFF                      -> OFF
+        chat ON                       -> ON
+        chat AUTO + native UI enabled -> AUTO
+        chat AUTO + native UI off     -> OFF   (rich widgets need native IUI)
+    """
+    if not global_enabled:
+        return IntelligentUIMode.OFF
+    if not user_enabled:
+        return IntelligentUIMode.OFF
+    mode = normalize_chat_mode(chat_mode)
+    if mode == IntelligentUIMode.OFF:
+        return IntelligentUIMode.OFF
+    if mode == IntelligentUIMode.ON:
+        return IntelligentUIMode.ON
+    return IntelligentUIMode.AUTO if native_ui_enabled else IntelligentUIMode.OFF
+
+
+def resolve_rich_widget_effective(
+    *,
+    global_enabled: bool,
+    user_settings: Optional[Any] = None,
+    params: Optional[Mapping[str, Any]] = None,
+    native_ui_enabled: bool = False,
+) -> IntelligentUIMode:
+    """Rich Widget mode from explicit scope containers (pure function)."""
+    return resolve_rich_widget_mode(
+        global_enabled=bool(global_enabled),
+        user_enabled=rich_user_enabled_from_settings(user_settings),
+        chat_mode=(params or {}).get("intelligent_ui_html"),
+        native_ui_enabled=bool(native_ui_enabled),
+    )
 
 
 def resolve_effective_mode(
@@ -158,4 +212,40 @@ async def load_effective_mode(
         user_settings=user_settings,
         params=params,
         model_capabilities=model_capabilities,
+    )
+
+
+HTML_GLOBAL_CONFIG_KEY = "intelligent_ui.html.enable"
+
+
+async def load_html_global_enabled() -> bool:
+    """Read the persisted global Rich Widget toggle."""
+    try:
+        from open_webui.models.config import Config  # noqa: PLC0415
+
+        values = await Config.get_many(HTML_GLOBAL_CONFIG_KEY)
+        if HTML_GLOBAL_CONFIG_KEY in values:
+            return bool(values[HTML_GLOBAL_CONFIG_KEY])
+    except (Exception, SystemExit):
+        pass
+    try:
+        from open_webui.config import ENABLE_INTELLIGENT_UI_HTML  # noqa: PLC0415
+
+        return bool(ENABLE_INTELLIGENT_UI_HTML)
+    except (Exception, SystemExit):
+        return False
+
+
+async def load_rich_widget_effective(
+    *,
+    user_settings: Optional[Any] = None,
+    params: Optional[Mapping[str, Any]] = None,
+    native_ui_enabled: bool = False,
+) -> IntelligentUIMode:
+    """Async Rich Widget resolver (reads the global html toggle from config)."""
+    return resolve_rich_widget_effective(
+        global_enabled=await load_html_global_enabled(),
+        user_settings=user_settings,
+        params=params,
+        native_ui_enabled=native_ui_enabled,
     )

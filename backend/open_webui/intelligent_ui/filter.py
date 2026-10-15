@@ -21,8 +21,12 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from open_webui.intelligent_ui.catalog_prompt import CATALOG_VERSION, PROMPT
-from open_webui.intelligent_ui.mode import IntelligentUIMode, load_effective_mode
+from open_webui.intelligent_ui.catalog_prompt import CATALOG_VERSION, PROMPT, RICH_PROMPT
+from open_webui.intelligent_ui.mode import (
+    IntelligentUIMode,
+    load_effective_mode,
+    load_rich_widget_effective,
+)
 
 OUTPUT_SCHEMA_VERSION = 1
 _BLOCK_RE = re.compile(r':::\s*intelligent-ui(?:\{[^}]*\})?\s*\n(.*?)\n:::', re.DOTALL)
@@ -56,6 +60,10 @@ ON_HEADER = (
     "Intelligent UI is ENABLED. Actively consider structured UI (comparison, metric, table) "
     "whenever it meaningfully improves the answer, while still using normal Markdown where UI "
     "adds little value. Do not force decorative widgets."
+)
+RICH_HEADER = (
+    "Rich widgets (custom HTML) are AVAILABLE. You may emit a fully custom HTML/CSS/JS widget when "
+    "the native components are not enough — but prefer native components when they suffice."
 )
 
 
@@ -97,19 +105,43 @@ class Filter:
         body["messages"] = [{"role": "system", "content": instructions}, *messages]
         return body
 
+    async def _rich_mode(self, __user__, __metadata__, native_ui_enabled: bool) -> IntelligentUIMode:
+        try:
+            user_settings = (__user__ or {}).get("settings") if __user__ else None
+            params = (__metadata__ or {}).get("params") if __metadata__ else None
+            return await load_rich_widget_effective(
+                user_settings=user_settings,
+                params=params,
+                native_ui_enabled=native_ui_enabled,
+            )
+        except (Exception, SystemExit):
+            log.exception("intelligent-ui: failed to resolve rich widget mode")
+            return IntelligentUIMode.OFF
+
     async def inlet(self, body: dict, __user__=None, __metadata__=None, __model__=None, **__) -> dict:
         if not self.valves.enabled:
             return body
 
-        mode = await self._effective_mode(__user__, __metadata__, __model__)
-        log.debug("intelligent-ui: effective mode=%s", mode.value)
+        native = await self._effective_mode(__user__, __metadata__, __model__)
+        rich = await self._rich_mode(__user__, __metadata__, native != IntelligentUIMode.OFF)
+        log.debug("intelligent-ui: native=%s rich=%s", native.value, rich.value)
 
-        if mode == IntelligentUIMode.OFF:
+        parts: list[str] = []
+        if native != IntelligentUIMode.OFF:
+            header = AUTO_HEADER if native == IntelligentUIMode.AUTO else ON_HEADER
+            parts.append(f"{header}\n\n{PROMPT}")
+        if rich != IntelligentUIMode.OFF:
+            rich_header = (
+                RICH_HEADER
+                if rich == IntelligentUIMode.ON
+                else RICH_HEADER + " Use it only when it is clearly better than the native components."
+            )
+            parts.append(f"{rich_header}\n\n{RICH_PROMPT}")
+
+        if not parts:
             return body  # TRUE no-op — identity, no mutation
 
-        header = AUTO_HEADER if mode == IntelligentUIMode.AUTO else ON_HEADER
-        instructions = f"{header}\n\n{PROMPT}"
-        return self._inject(body, instructions)
+        return self._inject(body, "\n\n".join(parts))
 
     @staticmethod
     def _build_output_items(content: str) -> list[dict]:

@@ -4004,5 +4004,8 @@
 	"Auto lets the model decide; On encourages richer UI; Off is plain Markdown.": "Auto lets the model decide; On encourages richer UI; Off is plain Markdown.",
 	"Rich widget": "Rich widget",
 	"Rich widgets (custom HTML)": "Rich widgets (custom HTML)",
-	"Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the \"no arbitrary HTML\" rule — enable only if you trust the models. Off = native components only.": "Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the \"no arbitrary HTML\" rule — enable only if you trust the models. Off = native components only."
+	"Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the \"no arbitrary HTML\" rule — enable only if you trust the models. Off = native components only.": "Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the \"no arbitrary HTML\" rule — enable only if you trust the models. Off = native components only.",
+	"Rich widgets": "Rich widgets",
+	"Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe. Requires your administrator to enable Rich widgets.": "Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe. Requires your administrator to enable Rich widgets.",
+	"Rich widgets: Auto lets the model decide; On encourages custom widgets; Off disables them.": "Rich widgets: Auto lets the model decide; On encourages custom widgets; Off disables them."
 }

@@ -28,6 +28,7 @@ A customized Open WebUI product aiming for:
 | 7 — incremental streaming | ✅ complete | open/closed fence tokenizer + `createStreamingParser`; progressive render; last-good tree |
 | 8 — server fallback + @Each | ✅ complete | `fallbackMarkdown` in output items; `@Each` loops render (tool/Query bindings prepared) |
 | 9 — AppBlock / rich widget | ✅ complete | opt-in `:::intelligent-ui-html` in the sandboxed iframe; theme vars + bridge; flagged, default off |
+| 9.1 — rich widget control parity | ✅ complete | global + user + chat Auto/On/Off via the shared resolver; historical render preserved |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:

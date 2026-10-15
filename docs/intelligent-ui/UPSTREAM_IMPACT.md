@@ -183,3 +183,17 @@ updates, and tests are all our own files. No new dependencies.
 New files (ours): `intelligent-ui-html-extension.ts`, `RichWidget.svelte`.
 
 **Cumulative M1–M9:** ~18 core files, ~195 lines.
+
+## Milestone 9.1 — actual upstream/core changes
+
+| File | Purpose | ~Lines |
+|---|---|---|
+| `models/users.py` | `InterfaceSettings.intelligentUiHtml` | +1 |
+| `common/InterfaceSettings.svelte` | user Rich Widget toggle | +24 |
+| `chat/Controls/Controls.svelte` | Rich Widget Auto/On/Off control | +40 |
+| `intelligent-ui/components/RichWidget.svelte` | render-if-present (historical) | ~ -6 |
+| i18n en-US / nb-NO | 3 keys each | +6 |
+
+Backend (ours): `mode.py`, `filter.py`, `catalog_prompt.py` (generated).
+
+**Cumulative M1–M9.1:** ~20 core files, ~235 lines.

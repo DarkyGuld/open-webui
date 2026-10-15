@@ -96,6 +96,14 @@ in Milestone 2.
 - Theme `--viz-*` variables + autosize (ResizeObserver) + allow-listed `GenUI.sendPrompt`/`copy` bridge.
 - Gated by the global flag `intelligent_ui.html.enable` (default OFF); safe fallback when off.
 
+## Implemented rich-widget control parity (Milestone 9.1)
+
+- Rich Widgets now have **global + user + chat (Auto/On/Off)** gating via
+  `resolve_rich_widget_mode` (AUTO requires native Intelligent UI enabled).
+- The Filter gates native and rich generation independently; both OFF = request unchanged.
+- **Historical rendering preserved**: persisted widgets render if present (generation gated).
+- Native Intelligent UI is independently usable.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

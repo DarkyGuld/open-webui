@@ -155,6 +155,17 @@ introduced here.
   `stores/index.ts`, `admin/Settings/Interface.svelte`, i18n. Opt-in flag default **OFF**.
   Cumulative ~18 core files, ~195 lines.
 
+### Milestone 9.1 (rich widget control parity) addendum
+
+- `pytest tests/intelligent_ui` → **46 passed** (adds rich-widget resolver + filter tests).
+- `vitest run` → **58 passed**.
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 4 screenshots under `audit/local/intelligent-ui/milestone-9.1/`; both chat controls
+  visible (native + rich); historical rich widget renders, including when generation is disabled;
+  0 errors.
+- Rich widgets: global + user + chat gating; default global **OFF**; historical render preserved.
+  Cumulative ~20 core files, ~235 lines.
+
 ## Reproduce
 
 ```bash

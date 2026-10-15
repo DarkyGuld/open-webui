@@ -26,6 +26,24 @@ from open_webui.intelligent_ui.mode import IntelligentUIMode, load_effective_mod
 
 OUTPUT_SCHEMA_VERSION = 1
 _BLOCK_RE = re.compile(r':::\s*intelligent-ui(?:\{[^}]*\})?\s*\n(.*?)\n:::', re.DOTALL)
+_STRING_RE = re.compile(r'"((?:[^"\\]|\\.)*)"')
+
+
+def _fallback_markdown(block: str) -> str:
+    """Static-text fallback for a UI block, for clients that cannot render it.
+
+    Heuristic (no OpenUI parser server-side): list the block's string literals
+    (labels, values, attributes) as Markdown bullets. The surrounding prose is
+    preserved separately; this replaces only the interactive part.
+    """
+    inner = block or ''
+    m = _BLOCK_RE.search(inner)
+    if m:
+        inner = m.group(1) or ''
+    strings = [s.strip() for s in _STRING_RE.findall(inner) if s.strip()]
+    if not strings:
+        return '_Interactive UI_'
+    return '\n'.join(f'- {s}' for s in strings[:8])
 
 log = logging.getLogger(__name__)
 
@@ -116,6 +134,7 @@ class Filter:
                     'format': 'openui-lang',
                     'content': lang,
                     'state': {},
+                    'fallback_markdown': _fallback_markdown(match.group(0)),
                 }
             )
         return items

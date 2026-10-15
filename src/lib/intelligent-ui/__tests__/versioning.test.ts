@@ -31,6 +31,10 @@ describe('intelligent-ui versioning', () => {
 		if (!r.ok) expect(r.reason).toContain('catalog version');
 	});
 
+	it('accepts an item with fallback_markdown', () => {
+		expect(validateOutputItem({ ...base, fallback_markdown: '- Monthly cost' }).ok).toBe(true);
+	});
+
 	it('rejects malformed items', () => {
 		expect(validateOutputItem({ type: 'intelligent_ui' }).ok).toBe(false);
 		expect(validateOutputItem(null).ok).toBe(false);

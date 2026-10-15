@@ -25,6 +25,19 @@ import type { IntelligentUIEngine, UINode } from '../types';
 
 const parser = createParser(openuiLibrary.toJSONSchema());
 
+/**
+ * `@Each` expands to a nested ARRAY of ElementNodes inside `children`; flatten
+ * (recursively) and drop anything that is not an element node.
+ */
+function flattenChildren(children: any): any[] {
+	const out: any[] = [];
+	for (const child of Array.isArray(children) ? children : []) {
+		if (Array.isArray(child)) out.push(...flattenChildren(child));
+		else if (child && child.type === 'element') out.push(child);
+	}
+	return out;
+}
+
 function bound(value: unknown, store: Store | null): { value: unknown; binding?: string } {
 	if (isReactiveAssign(value)) {
 		return { value: store ? store.get(value.target) : undefined, binding: value.target };
@@ -127,7 +140,7 @@ function mapNode(element: ElementNode, store: Store | null): UINode {
 			return {
 				type: type as 'stack' | 'row' | 'grid' | 'section' | 'card',
 				...(p.title != null ? { title: String(p.title) } : {}),
-				children: (p.children ?? []).map((c: any) => mapNode(c, store)),
+				children: flattenChildren(p.children).map((c: any) => mapNode(c, store)),
 				...(p.action != null ? { action: p.action } : {})
 			};
 		default:

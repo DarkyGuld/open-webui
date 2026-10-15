@@ -140,6 +140,7 @@ export const outputItemSchema = z
 		id: z.string().min(1).max(128),
 		format: z.enum(['openui-lang', 'json']),
 		content: z.string().max(LIMITS.MAX_PAYLOAD_BYTES),
-		state: z.record(z.string(), z.unknown()).optional()
+		state: z.record(z.string(), z.unknown()).optional(),
+		fallback_markdown: z.string().max(LIMITS.MAX_PAYLOAD_BYTES).optional()
 	})
 	.strict();

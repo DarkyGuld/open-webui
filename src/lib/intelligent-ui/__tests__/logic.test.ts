@@ -47,6 +47,22 @@ root = Metric("x", $n > 3 ? "high" : "low")`;
 		if (out.ok && out.node.type === 'metric') expect(out.node.value).toBe('high');
 	});
 
+	it('expands @Each loops into children', () => {
+		const prog = `$items = ["A", "B", "C"]
+root = Stack([l1])
+l1 = Section("Items", [@Each($items, item, Badge(item))])`;
+		const out = parseIntelligentUI({ version: '1', content: prog });
+		expect(out.ok).toBe(true);
+		if (out.ok && out.node.type === 'stack') {
+			const section = out.node.children[0];
+			expect(section.type).toBe('section');
+			if (section.type === 'section') {
+				expect(section.children).toHaveLength(3);
+				expect(section.children[0].type).toBe('badge');
+			}
+		}
+	});
+
 	it('rejects malformed logic safely (no throw)', () => {
 		const out = parseIntelligentUI({ version: '1', content: 'root = Metric("x", $undefinedVar)' });
 		expect(typeof out.ok).toBe('boolean');

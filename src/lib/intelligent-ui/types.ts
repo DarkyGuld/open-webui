@@ -164,4 +164,5 @@ export interface IntelligentUIOutputItem {
 	format: 'openui-lang' | 'json';
 	content: string;
 	state?: Record<string, unknown>;
+	fallback_markdown?: string;
 }

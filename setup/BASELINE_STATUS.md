@@ -96,6 +96,16 @@ introduced here.
 - Provider: opencode gateway; model emitted valid `:::intelligent-ui` blocks (server log + captured
   fixtures). Latency high; only one provider family tested.
 
+### Milestone 4 (interaction/state/output/i18n) addendum
+
+- `pytest tests/intelligent_ui` → **36 passed** (adds structured-output outlet tests).
+- `vitest run` → **45 passed** (adds actions 8, versioning 6, state 4).
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 10 screenshots under `audit/local/intelligent-ui/milestone-4/`; selection, reload
+  persistence, send_prompt, confirmation dialog, and fallback all verified; 0 page/console errors.
+- Catalog bumped to **v2** (optional interaction fields; v1 still valid); prompt regenerated.
+- Core edits: `structuredOutput.ts` (+5) + 4 i18n/label files. All else is new/our files.
+
 ## Reproduce
 
 ```bash

@@ -117,3 +117,19 @@ API); it is not auto-loaded by core, so there is no core coupling.
 `models/users.py`, `stores/index.ts`, `admin/Settings/Interface.svelte`,
 `common/InterfaceSettings.svelte`, `chat/Controls/Controls.svelte`,
 `chat/Messages/Markdown/MarkdownTokens.svelte` (+ tooling `vite.config.ts`). ~9 files, ~120 lines.
+
+## Milestone 4 — actual upstream/core changes
+
+| File | Purpose | ~Lines | Merge risk | Isolation |
+|---|---|---|---|---|
+| `chat/Messages/structuredOutput.ts` | ignore `intelligent_ui` output items (durable metadata; visual comes from content) | +5 | Low | Could move to a shared type guard later |
+| `common/InterfaceSettings.svelte` | i18n for the user toggle | ~6 | Low | — |
+| `admin/Settings/Interface.svelte` | i18n for the admin toggle | ~6 | Low | — |
+| `chat/Controls/Controls.svelte` | i18n for the chat control | ~4 | Low | — |
+| `i18n/locales/{en-US,nb-NO}/translation.json` | +5 keys each | +5 | Low | — |
+
+All other M4 changes are our own files (`src/lib/intelligent-ui/*`,
+`backend/open_webui/intelligent_ui/filter.py`, tests, fixtures). No changes to middleware,
+Chat.svelte, ResponseMessage.svelte, socket, streaming, provider APIs, or the message DB model.
+
+**Cumulative M1–M4:** ~11 core files, ~150 lines.

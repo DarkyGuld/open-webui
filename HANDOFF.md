@@ -22,8 +22,11 @@ A customized Open WebUI product aiming for:
 | 1 — gating & settings | ✅ complete | global/user/chat/model toggles + resolver; OFF = stock no-op |
 | 2 — native rendering | ✅ complete | `:::intelligent-ui` token, adapter, OpenUI engine, metric/comparison/table, fallback |
 | 3 — generation/orchestration | ✅ complete | catalog prompt + Filter injection (Auto/On/Off); real model output validated |
+| 4 — interaction/state/output/i18n | ✅ complete | safe actions + confirmation, durable local state, `output[]` artifacts, i18n |
 
-Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`, `MILESTONE_3_REPORT.md`.
+Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
+`MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:
+`OUTPUT_PERSISTENCE.md`.
 
 ## Intelligent UI architecture (current path)
 
@@ -41,6 +44,9 @@ Open WebUI request
  → adapter.ts  (version check → optional envelope unwrap → engine.parse → Zod validation)
  → engines/openui.ts  (@openuidev/lang-core)
  → registry.ts → native Metric / Comparison / Table   (else IntelligentUIFallback)
+ → interactions: action dispatcher (allow-list + risk) → confirmation (ConfirmDialog)
+                  → send_prompt (input:prompt:submit) | durable local state (localStorage)
+ → durable artifact: Filter outlet attaches message.output[] item {intelligent_ui, versioned}
 ```
 
 Raw token is stored verbatim in the normal `message.content` (no DB change); reload re-renders
@@ -72,10 +78,11 @@ identically; the engine is not persisted.
 
 - Only one provider family validated (opencode gateway); latency high.
 - Single root component; no layout nesting; plain-text cells.
-- New UI strings are literal English (i18n pending).
+- Structured `output[]` artifacts are stored but rendering still uses `content` (equivalent; the
+  "prefer output[]" render path is deferred — the block cannot see the parent message).
+- Interaction state is browser-local (`localStorage`), not server-synced across devices.
+- `tool` actions architected but not exposed; i18n covers en-US + nb-NO (others fall back).
 - Filter must be installed/enabled manually (documented in `docs/FRESH_MACHINE_SETUP.md`).
-- No durable `output[]` persistence yet (rendered from `content` on each render).
-- No interaction/actions from components yet (M4).
 
 ## Important files
 
@@ -158,13 +165,13 @@ Details: `setup/mcp/MCP_INVENTORY.md`. Restart OpenCode after editing `opencode.
 Never commit values. `.env`, `backend/data/`, `.local/`, browser profiles, and `research/` are
 gitignored.
 
-## Next recommended milestone (Milestone 4)
+## Next recommended milestone (Milestone 5)
 
-1. **Durability:** persist UI as a structured `output[]` item (survives arena/reload).
-2. **Catalog expansion:** chart, form, tabs, image, gallery behind the same adapter.
-3. **Provider capability matrix:** per-model generation/render policy + auto-detection.
-4. **i18n** for new UI strings.
-5. **Interaction:** allow-listed follow-up prompts/actions from components (with confirmation).
-6. **Visual regression baselines** + package the Filter for one-command install.
+1. **Catalog expansion:** chart, form, tabs, list, image/gallery, progress, timeline behind the
+   same adapter + action/state framework.
+2. **Provider capability matrix:** per-model generation/render policy + auto-detection.
+3. **Server-durable state / prefer output[] for render.**
+4. **i18n** for remaining locales.
+5. **Visual regression baselines** + package the Filter for one-command install.
 
 Do **not** re-research or redesign the existing architecture unless tests/source show it is broken.

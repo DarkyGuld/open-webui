@@ -49,6 +49,21 @@ in Milestone 2.
 - **Validated:** real model output (comparison/metric/table, incl. hoisted references) parses and
   renders natively; adversarial/malformed output falls back safely.
 
+## Implemented interaction layer (Milestone 4)
+
+- **Actions:** centralized dispatcher (`src/lib/intelligent-ui/actions.ts`) — allow-list
+  (`send_prompt`, `select`, `toggle`, `set_value`, `confirm`), risk levels, validation. No
+  arbitrary code. See `ACTIONS.md`.
+- **State:** durable selection/values in `localStorage` keyed by chat+block (survives reload);
+  ephemeral state not persisted.
+- **Confirmation:** native `ConfirmDialog` for `confirm`-risk actions.
+- **Durable output:** Filter `outlet` attaches versioned `intelligent_ui` items to `message.output[]`
+  (stable id, `output_schema_version`, `catalog_version`, engine-agnostic `format`). See
+  `OUTPUT_PERSISTENCE.md`.
+- **i18n:** all feature strings via `$i18n.t(...)` (en-US + nb-NO).
+- **Versioning:** transport `version`, `output_schema_version`, and `catalog_version` (now 2;
+  v1 still valid) enforced independently.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

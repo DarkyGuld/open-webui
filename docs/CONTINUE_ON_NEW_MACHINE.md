@@ -18,7 +18,8 @@ Before doing anything, read, in order:
 4. docs/intelligent-ui/MILESTONE_1_REPORT.md
 5. docs/intelligent-ui/MILESTONE_2_REPORT.md
 6. docs/intelligent-ui/MILESTONE_3_REPORT.md
-7. docs/FRESH_MACHINE_SETUP.md
+7. docs/intelligent-ui/MILESTONE_4_REPORT.md
+8. docs/FRESH_MACHINE_SETUP.md
 
 Then:
 - Inspect git history (git log --oneline -20) and the current branch/commit.

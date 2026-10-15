@@ -5,9 +5,7 @@
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
 	import { loadState, saveState } from '$lib/intelligent-ui/state';
 	import type { UIAction } from '$lib/intelligent-ui/types';
-	import Metric from '$lib/intelligent-ui/components/Metric.svelte';
-	import Comparison from '$lib/intelligent-ui/components/Comparison.svelte';
-	import Table from '$lib/intelligent-ui/components/Table.svelte';
+	import NodeRenderer from '$lib/intelligent-ui/components/NodeRenderer.svelte';
 	import IntelligentUIFallback from '$lib/intelligent-ui/components/IntelligentUIFallback.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
@@ -68,32 +66,7 @@
 </script>
 
 {#if outcome.ok}
-	{#if outcome.node.type === 'metric'}
-		<Metric
-			label={outcome.node.label}
-			value={outcome.node.value}
-			description={outcome.node.description}
-			action={outcome.node.action}
-			onAction={handleAction}
-		/>
-	{:else if outcome.node.type === 'comparison'}
-		<Comparison
-			title={outcome.node.title}
-			items={outcome.node.items}
-			selectable={outcome.node.selectable ?? false}
-			action={outcome.node.action}
-			{selected}
-			onAction={handleAction}
-		/>
-	{:else if outcome.node.type === 'table'}
-		<Table
-			title={outcome.node.title}
-			columns={outcome.node.columns}
-			rows={outcome.node.rows}
-			action={outcome.node.action}
-			onAction={handleAction}
-		/>
-	{/if}
+	<NodeRenderer node={outcome.node} onAction={handleAction} {selected} />
 {:else}
 	<IntelligentUIFallback content={token?.text ?? ''} reason={outcome.reason} />
 {/if}

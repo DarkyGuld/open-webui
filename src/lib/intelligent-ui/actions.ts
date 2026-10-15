@@ -5,7 +5,7 @@
  * risk classification → optional native confirmation → execution. Components do
  * not implement their own action handling.
  */
-import { actionSchema } from './catalog';
+import { actionSchema } from './action-schema';
 import type { UIAction } from './types';
 
 export type ActionRisk = 'safe' | 'confirm' | 'forbidden';

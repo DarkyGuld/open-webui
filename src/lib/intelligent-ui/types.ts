@@ -16,6 +16,8 @@ export type UIAction =
 	| { type: 'set_value'; value: string | number | boolean }
 	| { type: 'confirm'; prompt?: string };
 
+// --- Leaf nodes ---
+
 export interface MetricNode {
 	type: 'metric';
 	label: string;
@@ -45,8 +47,31 @@ export interface TableNode {
 	action?: UIAction;
 }
 
-export type UINode = MetricNode | ComparisonNode | TableNode;
+export interface BadgeNode {
+	type: 'badge';
+	label: string;
+	action?: UIAction;
+}
+
+export interface DividerNode {
+	type: 'divider';
+}
+
+// --- Container nodes (recursive layout composition) ---
+
+export type ContainerType = 'stack' | 'row' | 'grid' | 'section' | 'card';
+
+export interface ContainerNode {
+	type: ContainerType;
+	title?: string;
+	children: UINode[];
+	action?: UIAction;
+}
+
+export type UINode = MetricNode | ComparisonNode | TableNode | BadgeNode | DividerNode | ContainerNode;
 export type UINodeType = UINode['type'];
+
+export const CONTAINER_TYPES: ContainerType[] = ['stack', 'row', 'grid', 'section', 'card'];
 
 /** Stable internal envelope (constructed by the adapter; engine is system-chosen). */
 export interface IntelligentUIEnvelope {

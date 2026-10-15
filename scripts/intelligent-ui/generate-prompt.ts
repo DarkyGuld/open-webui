@@ -11,8 +11,7 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openuiLibrary } from '../../src/lib/intelligent-ui/engines/openui';
-import { CATALOG_VERSION_ID } from '../../src/lib/intelligent-ui/catalog';
+import { openuiLibrary, CATALOG_VERSION_ID } from '../../src/lib/intelligent-ui/catalog';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
@@ -22,8 +21,10 @@ const prompt = openuiLibrary.prompt({
 		'You may optionally present part of your answer as structured, interactive UI. This is OPTIONAL — normal Markdown is always the default.',
 	additionalRules: [
 		'Prefer normal Markdown for explanations, prose, reasoning, and simple answers.',
-		'Use Intelligent UI ONLY when it materially improves clarity: a side-by-side comparison, a single headline metric, or tabular data.',
-		'Only the components Metric, Comparison, and Table exist. Never invent components.',
+		'Use Intelligent UI ONLY when it materially improves clarity: a side-by-side comparison, headline metrics, or tabular data.',
+		'Only the documented components exist. Never invent components.',
+		'Use Stack as the root for most responses. Compose layouts with Stack (vertical), Row (horizontal), Grid (2-3 columns), Section (titled group) and Card (titled surface).',
+		'Put leaf components (Metric, Comparison, Table, Badge, Divider) inside containers. Do not nest Stack inside Stack.',
 		'When you use UI, wrap the OpenUI Lang in a fenced block on its own lines:',
 		':::intelligent-ui{v="1"}',
 		'<openui lang here>',
@@ -36,6 +37,7 @@ const prompt = openuiLibrary.prompt({
 		`User: Compare these three VPS plans.\n\nHere is a quick comparison:\n\n:::intelligent-ui{v="1"}\nroot = Comparison("VPS plans", [{name:"Basic",attributes:["1 vCPU","1 GB RAM"]},{name:"Pro",attributes:["2 vCPU","4 GB RAM"]},{name:"Team",attributes:["4 vCPU","8 GB RAM"]}])\n:::\n\nThe Pro plan is the best balance for most users.`,
 		`User: What is the monthly cost?\n\n:::intelligent-ui{v="1"}\nroot = Metric("Monthly cost", "5 294 kr", "Including VAT")\n:::`,
 		`User: Show the costs as a table.\n\n:::intelligent-ui{v="1"}\nroot = Table("Monthly costs", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])\n:::`,
+		`User: Give me a small dashboard of the key numbers.\n\n:::intelligent-ui{v="1"}\nroot = Stack([g1, t1])\ng1 = Grid([c1, c2])\nc1 = Card("Cost", [m1])\nm1 = Metric("Monthly cost", "5 294 kr", "Incl. VAT")\nc2 = Card("Seats", [m2])\nm2 = Metric("Seats", "8")\nt1 = Section("Breakdown", [tbl])\ntbl = Table("", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])\n:::`,
 		`User: Who was Nikola Tesla?\n\nNikola Tesla was a Serbian-American inventor and electrical engineer best known for his contributions to the design of the modern alternating current (AC) electricity supply system.`
 	]
 });

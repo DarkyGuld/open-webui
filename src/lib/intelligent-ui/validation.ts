@@ -13,18 +13,44 @@ export function isPayloadWithinLimits(content: string): boolean {
 	return byteLength(content) <= LIMITS.MAX_PAYLOAD_BYTES;
 }
 
+interface TreeStats {
+	nodes: number;
+	depth: number;
+}
+
+function measure(node: unknown, depth = 1): TreeStats {
+	if (!node || typeof node !== 'object') return { nodes: 0, depth: 0 };
+	const children = Array.isArray((node as any).children) ? (node as any).children : [];
+	let nodes = 1;
+	let maxDepth = depth;
+	for (const child of children) {
+		const s = measure(child, depth + 1);
+		nodes += s.nodes;
+		maxDepth = Math.max(maxDepth, s.depth);
+	}
+	return { nodes, depth: maxDepth };
+}
+
 /**
- * Strictly validate a canonical node against the allow-list + Zod schemas +
+ * Strictly validate a canonical node tree against the allow-list + Zod schemas +
  * limits. Unknown fields are rejected (`.strict()`); unknown components are
- * rejected by the discriminated union.
+ * rejected. Enforces node-count and depth limits.
  */
 export function validateNode(input: unknown): ValidationResult {
 	const parsed = uiNodeSchema.safeParse(input);
 	if (!parsed.success) {
 		const reason = parsed.error.issues
 			.map((issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`)
+			.slice(0, 3)
 			.join('; ');
 		return { ok: false, reason: reason || 'schema validation failed' };
+	}
+	const stats = measure(parsed.data);
+	if (stats.nodes > LIMITS.MAX_NODES) {
+		return { ok: false, reason: `too many nodes (${stats.nodes} > ${LIMITS.MAX_NODES})` };
+	}
+	if (stats.depth > LIMITS.MAX_DEPTH) {
+		return { ok: false, reason: `too deep (${stats.depth} > ${LIMITS.MAX_DEPTH})` };
 	}
 	return { ok: true, node: parsed.data as UINode };
 }
@@ -37,10 +63,6 @@ export type OutputItemValidation =
 	| { ok: true; item: IntelligentUIOutputItem }
 	| { ok: false; reason: string };
 
-/**
- * Validate a persisted structured output item. Rejects unknown output-schema
- * versions and unsupported catalog versions (never silently interpret them).
- */
 export function validateOutputItem(input: unknown): OutputItemValidation {
 	const parsed = outputItemSchema.safeParse(input);
 	if (!parsed.success) return { ok: false, reason: 'invalid output item' };

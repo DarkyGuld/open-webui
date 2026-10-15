@@ -39,6 +39,7 @@ describe('intelligent-ui versioning', () => {
 	it('isSupportedCatalogVersion', () => {
 		expect(isSupportedCatalogVersion(1)).toBe(true);
 		expect(isSupportedCatalogVersion(2)).toBe(true);
-		expect(isSupportedCatalogVersion(3)).toBe(false);
+		expect(isSupportedCatalogVersion(3)).toBe(true);
+		expect(isSupportedCatalogVersion(4)).toBe(false);
 	});
 });

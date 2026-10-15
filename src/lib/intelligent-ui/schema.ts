@@ -1,22 +1,69 @@
 import { z } from 'zod';
+import { actionSchema } from './action-schema';
 import { CATALOG_VERSION, LIMITS, SUPPORTED_VERSION } from './limits';
-import { catalogComponents } from './catalog';
 
-/**
- * Canonical node schemas are DERIVED from the shared catalog so the frontend
- * validation schema and the server-side catalog cannot drift.
- */
-export const metricSchema = catalogComponents.Metric.props
-	.extend({ type: z.literal('metric') })
+const str = () => z.string().min(1).max(LIMITS.MAX_STRING_LENGTH);
+
+export const metricSchema = z
+	.object({
+		type: z.literal('metric'),
+		label: str(),
+		value: str(),
+		description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		action: actionSchema.optional()
+	})
 	.strict();
 
-export const comparisonSchema = catalogComponents.Comparison.props
-	.extend({ type: z.literal('comparison') })
+export const comparisonItemSchema = z
+	.object({
+		name: str(),
+		attributes: z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).max(LIMITS.MAX_COMPARISON_ATTRIBUTES)
+	})
 	.strict();
 
-export const tableSchema = catalogComponents.Table.props.extend({ type: z.literal('table') }).strict();
+export const comparisonSchema = z
+	.object({
+		type: z.literal('comparison'),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		items: z.array(comparisonItemSchema).min(1).max(LIMITS.MAX_COMPARISON_ITEMS),
+		selectable: z.boolean().optional(),
+		action: actionSchema.optional()
+	})
+	.strict();
 
-export const uiNodeSchema = z.discriminatedUnion('type', [metricSchema, comparisonSchema, tableSchema]);
+export const tableSchema = z
+	.object({
+		type: z.literal('table'),
+		title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		columns: z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).min(1).max(LIMITS.MAX_TABLE_COLUMNS),
+		rows: z
+			.array(z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).max(LIMITS.MAX_TABLE_COLUMNS))
+			.max(LIMITS.MAX_TABLE_ROWS),
+		action: actionSchema.optional()
+	})
+	.strict();
+
+export const badgeSchema = z
+	.object({ type: z.literal('badge'), label: str(), action: actionSchema.optional() })
+	.strict();
+
+export const dividerSchema = z.object({ type: z.literal('divider') }).strict();
+
+// Recursive container schema (children are nodes).
+export const containerSchema: z.ZodTypeAny = z.lazy(() =>
+	z
+		.object({
+			type: z.enum(['stack', 'row', 'grid', 'section', 'card']),
+			title: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+			children: z.array(uiNodeSchema).max(LIMITS.MAX_CHILDREN),
+			action: actionSchema.optional()
+		})
+		.strict()
+);
+
+export const uiNodeSchema: z.ZodTypeAny = z.lazy(() =>
+	z.union([metricSchema, comparisonSchema, tableSchema, badgeSchema, dividerSchema, containerSchema])
+);
 
 /** Optional JSON envelope form (forward-compatible with the internal envelope). */
 export const envelopeSchema = z

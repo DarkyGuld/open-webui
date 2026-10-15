@@ -116,6 +116,16 @@ introduced here.
 - catalog_version **3**; limits nodes 120 / depth 6 / children 12.
 - **No core files touched.** All changes are our own files + generated prompt + tests.
 
+### Milestone 6 (logic/state layer from lang-core) addendum
+
+- `vitest run` → **53 passed** (adds logic tests: state+expression, two-way binding + re-evaluate,
+  ternary; catalog/registry updated to 15 components).
+- `pytest tests/intelligent_ui` → **36 passed**.
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 4 screenshots under `audit/local/intelligent-ui/milestone-6/`; live pricing
+  calculator verified (`232` → slider 20 → `580`) with **no model call**; 0 errors.
+- **No new dependencies; no core files touched.**
+
 ## Reproduce
 
 ```bash

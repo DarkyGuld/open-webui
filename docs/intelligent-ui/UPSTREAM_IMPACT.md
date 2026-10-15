@@ -143,3 +143,11 @@ Chat.svelte, ResponseMessage.svelte, socket, streaming, provider APIs, or the me
 No changes to Open WebUI core, middleware, streaming, provider APIs, or the message DB model.
 
 **Cumulative M1–M5:** still ~11 core files, ~150 lines.
+
+## Milestone 6 — actual upstream/core changes
+
+**None.** The logic layer is entirely our own files (engine runtime, inputs, renderer wiring,
+prompt, tests). lang-core is already a dependency; no new packages. No changes to Open WebUI core,
+middleware, streaming, or the message DB model.
+
+**Cumulative M1–M6:** still ~11 core files, ~150 lines.

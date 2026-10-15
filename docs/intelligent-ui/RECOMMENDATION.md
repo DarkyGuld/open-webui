@@ -73,6 +73,15 @@ in Milestone 2.
 - Limits: nodes 120, depth 6, children 12.
 - Zero new dependencies; no core changes.
 
+## Implemented logic layer (Milestone 6)
+
+- **Runtime from lang-core** (no parallel engine): `createStore` + `store.initialize(stateDeclarations)`
+  + `evaluateElementProps` resolves `$state`, expressions, and ternary.
+- **Two-way binding**: input props marked `markReactive` → `ReactiveAssign` → `{value, binding}`;
+  input change → `store.set` → re-evaluate → re-render (no model call).
+- **Inputs**: `slider`, `select`, `switch`, `checkbox`, `input` (15 components total).
+- Verified live: a pricing calculator (`$seats * 29`) updates instantly.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

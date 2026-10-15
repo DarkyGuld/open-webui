@@ -13,13 +13,18 @@ describe('intelligent-ui catalog — single source of truth', () => {
 		expect([...catalogComponentNames].sort()).toEqual([
 			'Badge',
 			'Card',
+			'Checkbox',
 			'Comparison',
 			'Divider',
 			'Grid',
+			'Input',
 			'Metric',
 			'Row',
 			'Section',
+			'Select',
+			'Slider',
 			'Stack',
+			'Switch',
 			'Table'
 		]);
 	});

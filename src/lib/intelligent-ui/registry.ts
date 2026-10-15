@@ -4,6 +4,11 @@ import Comparison from './components/Comparison.svelte';
 import Table from './components/Table.svelte';
 import Badge from './components/Badge.svelte';
 import Divider from './components/Divider.svelte';
+import Slider from './components/Slider.svelte';
+import Select from './components/Select.svelte';
+import Switch from './components/Switch.svelte';
+import Checkbox from './components/Checkbox.svelte';
+import Input from './components/Input.svelte';
 import type { UINodeType } from './types';
 
 /**
@@ -16,7 +21,12 @@ export const leafRegistry: Partial<Record<UINodeType, Component<any>>> = {
 	comparison: Comparison,
 	table: Table,
 	badge: Badge,
-	divider: Divider
+	divider: Divider,
+	slider: Slider,
+	select: Select,
+	switch: Switch,
+	checkbox: Checkbox,
+	input: Input
 };
 
 export const CONTAINER_TYPES: UINodeType[] = ['stack', 'row', 'grid', 'section', 'card'];
@@ -27,6 +37,11 @@ export const SUPPORTED_COMPONENTS: UINodeType[] = [
 	'table',
 	'badge',
 	'divider',
+	'slider',
+	'select',
+	'switch',
+	'checkbox',
+	'input',
 	...CONTAINER_TYPES
 ];
 

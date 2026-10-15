@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { getContext, onMount } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
 	import { chatId } from '$lib/stores';
-	import { parseIntelligentUI } from '$lib/intelligent-ui/adapter';
+	import {
+		createIntelligentUIRuntime,
+		type IntelligentUIRuntime,
+		type RuntimeOutcome
+	} from '$lib/intelligent-ui/adapter';
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
 	import { loadState, saveState } from '$lib/intelligent-ui/state';
-	import type { UIAction } from '$lib/intelligent-ui/types';
+	import type { UIAction, UINode } from '$lib/intelligent-ui/types';
 	import NodeRenderer from '$lib/intelligent-ui/components/NodeRenderer.svelte';
 	import IntelligentUIFallback from '$lib/intelligent-ui/components/IntelligentUIFallback.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
@@ -15,18 +19,39 @@
 	export let done: boolean = true;
 	export let id: string = '';
 
-	$: outcome = parseIntelligentUI({
+	$: outcome = createIntelligentUIRuntime({
 		version: token?.attributes?.v,
 		content: token?.text ?? ''
 	});
 
-	// --- durable local state (selection etc.) ---
-	let uiState: Record<string, unknown> = {};
-	let selected: string | undefined = undefined;
-	onMount(() => {
-		uiState = loadState($chatId ?? '', id);
-		if (typeof uiState.selected === 'string') selected = uiState.selected;
-	});
+	let tree: UINode | null = null;
+	let runtime: IntelligentUIRuntime | undefined = undefined;
+	let unsub: (() => void) | undefined;
+	let lastOutcome: RuntimeOutcome | null = null;
+
+	// (Re)initialise the runtime + subscribe to state changes when the parse outcome changes.
+	$: if (outcome !== lastOutcome) {
+		unsub?.();
+		lastOutcome = outcome;
+		if (outcome.ok) {
+			tree = outcome.node;
+			runtime = outcome.runtime;
+			if (runtime) {
+				unsub = runtime.subscribe(() => {
+					tree = runtime!.evaluate();
+				});
+			}
+		} else {
+			tree = null;
+			runtime = undefined;
+		}
+	}
+
+	onDestroy(() => unsub?.());
+
+	// --- durable local state (comparison selection) ---
+	let uiState: Record<string, unknown> = loadState($chatId ?? '', id);
+	let selected: string | undefined = typeof uiState.selected === 'string' ? uiState.selected : undefined;
 
 	// --- native confirmation ---
 	let confirmOpen = false;
@@ -45,7 +70,6 @@
 
 	const ctx: ActionContext = {
 		sendPrompt: async (prompt: string) => {
-			// Reuse Open WebUI's existing same-origin prompt-submit channel.
 			window.postMessage({ type: 'input:prompt:submit', text: prompt }, window.location.origin);
 		},
 		confirm
@@ -63,11 +87,16 @@
 			console.debug('[intelligent-ui] action rejected:', result.reason);
 		}
 	}
+
+	function handleBind(name: string, value: unknown) {
+		runtime?.setState(name, value);
+		tree = runtime?.evaluate() ?? tree;
+	}
 </script>
 
-{#if outcome.ok}
-	<NodeRenderer node={outcome.node} onAction={handleAction} {selected} />
-{:else}
+{#if tree}
+	<NodeRenderer node={tree} onAction={handleAction} {selected} onBind={handleBind} />
+{:else if !outcome.ok}
 	<IntelligentUIFallback content={token?.text ?? ''} reason={outcome.reason} />
 {/if}
 

@@ -59,6 +59,48 @@ export interface DividerNode {
 
 // --- Container nodes (recursive layout composition) ---
 
+// --- Input nodes (reactive, two-way bound to $state) ---
+
+export interface SliderNode {
+	type: 'slider';
+	label: string;
+	value: number;
+	min: number;
+	max: number;
+	step?: number;
+	binding?: string;
+}
+
+export interface SelectNode {
+	type: 'select';
+	label: string;
+	value: string;
+	options: string[];
+	binding?: string;
+}
+
+export interface SwitchNode {
+	type: 'switch';
+	label: string;
+	value: boolean;
+	binding?: string;
+}
+
+export interface CheckboxNode {
+	type: 'checkbox';
+	label: string;
+	value: boolean;
+	binding?: string;
+}
+
+export interface InputNode {
+	type: 'input';
+	label: string;
+	value: string;
+	placeholder?: string;
+	binding?: string;
+}
+
 export type ContainerType = 'stack' | 'row' | 'grid' | 'section' | 'card';
 
 export interface ContainerNode {
@@ -68,7 +110,20 @@ export interface ContainerNode {
 	action?: UIAction;
 }
 
-export type UINode = MetricNode | ComparisonNode | TableNode | BadgeNode | DividerNode | ContainerNode;
+export type InputNodeType = 'slider' | 'select' | 'switch' | 'checkbox' | 'input';
+
+export type UINode =
+	| MetricNode
+	| ComparisonNode
+	| TableNode
+	| BadgeNode
+	| DividerNode
+	| SliderNode
+	| SelectNode
+	| SwitchNode
+	| CheckboxNode
+	| InputNode
+	| ContainerNode;
 export type UINodeType = UINode['type'];
 
 export const CONTAINER_TYPES: ContainerType[] = ['stack', 'row', 'grid', 'section', 'card'];

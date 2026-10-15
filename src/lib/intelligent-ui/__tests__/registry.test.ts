@@ -6,13 +6,18 @@ describe('intelligent-ui registry — strict allow-list', () => {
 		expect([...SUPPORTED_COMPONENTS].sort()).toEqual([
 			'badge',
 			'card',
+			'checkbox',
 			'comparison',
 			'divider',
 			'grid',
+			'input',
 			'metric',
 			'row',
 			'section',
+			'select',
+			'slider',
 			'stack',
+			'switch',
 			'table'
 		]);
 	});

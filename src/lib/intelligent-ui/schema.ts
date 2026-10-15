@@ -49,6 +49,48 @@ export const badgeSchema = z
 
 export const dividerSchema = z.object({ type: z.literal('divider') }).strict();
 
+const binding = () => z.string().max(120).optional();
+
+export const sliderSchema = z
+	.object({
+		type: z.literal('slider'),
+		label: str(),
+		value: z.number(),
+		min: z.number(),
+		max: z.number(),
+		step: z.number().optional(),
+		binding: binding()
+	})
+	.strict();
+
+export const selectSchema = z
+	.object({
+		type: z.literal('select'),
+		label: str(),
+		value: z.string().max(LIMITS.MAX_STRING_LENGTH),
+		options: z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).min(1).max(LIMITS.MAX_CHILDREN),
+		binding: binding()
+	})
+	.strict();
+
+export const switchSchema = z
+	.object({ type: z.literal('switch'), label: str(), value: z.boolean(), binding: binding() })
+	.strict();
+
+export const checkboxSchema = z
+	.object({ type: z.literal('checkbox'), label: str(), value: z.boolean(), binding: binding() })
+	.strict();
+
+export const inputSchema = z
+	.object({
+		type: z.literal('input'),
+		label: str(),
+		value: z.string().max(LIMITS.MAX_STRING_LENGTH),
+		placeholder: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		binding: binding()
+	})
+	.strict();
+
 // Recursive container schema (children are nodes).
 export const containerSchema: z.ZodTypeAny = z.lazy(() =>
 	z
@@ -62,7 +104,19 @@ export const containerSchema: z.ZodTypeAny = z.lazy(() =>
 );
 
 export const uiNodeSchema: z.ZodTypeAny = z.lazy(() =>
-	z.union([metricSchema, comparisonSchema, tableSchema, badgeSchema, dividerSchema, containerSchema])
+	z.union([
+		metricSchema,
+		comparisonSchema,
+		tableSchema,
+		badgeSchema,
+		dividerSchema,
+		sliderSchema,
+		selectSchema,
+		switchSchema,
+		checkboxSchema,
+		inputSchema,
+		containerSchema
+	])
 );
 
 /** Optional JSON envelope form (forward-compatible with the internal envelope). */

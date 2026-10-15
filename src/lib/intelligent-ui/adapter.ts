@@ -2,15 +2,17 @@
  * Intelligent UI adapter — the single boundary between Open WebUI and any
  * generative-UI engine. Nothing else in the app imports an engine package.
  *
- * Flow: token(version + content) -> optional envelope unwrap -> engine parse
- *       -> strict validation -> canonical node (or a safe failure reason).
+ * Two entry points:
+ *   - parseIntelligentUI(): static parse + validate (no runtime handle).
+ *   - createIntelligentUIRuntime(): parse + a live state runtime (store) for
+ *     two-way binding (OpenUI engine only; json-render stays static).
  */
 import { envelopeSchema } from './schema';
 import { SUPPORTED_VERSION } from './limits';
 import { isPayloadWithinLimits, validateNode } from './validation';
-import { openuiEngine } from './engines/openui';
+import { createOpenUIRuntime, openuiEngine } from './engines/openui';
 import { jsonRenderEngine } from './engines/json-render';
-import type { IntelligentUIEngine, IntelligentUIEngineId, ParseOutcome } from './types';
+import type { IntelligentUIEngine, IntelligentUIEngineId, ParseOutcome, UINode } from './types';
 
 /** Engine is system-controlled — never selected by the model or the payload. */
 export const DEFAULT_ENGINE: IntelligentUIEngineId = 'openui';
@@ -27,20 +29,16 @@ export interface ParseInput {
 	content: string;
 }
 
-export function parseIntelligentUI(
-	input: ParseInput,
-	engineId: IntelligentUIEngineId = DEFAULT_ENGINE
-): ParseOutcome {
-	const rawContent = input.content ?? '';
-	if (!isPayloadWithinLimits(rawContent)) {
-		return { ok: false, reason: 'payload exceeds size limit' };
-	}
+type ResolvedPayload = { ok: true; version: number; payload: string } | { ok: false; reason: string };
+
+function resolvePayload(input: ParseInput): ResolvedPayload {
+	const raw = input.content ?? '';
+	if (!isPayloadWithinLimits(raw)) return { ok: false, reason: 'payload exceeds size limit' };
 
 	let version = Number.parseInt(String(input.version ?? SUPPORTED_VERSION), 10);
-	let payload = rawContent;
+	let payload = raw;
 
-	// Optional forward-compatible JSON envelope: { version, catalog_version, content }.
-	const trimmed = rawContent.trim();
+	const trimmed = raw.trim();
 	if (trimmed.startsWith('{')) {
 		try {
 			const env = envelopeSchema.parse(JSON.parse(trimmed));
@@ -54,20 +52,75 @@ export function parseIntelligentUI(
 	if (version !== SUPPORTED_VERSION) {
 		return { ok: false, reason: `unsupported version ${version}` };
 	}
+	return { ok: true, version, payload };
+}
+
+export function parseIntelligentUI(
+	input: ParseInput,
+	engineId: IntelligentUIEngineId = DEFAULT_ENGINE
+): ParseOutcome {
+	const resolved = resolvePayload(input);
+	if (!resolved.ok) return { ok: false, reason: resolved.reason };
 
 	const engine = ENGINES[engineId] ?? openuiEngine;
-
 	let node: unknown;
 	try {
-		node = engine.parse(payload);
+		node = engine.parse(resolved.payload);
 	} catch (error) {
 		return { ok: false, reason: `parse error: ${(error as Error).message}`, engine: engineId };
 	}
-
 	const validated = validateNode(node);
 	if (!validated.ok) {
 		return { ok: false, reason: `validation: ${validated.reason}`, engine: engineId };
 	}
-
 	return { ok: true, node: validated.node, engine: engineId };
+}
+
+/** Live runtime handle for two-way binding (OpenUI engine). */
+export interface IntelligentUIRuntime {
+	getState(): Record<string, unknown>;
+	setState(name: string, value: unknown): void;
+	subscribe(cb: () => void): () => void;
+	evaluate(): UINode;
+}
+
+export type RuntimeOutcome =
+	| { ok: true; node: UINode; engine: IntelligentUIEngineId; runtime?: IntelligentUIRuntime }
+	| { ok: false; reason: string; engine?: IntelligentUIEngineId };
+
+export function createIntelligentUIRuntime(
+	input: ParseInput,
+	engineId: IntelligentUIEngineId = DEFAULT_ENGINE
+): RuntimeOutcome {
+	const resolved = resolvePayload(input);
+	if (!resolved.ok) return { ok: false, reason: resolved.reason };
+
+	if (engineId === 'openui') {
+		try {
+			const rt = createOpenUIRuntime(resolved.payload);
+			const node = rt.evaluate();
+			const validated = validateNode(node);
+			if (!validated.ok) {
+				return { ok: false, reason: `validation: ${validated.reason}`, engine: engineId };
+			}
+			return {
+				ok: true,
+				node: validated.node,
+				engine: engineId,
+				runtime: {
+					getState: () => rt.store.getSnapshot(),
+					setState: (name, value) => rt.store.set(name, value),
+					subscribe: (cb) => rt.store.subscribe(cb),
+					evaluate: () => rt.evaluate()
+				}
+			};
+		} catch (error) {
+			return { ok: false, reason: `parse error: ${(error as Error).message}`, engine: engineId };
+		}
+	}
+
+	const out = parseIntelligentUI(input, engineId);
+	return out.ok
+		? { ok: true, node: out.node, engine: engineId }
+		: { ok: false, reason: out.reason, engine: engineId };
 }

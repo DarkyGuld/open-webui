@@ -24,17 +24,23 @@ PROMPT = r"""You may optionally present part of your answer as structured, inter
 ## Component Signatures
 
 Arguments marked with ? are optional. Sub-components can be inline or referenced; prefer references for better streaming.
+Props marked `$binding<type>` accept a `$variable` reference for two-way binding.
 
 Metric(label: string, value: string, description?: string, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A single important number (cost, total, count) with a short label and optional note.
 Comparison(title?: string, items: {name: string, attributes: string[]}[], selectable?: boolean, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — Compare 2-4 options side by side by name, each with a list of attributes.
 Table(title?: string, columns: string[], rows: string[][], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A simple data table with columns and rows.
 Badge(label: string, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A small inline label/tag (status, category).
 Divider() — A horizontal separator between sections.
-Card(title?: string, children: (Metric | Comparison | Table | Badge | Divider)[], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A titled surface that groups child components.
-Stack(children: (Metric | Comparison | Table | Badge | Divider | Card | Row | Grid | Section)[]) — Vertical layout container. Use as the root for most responses.
-Row(children: (Metric | Comparison | Table | Badge | Divider | Card)[]) — Horizontal layout container (wraps on small screens).
-Grid(children: (Metric | Comparison | Table | Badge | Divider | Card | Row)[]) — Responsive grid of 2-3 columns. Use for side-by-side cards.
-Section(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Card | Row | Grid)[]) — A titled section that groups children (no card chrome).
+Slider(label: string, value: $binding<number>, min: number, max: number, step?: number) — A numeric slider bound to a $state variable.
+Select(label: string, value: $binding<string>, options: string[]) — A dropdown bound to a $state variable.
+Switch(label: string, value: $binding<boolean>) — An on/off switch bound to a $state variable.
+Checkbox(label: string, value: $binding<boolean>) — A checkbox bound to a $state variable.
+Input(label: string, value: $binding<string>, placeholder?: string) — A single-line text input bound to a $state variable.
+Card(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input)[], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A titled surface that groups child components.
+Stack(children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid | Section)[]) — Vertical layout container. Use as the root for most responses.
+Row(children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card)[]) — Horizontal layout container (wraps on small screens).
+Grid(children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card | Row)[]) — Responsive grid of 2-3 columns. Use for side-by-side cards.
+Section(title?: string, children: (Metric | Comparison | Table | Badge | Divider | Slider | Select | Switch | Checkbox | Input | Card | Row | Grid)[]) — A titled section that groups children (no card chrome).
 
 ## Hoisting & Streaming (CRITICAL)
 
@@ -73,6 +79,16 @@ User: Show the costs as a table.
 root = Table("Monthly costs", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])
 :::
 
+User: Make a small pricing calculator with a seats slider.
+
+:::intelligent-ui{v="1"}
+$seats = 8
+root = Stack([s1, m1])
+s1 = Slider("Seats", $seats, 1, 50)
+m1 = Metric("Monthly price", total, "Incl. VAT")
+total = $seats * 29
+:::
+
 User: Give me a small dashboard of the key numbers.
 
 :::intelligent-ui{v="1"}
@@ -102,7 +118,9 @@ Before finishing, walk your output and verify:
 - Use Intelligent UI ONLY when it materially improves clarity: a side-by-side comparison, headline metrics, or tabular data.
 - Only the documented components exist. Never invent components.
 - Use Stack as the root for most responses. Compose layouts with Stack (vertical), Row (horizontal), Grid (2-3 columns), Section (titled group) and Card (titled surface).
-- Put leaf components (Metric, Comparison, Table, Badge, Divider) inside containers. Do not nest Stack inside Stack.
+- Put leaf components (Metric, Comparison, Table, Badge, Divider, inputs) inside containers. Do not nest Stack inside Stack.
+- Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input, and reference `$name` in expressions elsewhere. Inputs update the UI without a model call.
+- You may compute derived values (`total = $seats * 29`) and use a ternary (`$flag ? a : b`) in any prop.
 - When you use UI, wrap the OpenUI Lang in a fenced block on its own lines:
 - :::intelligent-ui{v="1"}
 - <openui lang here>

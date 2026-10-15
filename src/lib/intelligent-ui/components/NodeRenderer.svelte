@@ -8,11 +8,17 @@
 	import Table from './Table.svelte';
 	import Badge from './Badge.svelte';
 	import Divider from './Divider.svelte';
+	import Slider from './Slider.svelte';
+	import Select from './Select.svelte';
+	import Switch from './Switch.svelte';
+	import Checkbox from './Checkbox.svelte';
+	import Input from './Input.svelte';
 	import ActionButton from './ActionButton.svelte';
 
 	export let node: UINode;
 	export let onAction: (a: UIAction) => void = () => {};
 	export let selected: string | undefined = undefined;
+	export let onBind: (name: string, value: unknown) => void = () => {};
 </script>
 
 {#if node.type === 'metric'}
@@ -40,24 +46,48 @@
 	</div>
 {:else if node.type === 'divider'}
 	<Divider />
+{:else if node.type === 'slider'}
+	<Slider
+		label={node.label}
+		value={node.value}
+		min={node.min}
+		max={node.max}
+		step={node.step}
+		binding={node.binding}
+		{onBind}
+	/>
+{:else if node.type === 'select'}
+	<Select label={node.label} value={node.value} options={node.options} binding={node.binding} {onBind} />
+{:else if node.type === 'switch'}
+	<Switch label={node.label} value={node.value} binding={node.binding} {onBind} />
+{:else if node.type === 'checkbox'}
+	<Checkbox label={node.label} value={node.value} binding={node.binding} {onBind} />
+{:else if node.type === 'input'}
+	<Input
+		label={node.label}
+		value={node.value}
+		placeholder={node.placeholder}
+		binding={node.binding}
+		{onBind}
+	/>
 {:else if node.type === 'stack'}
 	<div class="my-3 flex flex-col gap-3">
 		{#each node.children as child, i (i)}
-			<svelte:self node={child} {onAction} {selected} />
+			<svelte:self node={child} {onAction} {selected} {onBind} />
 		{/each}
 	</div>
 {:else if node.type === 'row'}
 	<div class="my-3 flex flex-wrap gap-3">
 		{#each node.children as child, i (i)}
 			<div class="min-w-[12rem] flex-1">
-				<svelte:self node={child} {onAction} {selected} />
+				<svelte:self node={child} {onAction} {selected} {onBind} />
 			</div>
 		{/each}
 	</div>
 {:else if node.type === 'grid'}
 	<div class="my-3 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
 		{#each node.children as child, i (i)}
-			<svelte:self node={child} {onAction} {selected} />
+			<svelte:self node={child} {onAction} {selected} {onBind} />
 		{/each}
 	</div>
 {:else if node.type === 'section'}
@@ -67,7 +97,7 @@
 		{/if}
 		<div class="flex flex-col gap-3">
 			{#each node.children as child, i (i)}
-				<svelte:self node={child} {onAction} {selected} />
+				<svelte:self node={child} {onAction} {selected} {onBind} />
 			{/each}
 		</div>
 	</div>
@@ -78,7 +108,7 @@
 		{/if}
 		<div class="flex flex-col gap-3">
 			{#each node.children as child, i (i)}
-				<svelte:self node={child} {onAction} {selected} />
+				<svelte:self node={child} {onAction} {selected} {onBind} />
 			{/each}
 		</div>
 		<ActionButton action={node.action} {onAction} />

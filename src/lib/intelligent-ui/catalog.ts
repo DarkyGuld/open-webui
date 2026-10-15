@@ -9,7 +9,7 @@
  * Layout primitives (stack/row/grid/section/card) compose recursively; leaves
  * (metric/comparison/table/badge/divider) are terminals. catalog_version = 3.
  */
-import { createLibrary, defineComponent } from '@openuidev/lang-core';
+import { createLibrary, defineComponent, markReactive } from '@openuidev/lang-core';
 import { z } from 'zod';
 import { actionSchema } from './action-schema';
 import { CATALOG_VERSION, LIMITS } from './limits';
@@ -80,7 +80,66 @@ const DividerDef = defineComponent({
 	...placeholder
 });
 
-const leafRefs = [MetricDef.ref, ComparisonDef.ref, TableDef.ref, BadgeDef.ref, DividerDef.ref];
+// --- Inputs (reactive `value` is two-way bound to a $state variable) ---
+const SliderDef = defineComponent({
+	name: 'Slider',
+	description: 'A numeric slider bound to a $state variable.',
+	props: z.object({
+		label: str(),
+		value: z.number(),
+		min: z.number(),
+		max: z.number(),
+		step: z.number().optional()
+	}),
+	...placeholder
+});
+
+const SelectDef = defineComponent({
+	name: 'Select',
+	description: 'A dropdown bound to a $state variable.',
+	props: z.object({ label: str(), value: str(), options: z.array(str()).min(1).max(LIMITS.MAX_CHILDREN) }),
+	...placeholder
+});
+
+const SwitchDef = defineComponent({
+	name: 'Switch',
+	description: 'An on/off switch bound to a $state variable.',
+	props: z.object({ label: str(), value: z.boolean() }),
+	...placeholder
+});
+
+const CheckboxDef = defineComponent({
+	name: 'Checkbox',
+	description: 'A checkbox bound to a $state variable.',
+	props: z.object({ label: str(), value: z.boolean() }),
+	...placeholder
+});
+
+const InputDef = defineComponent({
+	name: 'Input',
+	description: 'A single-line text input bound to a $state variable.',
+	props: z.object({ label: str(), value: str(), placeholder: z.string().max(LIMITS.MAX_STRING_LENGTH).optional() }),
+	...placeholder
+});
+
+// Mark the bound prop of each input as reactive (keeps ReactiveAssign through
+// evaluation so we can wire two-way binding).
+for (const def of [SliderDef, SelectDef, SwitchDef, CheckboxDef, InputDef]) {
+	markReactive((def.props as any).shape.value);
+}
+
+const leafRefs = [
+	MetricDef.ref,
+	ComparisonDef.ref,
+	TableDef.ref,
+	BadgeDef.ref,
+	DividerDef.ref,
+	SliderDef.ref,
+	SelectDef.ref,
+	SwitchDef.ref,
+	CheckboxDef.ref,
+	InputDef.ref
+];
 
 // --- Containers ---
 const CardDef = defineComponent({
@@ -140,6 +199,11 @@ export const openuiLibrary = createLibrary({
 		TableDef,
 		BadgeDef,
 		DividerDef,
+		SliderDef,
+		SelectDef,
+		SwitchDef,
+		CheckboxDef,
+		InputDef,
 		CardDef,
 		StackDef,
 		RowDef,
@@ -154,6 +218,11 @@ export const catalogComponentNames = [
 	'Table',
 	'Badge',
 	'Divider',
+	'Slider',
+	'Select',
+	'Switch',
+	'Checkbox',
+	'Input',
 	'Card',
 	'Stack',
 	'Row',
@@ -168,6 +237,11 @@ export const COMPONENT_TYPE_MAP: Record<string, string> = {
 	Table: 'table',
 	Badge: 'badge',
 	Divider: 'divider',
+	Slider: 'slider',
+	Select: 'select',
+	Switch: 'switch',
+	Checkbox: 'checkbox',
+	Input: 'input',
 	Card: 'card',
 	Stack: 'stack',
 	Row: 'row',

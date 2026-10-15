@@ -299,8 +299,10 @@
 				</AdminSettingRow>
 
 				<AdminSettingRow
-					label="Intelligent UI"
-					description="Allow the model to choose richer, interactive answer formats (tables, comparisons, metrics, charts) rendered with native Open WebUI components. Off = stock Open WebUI. Per-user and per-chat Auto/On/Off apply only when this is on."
+					label={$i18n.t('Intelligent UI')}
+					description={$i18n.t(
+						'Allow the model to choose richer, interactive answer formats (tables, comparisons, metrics) rendered with native Open WebUI components. Off = stock Open WebUI. Per-user and per-chat Auto/On/Off apply only when this is on.'
+					)}
 					let:labelId
 				>
 					<Switch bind:state={chatConfig.ENABLE_INTELLIGENT_UI} ariaLabelledbyId={labelId} />

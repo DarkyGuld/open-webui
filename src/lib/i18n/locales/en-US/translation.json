@@ -3996,5 +3996,10 @@
 	"YouTube": "",
 	"YouTube video player": "",
 	"Zoom in": "",
-	"Zoom out": ""
+	"Zoom out": "",
+	"Intelligent UI": "Intelligent UI",
+	"Intelligent UI unavailable": "Intelligent UI unavailable",
+	"Allow the model to render richer, interactive answers (tables, comparisons, metrics) when helpful. Requires your administrator to enable Intelligent UI.": "Allow the model to render richer, interactive answers (tables, comparisons, metrics) when helpful. Requires your administrator to enable Intelligent UI.",
+	"Allow the model to choose richer, interactive answer formats (tables, comparisons, metrics) rendered with native Open WebUI components. Off = stock Open WebUI. Per-user and per-chat Auto/On/Off apply only when this is on.": "Allow the model to choose richer, interactive answer formats (tables, comparisons, metrics) rendered with native Open WebUI components. Off = stock Open WebUI. Per-user and per-chat Auto/On/Off apply only when this is on.",
+	"Auto lets the model decide; On encourages richer UI; Off is plain Markdown.": "Auto lets the model decide; On encourages richer UI; Off is plain Markdown."
 }

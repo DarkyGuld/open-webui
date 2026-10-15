@@ -156,9 +156,7 @@
 							{/each}
 						</div>
 						<p class="mt-1 text-[0.6875rem] text-gray-400 dark:text-gray-600">
-							{$i18n.t('Auto')}: {$i18n.t('the model decides')} · {$i18n.t('On')}: {$i18n.t(
-								'encourage richer UI'
-							)} · {$i18n.t('Off')}: {$i18n.t('plain Markdown')}
+							{$i18n.t('Auto lets the model decide; On encourages richer UI; Off is plain Markdown.')}
 						</p>
 					</div>
 				</Collapsible>

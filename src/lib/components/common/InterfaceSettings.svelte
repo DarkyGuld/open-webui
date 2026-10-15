@@ -611,7 +611,7 @@
 
 	<div>
 		<div class={settingRowClass}>
-			<div id="intelligent-ui-label" class={settingLabelClass}>Intelligent UI</div>
+			<div id="intelligent-ui-label" class={settingLabelClass}>{$i18n.t('Intelligent UI')}</div>
 
 			<div class={settingControlClass}>
 				<Switch
@@ -626,8 +626,9 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			Allow the model to render richer, interactive answers (tables, comparisons, metrics)
-			when helpful. Requires your administrator to enable Intelligent UI.
+			{$i18n.t(
+				'Allow the model to render richer, interactive answers (tables, comparisons, metrics) when helpful. Requires your administrator to enable Intelligent UI.'
+			)}
 		</p>
 	</div>
 

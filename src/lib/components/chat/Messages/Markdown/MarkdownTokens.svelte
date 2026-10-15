@@ -629,6 +629,13 @@
 		{#if token.text}
 			<KatexRenderer content={token.text} displayMode={token?.displayMode ?? false} />
 		{/if}
+	{:else if token.type === 'intelligentUi'}
+		<IntelligentUIBlock
+			id={`${id}-${tokenIdx}`}
+			{token}
+			{done}
+			partial={token.partial ?? false}
+		/>
 	{:else if token.type === 'colonFence'}
 		{#if token.fenceType === 'intelligent-ui'}
 			<IntelligentUIBlock id={`${id}-${tokenIdx}`} {token} {done} />

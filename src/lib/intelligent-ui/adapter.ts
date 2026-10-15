@@ -10,7 +10,7 @@
 import { envelopeSchema } from './schema';
 import { SUPPORTED_VERSION } from './limits';
 import { isPayloadWithinLimits, validateNode } from './validation';
-import { createOpenUIRuntime, openuiEngine } from './engines/openui';
+import { createOpenUIRuntime, openuiEngine, parseOpenUIPartial } from './engines/openui';
 import { jsonRenderEngine } from './engines/json-render';
 import type { IntelligentUIEngine, IntelligentUIEngineId, ParseOutcome, UINode } from './types';
 
@@ -74,6 +74,24 @@ export function parseIntelligentUI(
 		return { ok: false, reason: `validation: ${validated.reason}`, engine: engineId };
 	}
 	return { ok: true, node: validated.node, engine: engineId };
+}
+
+/**
+ * Parse a possibly-incomplete program for progressive rendering (streaming).
+ * Uses lang-core's streaming parser. Never throws for the caller.
+ */
+export function parseIntelligentUIPartial(input: ParseInput): ParseOutcome {
+	const resolved = resolvePayload(input);
+	if (!resolved.ok) return { ok: false, reason: resolved.reason };
+	try {
+		const node = parseOpenUIPartial(resolved.payload);
+		if (!node) return { ok: false, reason: 'no renderable root yet' };
+		const validated = validateNode(node);
+		if (!validated.ok) return { ok: false, reason: `validation: ${validated.reason}` };
+		return { ok: true, node: validated.node, engine: 'openui' };
+	} catch (error) {
+		return { ok: false, reason: `parse error: ${(error as Error).message}`, engine: 'openui' };
+	}
 }
 
 /** Live runtime handle for two-way binding (OpenUI engine). */

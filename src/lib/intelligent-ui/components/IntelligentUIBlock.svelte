@@ -3,8 +3,8 @@
 	import { chatId } from '$lib/stores';
 	import {
 		createIntelligentUIRuntime,
-		type IntelligentUIRuntime,
-		type RuntimeOutcome
+		parseIntelligentUIPartial,
+		type IntelligentUIRuntime
 	} from '$lib/intelligent-ui/adapter';
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
 	import { loadState, saveState } from '$lib/intelligent-ui/state';
@@ -18,32 +18,42 @@
 	export let token: any;
 	export let done: boolean = true;
 	export let id: string = '';
-
-	$: outcome = createIntelligentUIRuntime({
-		version: token?.attributes?.v,
-		content: token?.text ?? ''
-	});
+	export let partial: boolean = false;
 
 	let tree: UINode | null = null;
 	let runtime: IntelligentUIRuntime | undefined = undefined;
+	let fallbackReason: string | null = null;
 	let unsub: (() => void) | undefined;
-	let lastOutcome: RuntimeOutcome | null = null;
+	let lastKey: string | null = null;
 
-	// (Re)initialise the runtime + subscribe to state changes when the parse outcome changes.
-	$: if (outcome !== lastOutcome) {
-		unsub?.();
-		lastOutcome = outcome;
-		if (outcome.ok) {
-			tree = outcome.node;
-			runtime = outcome.runtime;
-			if (runtime) {
-				unsub = runtime.subscribe(() => {
-					tree = runtime!.evaluate();
-				});
-			}
+	// Re-parse when the fence content (or completion) changes.
+	// - partial: progressive render via the streaming parser; keep last-good tree.
+	// - complete: full parse + live runtime (two-way binding).
+	$: key = `${partial ? 'p' : 'f'}:${token?.text ?? ''}`;
+	$: if (key !== lastKey) {
+		lastKey = key;
+		const input = { version: token?.attributes?.v, content: token?.text ?? '' };
+		if (partial) {
+			const p = parseIntelligentUIPartial(input);
+			if (p.ok) tree = p.node; // keep last-good tree on failure
 		} else {
-			tree = null;
-			runtime = undefined;
+			unsub?.();
+			unsub = undefined;
+			const outcome = createIntelligentUIRuntime(input);
+			if (outcome.ok) {
+				tree = outcome.node;
+				runtime = outcome.runtime;
+				fallbackReason = null;
+				if (runtime) {
+					unsub = runtime.subscribe(() => {
+						tree = runtime!.evaluate();
+					});
+				}
+			} else {
+				tree = null;
+				runtime = undefined;
+				fallbackReason = outcome.reason;
+			}
 		}
 	}
 
@@ -96,8 +106,8 @@
 
 {#if tree}
 	<NodeRenderer node={tree} onAction={handleAction} {selected} onBind={handleBind} />
-{:else if !outcome.ok}
-	<IntelligentUIFallback content={token?.text ?? ''} reason={outcome.reason} />
+{:else if !partial && fallbackReason !== null}
+	<IntelligentUIFallback content={token?.text ?? ''} reason={fallbackReason} />
 {/if}
 
 <ConfirmDialog

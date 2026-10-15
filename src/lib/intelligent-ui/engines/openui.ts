@@ -12,7 +12,13 @@
  *   - evaluateElementProps(el, { ctx, library, store })
  *   - isReactiveAssign(value) -> two-way binding descriptor
  */
-import { createParser, createStore, evaluateElementProps, isReactiveAssign } from '@openuidev/lang-core';
+import {
+	createParser,
+	createStreamingParser,
+	createStore,
+	evaluateElementProps,
+	isReactiveAssign
+} from '@openuidev/lang-core';
 import type { ElementNode, Store } from '@openuidev/lang-core';
 import { COMPONENT_TYPE_MAP, openuiLibrary } from '../catalog';
 import type { IntelligentUIEngine, UINode } from '../types';
@@ -173,3 +179,36 @@ export const openuiEngine: IntelligentUIEngine = {
 		return createOpenUIRuntime(content).evaluate();
 	}
 };
+
+/**
+ * Parse a possibly-incomplete program for progressive rendering (streaming).
+ * Uses lang-core's streaming parser (statement cache, partial-safe). Returns
+ * null when nothing renderable exists yet; throws only on a genuine error in a
+ * COMPLETE program. Mid-stream "missing-required" noise is ignored while
+ * `incomplete`.
+ */
+export function parseOpenUIPartial(content: string): UINode | null {
+	const sp = createStreamingParser(openuiLibrary.toJSONSchema());
+	const result = sp.push(content);
+	if (!result.root) return null;
+	if (!result.meta?.incomplete && result.meta?.errors?.length) {
+		throw new Error(
+			'validation: ' + result.meta.errors.map((e) => `${e.code}:${e.component}`).join(',')
+		);
+	}
+
+	const store = createStore();
+	const state = (result.stateDeclarations ?? {}) as Record<string, unknown>;
+	store.initialize(state, {});
+	const evalCtx = {
+		ctx: {
+			getState: (name: string) => store.get(name),
+			resolveRef: (name: string) => store.get(name)
+		},
+		library: openuiLibrary,
+		store,
+		errors: [] as any[]
+	};
+	const evaluated = evaluateElementProps(result.root, evalCtx as any);
+	return mapNode(evaluated, store);
+}

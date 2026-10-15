@@ -8,12 +8,20 @@
 
 export type IntelligentUIEngineId = 'openui' | 'json-render';
 
-/** Canonical, validated render nodes (Milestone 2 allow-list: exactly three). */
+/** Allow-listed component actions (no arbitrary callbacks or code). */
+export type UIAction =
+	| { type: 'send_prompt'; prompt: string }
+	| { type: 'select'; value: string }
+	| { type: 'toggle'; value: boolean }
+	| { type: 'set_value'; value: string | number | boolean }
+	| { type: 'confirm'; prompt?: string };
+
 export interface MetricNode {
 	type: 'metric';
 	label: string;
 	value: string;
 	description?: string;
+	action?: UIAction;
 }
 
 export interface ComparisonItem {
@@ -25,6 +33,8 @@ export interface ComparisonNode {
 	type: 'comparison';
 	title?: string;
 	items: ComparisonItem[];
+	selectable?: boolean;
+	action?: UIAction;
 }
 
 export interface TableNode {
@@ -32,15 +42,13 @@ export interface TableNode {
 	title?: string;
 	columns: string[];
 	rows: string[][];
+	action?: UIAction;
 }
 
 export type UINode = MetricNode | ComparisonNode | TableNode;
 export type UINodeType = UINode['type'];
 
-/**
- * Stable internal envelope. Constructed by the adapter from the token — the model
- * does not choose the engine. `content` is the engine payload (e.g. OpenUI Lang).
- */
+/** Stable internal envelope (constructed by the adapter; engine is system-chosen). */
 export interface IntelligentUIEnvelope {
 	version: number;
 	catalogVersion: number;
@@ -54,13 +62,26 @@ export type ParseOutcome =
 
 export interface IntelligentUIEngine {
 	id: IntelligentUIEngineId;
-	/** Parse engine payload -> canonical node. May throw on malformed input. */
 	parse(content: string): UINode;
 }
 
-/** Token surface the renderer receives from the colonFence tokenizer. */
 export interface IntelligentUIToken {
 	fenceType: string;
 	attributes?: Record<string, string>;
 	text: string;
+}
+
+/**
+ * Durable structured output item (message.output[]). Versioned independently of
+ * the catalog. The engine format is recorded so the item schema stays
+ * engine-agnostic; canonical parsing remains client-side (adapter).
+ */
+export interface IntelligentUIOutputItem {
+	type: 'intelligent_ui';
+	output_schema_version: number;
+	catalog_version: number;
+	id: string;
+	format: 'openui-lang' | 'json';
+	content: string;
+	state?: Record<string, unknown>;
 }

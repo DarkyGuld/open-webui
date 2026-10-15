@@ -14,13 +14,18 @@ Absolute imports are used because Open WebUI executes function source standalone
 
 from __future__ import annotations
 
+import hashlib
 import logging
+import re
 from typing import Any
 
 from pydantic import BaseModel
 
 from open_webui.intelligent_ui.catalog_prompt import CATALOG_VERSION, PROMPT
 from open_webui.intelligent_ui.mode import IntelligentUIMode, load_effective_mode
+
+OUTPUT_SCHEMA_VERSION = 1
+_BLOCK_RE = re.compile(r':::\s*intelligent-ui(?:\{[^}]*\})?\s*\n(.*?)\n:::', re.DOTALL)
 
 log = logging.getLogger(__name__)
 
@@ -88,15 +93,56 @@ class Filter:
         instructions = f"{header}\n\n{PROMPT}"
         return self._inject(body, instructions)
 
+    @staticmethod
+    def _build_output_items(content: str) -> list[dict]:
+        """Durable, versioned structured output items for each UI block.
+
+        Engine format is recorded in `format` so the item schema stays
+        engine-agnostic; canonical parsing remains client-side. Stable id derived
+        from the block content (survives reload / regeneration).
+        """
+        items: list[dict] = []
+        for match in _BLOCK_RE.finditer(content or ''):
+            lang = (match.group(1) or '').strip()
+            if not lang:
+                continue
+            item_id = 'iu_' + hashlib.sha256(lang.encode('utf-8')).hexdigest()[:16]
+            items.append(
+                {
+                    'type': 'intelligent_ui',
+                    'output_schema_version': OUTPUT_SCHEMA_VERSION,
+                    'catalog_version': CATALOG_VERSION,
+                    'id': item_id,
+                    'format': 'openui-lang',
+                    'content': lang,
+                    'state': {},
+                }
+            )
+        return items
+
     async def outlet(self, body: dict, **__) -> dict:
-        # Observability only — never mutate the response.
+        # Attach durable structured output items; never alter the human text.
         try:
-            messages = body.get("messages") or []
-            content = messages[-1].get("content") if messages else ""
-            if isinstance(content, str) and ":::intelligent-ui" in content:
-                log.info("intelligent-ui: model emitted UI block (catalog_version=%s)", CATALOG_VERSION)
+            messages = body.get('messages') or []
+            if not messages:
+                return body
+            last = messages[-1]
+            content = last.get('content')
+            if not isinstance(content, str) or ':::intelligent-ui' not in content:
+                return body
+            items = self._build_output_items(content)
+            if items:
+                existing = last.get('output')
+                if not isinstance(existing, list):
+                    existing = []
+                last['output'] = existing + items
+                log.info(
+                    'intelligent-ui: attached %d structured output item(s) (catalog_version=%s)',
+                    len(items),
+                    CATALOG_VERSION,
+                )
         except Exception:
-            pass
+            log.exception('intelligent-ui: failed to build structured output')
         return body
 
     async def stream(self, event: dict, **__) -> dict:

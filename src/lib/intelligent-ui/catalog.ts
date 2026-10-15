@@ -1,12 +1,12 @@
 /**
- * Intelligent UI catalog — the SINGLE source of truth for supported components.
+ * Intelligent UI catalog — the SINGLE source of truth for supported components
+ * AND their safe, allow-listed actions.
  *
- * Used by:
- *   - engines/openui.ts        (OpenUI library for parsing)
- *   - schema.ts                (canonical node validation — derived, so no drift)
- *   - scripts/intelligent-ui/generate-prompt.ts (server-side prompt generation)
+ * Used by engines/openui.ts (parsing), schema.ts (derived validation), and
+ * scripts/intelligent-ui/generate-prompt.ts (server prompt).
  *
- * Only metric, comparison, table are allowed (Milestone 2/3). catalog_version = 1.
+ * Only metric, comparison, table. catalog_version = 2 (v1 nodes remain valid;
+ * the interaction fields are optional/backward-compatible).
  */
 import { z } from 'zod';
 import { CATALOG_VERSION, LIMITS } from './limits';
@@ -14,6 +14,22 @@ import { CATALOG_VERSION, LIMITS } from './limits';
 export const CATALOG_VERSION_ID = CATALOG_VERSION;
 
 const str = () => z.string().min(1).max(LIMITS.MAX_STRING_LENGTH);
+
+/**
+ * Allow-listed, typed component actions. No arbitrary callbacks or code.
+ * Risk levels (see actions.ts): send_prompt/select/toggle/set_value = safe,
+ * confirm = confirm. Anything else is rejected.
+ */
+export const actionSchema = z.discriminatedUnion('type', [
+	z.object({ type: z.literal('send_prompt'), prompt: str().max(LIMITS.MAX_ACTION_PROMPT_LENGTH) }),
+	z.object({ type: z.literal('select'), value: z.string().max(LIMITS.MAX_STRING_LENGTH) }),
+	z.object({ type: z.literal('toggle'), value: z.boolean() }),
+	z.object({
+		type: z.literal('set_value'),
+		value: z.union([z.string().max(500), z.number(), z.boolean()])
+	}),
+	z.object({ type: z.literal('confirm'), prompt: z.string().max(LIMITS.MAX_ACTION_PROMPT_LENGTH).optional() })
+]);
 
 export const catalogComponents = {
 	Metric: {
@@ -23,7 +39,8 @@ export const catalogComponents = {
 		props: z.object({
 			label: z.string().min(1).max(LIMITS.MAX_STRING_LENGTH).describe('Short label, e.g. "Monthly cost"'),
 			value: z.string().min(1).max(LIMITS.MAX_STRING_LENGTH).describe('The value, e.g. "5 294 kr"'),
-			description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional().describe('Optional supporting note')
+			description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional().describe('Optional supporting note'),
+			action: actionSchema.optional().describe('Optional follow-up action for the user')
 		})
 	},
 	Comparison: {
@@ -44,7 +61,9 @@ export const catalogComponents = {
 				)
 				.min(1)
 				.max(LIMITS.MAX_COMPARISON_ITEMS)
-				.describe('2-4 options')
+				.describe('2-4 options'),
+			selectable: z.boolean().optional().describe('Let the user select one option'),
+			action: actionSchema.optional().describe('Optional follow-up action for the user')
 		})
 	},
 	Table: {
@@ -61,7 +80,8 @@ export const catalogComponents = {
 			rows: z
 				.array(z.array(z.string().max(LIMITS.MAX_STRING_LENGTH)).max(LIMITS.MAX_TABLE_COLUMNS))
 				.max(LIMITS.MAX_TABLE_ROWS)
-				.describe('Row values (plain text)')
+				.describe('Row values (plain text)'),
+			action: actionSchema.optional().describe('Optional follow-up action for the user')
 		})
 	}
 } as const;

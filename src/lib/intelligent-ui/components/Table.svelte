@@ -1,12 +1,19 @@
 <script lang="ts">
+	import type { UIAction } from '$lib/intelligent-ui/types';
+	import ActionButton from './ActionButton.svelte';
+
 	export let title: string | undefined = undefined;
 	export let columns: string[] = [];
 	export let rows: string[][] = [];
+	export let action: UIAction | undefined = undefined;
+	export let onAction: (a: UIAction) => void = () => {};
 </script>
 
 <div class="my-3 overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800">
 	{#if title}
-		<div class="border-b border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200">
+		<div
+			class="border-b border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200"
+		>
 			{title}
 		</div>
 	{/if}
@@ -34,4 +41,9 @@
 			</tbody>
 		</table>
 	</div>
+	{#if action}
+		<div class="px-4 pb-3">
+			<ActionButton {action} {onAction} />
+		</div>
+	{/if}
 </div>

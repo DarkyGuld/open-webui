@@ -1,7 +1,12 @@
 <script lang="ts">
+	import type { UIAction } from '$lib/intelligent-ui/types';
+	import ActionButton from './ActionButton.svelte';
+
 	export let label: string;
 	export let value: string;
 	export let description: string | undefined = undefined;
+	export let action: UIAction | undefined = undefined;
+	export let onAction: (a: UIAction) => void = () => {};
 </script>
 
 <div
@@ -16,4 +21,5 @@
 	{#if description}
 		<div class="mt-1 text-xs break-words text-gray-400 dark:text-gray-500">{description}</div>
 	{/if}
+	<ActionButton {action} {onAction} />
 </div>

@@ -20,8 +20,8 @@ describe('intelligent-ui catalog — single source of truth', () => {
 
 	it('generated server prompt is in sync with the catalog', () => {
 		const prompt = readFileSync(promptFile, 'utf8');
-		expect(prompt).toContain('catalog_version: 1');
-		expect(prompt).toContain('CATALOG_VERSION = 1');
+		expect(prompt).toContain('catalog_version: 2');
+		expect(prompt).toContain('CATALOG_VERSION = 2');
 		// every catalog component must appear in the generated prompt
 		for (const name of catalogComponentNames) {
 			expect(prompt).toContain(name);

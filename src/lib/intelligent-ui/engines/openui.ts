@@ -45,7 +45,8 @@ function mapRoot(root: { typeName: string; props: Record<string, any> }): UINode
 				type: 'metric',
 				label: String(p.label),
 				value: String(p.value),
-				...(p.description != null ? { description: String(p.description) } : {})
+				...(p.description != null ? { description: String(p.description) } : {}),
+				...(p.action != null ? { action: p.action } : {})
 			};
 		case 'Comparison':
 			return {
@@ -54,14 +55,17 @@ function mapRoot(root: { typeName: string; props: Record<string, any> }): UINode
 				items: (p.items ?? []).map((i: any) => ({
 					name: String(i.name),
 					attributes: (i.attributes ?? []).map(String)
-				}))
+				})),
+				...(p.selectable != null ? { selectable: Boolean(p.selectable) } : {}),
+				...(p.action != null ? { action: p.action } : {})
 			};
 		case 'Table':
 			return {
 				type: 'table',
 				...(p.title != null ? { title: String(p.title) } : {}),
 				columns: (p.columns ?? []).map(String),
-				rows: (p.rows ?? []).map((r: any[]) => r.map(String))
+				rows: (p.rows ?? []).map((r: any[]) => r.map(String)),
+				...(p.action != null ? { action: p.action } : {})
 			};
 		default:
 			throw new Error(`unknown component: ${root.typeName}`);

@@ -380,6 +380,12 @@ export function buildOutputDisplayItems(output: OutputItem[] = []): OutputDispla
 			return;
 		}
 
+		// Intelligent UI structured items are durable metadata; the visual is
+		// rendered from the message content via IntelligentUIBlock (colonFence).
+		if ((item as any).type === 'intelligent_ui') {
+			return;
+		}
+
 		if (item.type === 'function_call_output') {
 			const inlineFile = getInlineFileFromToolOutput(toolCallByCallId[item.call_id ?? ''], item);
 			if (inlineFile) {

@@ -1,6 +1,6 @@
-import { uiNodeSchema } from './schema';
-import { LIMITS } from './limits';
-import type { UINode } from './types';
+import { outputItemSchema, uiNodeSchema } from './schema';
+import { LIMITS, OUTPUT_SCHEMA_VERSION, SUPPORTED_CATALOG_VERSIONS } from './limits';
+import type { IntelligentUIOutputItem, UINode } from './types';
 
 export type ValidationResult = { ok: true; node: UINode } | { ok: false; reason: string };
 
@@ -27,4 +27,29 @@ export function validateNode(input: unknown): ValidationResult {
 		return { ok: false, reason: reason || 'schema validation failed' };
 	}
 	return { ok: true, node: parsed.data as UINode };
+}
+
+export function isSupportedCatalogVersion(version: number): boolean {
+	return (SUPPORTED_CATALOG_VERSIONS as readonly number[]).includes(version);
+}
+
+export type OutputItemValidation =
+	| { ok: true; item: IntelligentUIOutputItem }
+	| { ok: false; reason: string };
+
+/**
+ * Validate a persisted structured output item. Rejects unknown output-schema
+ * versions and unsupported catalog versions (never silently interpret them).
+ */
+export function validateOutputItem(input: unknown): OutputItemValidation {
+	const parsed = outputItemSchema.safeParse(input);
+	if (!parsed.success) return { ok: false, reason: 'invalid output item' };
+	const item = parsed.data as IntelligentUIOutputItem;
+	if (item.output_schema_version !== OUTPUT_SCHEMA_VERSION) {
+		return { ok: false, reason: `unsupported output schema version ${item.output_schema_version}` };
+	}
+	if (!isSupportedCatalogVersion(item.catalog_version)) {
+		return { ok: false, reason: `unsupported catalog version ${item.catalog_version}` };
+	}
+	return { ok: true, item };
 }

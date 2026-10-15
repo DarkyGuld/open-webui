@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CATALOG_VERSION, SUPPORTED_VERSION } from './limits';
+import { CATALOG_VERSION, LIMITS, SUPPORTED_VERSION } from './limits';
 import { catalogComponents } from './catalog';
 
 /**
@@ -29,3 +29,16 @@ export const envelopeSchema = z
 	.passthrough();
 
 export const SUPPORTED = { version: SUPPORTED_VERSION, catalogVersion: CATALOG_VERSION } as const;
+
+/** Durable structured output item (message.output[]). */
+export const outputItemSchema = z
+	.object({
+		type: z.literal('intelligent_ui'),
+		output_schema_version: z.number().int(),
+		catalog_version: z.number().int(),
+		id: z.string().min(1).max(128),
+		format: z.enum(['openui-lang', 'json']),
+		content: z.string().max(LIMITS.MAX_PAYLOAD_BYTES),
+		state: z.record(z.string(), z.unknown()).optional()
+	})
+	.strict();

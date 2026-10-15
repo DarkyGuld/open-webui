@@ -1,0 +1,724 @@
+{
+  "summary": {
+    "model": "cat-jam-free",
+    "total": 50,
+    "errors": 0,
+    "channelAccuracy": 78,
+    "componentAccuracy": 78,
+    "invalidRate": 0,
+    "fallbackRate": 0,
+    "avgLatencyMs": 2235,
+    "totalTokens": 153673,
+    "avgTokens": 3073
+  },
+  "results": [
+    {
+      "prompt": "Explain what DNS is in two sentences.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1394,
+      "tokens": 2797
+    },
+    {
+      "prompt": "Who was Nikola Tesla?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2084,
+      "tokens": 2967
+    },
+    {
+      "prompt": "What is photosynthesis?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1945,
+      "tokens": 2865
+    },
+    {
+      "prompt": "Write a short poem about the sea.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1228,
+      "tokens": 2734
+    },
+    {
+      "prompt": "Summarize the causes of World War I.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1757,
+      "tokens": 3098
+    },
+    {
+      "prompt": "How do I stay motivated when learning to code?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2270,
+      "tokens": 3086
+    },
+    {
+      "prompt": "Explain the difference between TCP and UDP.",
+      "expected": "markdown",
+      "got": "native",
+      "component": "comparison",
+      "components": [
+        "comparison"
+      ],
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 4173,
+      "tokens": 3355
+    },
+    {
+      "prompt": "Give me tips to sleep better.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1621,
+      "tokens": 2997
+    },
+    {
+      "prompt": "What is a REST API?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2050,
+      "tokens": 3209
+    },
+    {
+      "prompt": "Explain recursion with a simple example.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1449,
+      "tokens": 3010
+    },
+    {
+      "prompt": "What should I cook for dinner tonight?",
+      "expected": "markdown",
+      "got": "native",
+      "component": "comparison",
+      "components": [
+        "comparison"
+      ],
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 2080,
+      "tokens": 3019
+    },
+    {
+      "prompt": "Tell me a fun fact about the Roman Empire.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1686,
+      "tokens": 2763
+    },
+    {
+      "prompt": "How does a car engine work?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2354,
+      "tokens": 3142
+    },
+    {
+      "prompt": "Explain the water cycle.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1742,
+      "tokens": 3013
+    },
+    {
+      "prompt": "What are the health benefits of walking?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2305,
+      "tokens": 3246
+    },
+    {
+      "prompt": "Compare these three VPS plans: Basic, Pro, Team.",
+      "expected": "native",
+      "expectedComponents": [
+        "comparison"
+      ],
+      "got": "native",
+      "component": "comparison",
+      "components": [
+        "comparison"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 4450,
+      "tokens": 2842
+    },
+    {
+      "prompt": "Compare Python vs JavaScript for backend development.",
+      "expected": "native",
+      "expectedComponents": [
+        "comparison"
+      ],
+      "got": "native",
+      "component": "comparison",
+      "components": [
+        "comparison"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 3222,
+      "tokens": 3339
+    },
+    {
+      "prompt": "Compare iPhone and Android for a developer.",
+      "expected": "native",
+      "expectedComponents": [
+        "comparison"
+      ],
+      "got": "native",
+      "component": "comparison",
+      "components": [
+        "comparison"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 3831,
+      "tokens": 3262
+    },
+    {
+      "prompt": "Show a comparison of the three cloud providers.",
+      "expected": "native",
+      "expectedComponents": [
+        "comparison"
+      ],
+      "got": "native",
+      "component": "comparison",
+      "components": [
+        "comparison"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2768,
+      "tokens": 3260
+    },
+    {
+      "prompt": "Which is better, PostgreSQL or MySQL? Compare them.",
+      "expected": "native",
+      "expectedComponents": [
+        "comparison"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "comparison",
+        "section",
+        "table"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 4817,
+      "tokens": 3796
+    },
+    {
+      "prompt": "What is the monthly cost of a 250000 kr loan at 0.4% interest over 60 months?",
+      "expected": "native",
+      "expectedComponents": [
+        "metric"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 4800,
+      "tokens": 4346
+    },
+    {
+      "prompt": "How many employees do we have in total? Just the number.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 2375,
+      "tokens": 2774
+    },
+    {
+      "prompt": "Give me the headline total revenue figure.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 1097,
+      "tokens": 2742
+    },
+    {
+      "prompt": "What is 15% of 2400?",
+      "expected": "native",
+      "expectedComponents": [
+        "metric"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 812,
+      "tokens": 2713
+    },
+    {
+      "prompt": "Show the monthly cost as a single number.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 1040,
+      "tokens": 2668
+    },
+    {
+      "prompt": "Show a table of monthly costs: compute, storage, backup.",
+      "expected": "native",
+      "expectedComponents": [
+        "table"
+      ],
+      "got": "native",
+      "component": "table",
+      "components": [
+        "table"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1129,
+      "tokens": 2789
+    },
+    {
+      "prompt": "List the top 5 programming languages with their market share.",
+      "expected": "native",
+      "expectedComponents": [
+        "table"
+      ],
+      "got": "native",
+      "component": "table",
+      "components": [
+        "table"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2398,
+      "tokens": 3277
+    },
+    {
+      "prompt": "Show this data as a table: 3 products with price and stock.",
+      "expected": "native",
+      "expectedComponents": [
+        "table"
+      ],
+      "got": "native",
+      "component": "table",
+      "components": [
+        "table"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1113,
+      "tokens": 2788
+    },
+    {
+      "prompt": "Give me a table of the planets and their distances from the sun.",
+      "expected": "native",
+      "expectedComponents": [
+        "table"
+      ],
+      "got": "native",
+      "component": "table",
+      "components": [
+        "table"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2177,
+      "tokens": 3255
+    },
+    {
+      "prompt": "Tabulate the quarterly sales numbers.",
+      "expected": "native",
+      "expectedComponents": [
+        "table"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 1166,
+      "tokens": 2801
+    },
+    {
+      "prompt": "Build a small loan calculator where I can drag a slider for months.",
+      "expected": "native",
+      "expectedComponents": [
+        "slider",
+        "metric"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "card",
+        "slider",
+        "slider",
+        "slider",
+        "card",
+        "metric",
+        "metric",
+        "metric"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 7481,
+      "tokens": 5075
+    },
+    {
+      "prompt": "Make a pricing calculator with a seats slider.",
+      "expected": "native",
+      "expectedComponents": [
+        "slider",
+        "metric"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "slider",
+        "metric",
+        "metric"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2223,
+      "tokens": 2918
+    },
+    {
+      "prompt": "Create an interactive form to sign up with name and email.",
+      "expected": "native",
+      "expectedComponents": [
+        "input"
+      ],
+      "got": "native",
+      "component": "card",
+      "components": [
+        "card",
+        "input",
+        "input",
+        "checkbox"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2065,
+      "tokens": 2976
+    },
+    {
+      "prompt": "Give me a dashboard with the key numbers and a cost breakdown.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric",
+        "table",
+        "stack",
+        "grid",
+        "card",
+        "section"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "grid",
+        "card",
+        "metric",
+        "card",
+        "metric",
+        "card",
+        "metric",
+        "section",
+        "table"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1635,
+      "tokens": 3162
+    },
+    {
+      "prompt": "Show an overview of the workspace with cost and seats.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric",
+        "stack",
+        "grid",
+        "card"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 1284,
+      "tokens": 2839
+    },
+    {
+      "prompt": "Lay out a summary with several metric cards side by side.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric",
+        "grid",
+        "card",
+        "row"
+      ],
+      "got": "native",
+      "component": "grid",
+      "components": [
+        "grid",
+        "card",
+        "metric",
+        "card",
+        "metric",
+        "card",
+        "metric",
+        "card",
+        "metric"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2375,
+      "tokens": 3189
+    },
+    {
+      "prompt": "Show the seats as a slider and compute the price.",
+      "expected": "native",
+      "expectedComponents": [
+        "slider",
+        "metric"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "slider",
+        "metric"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2590,
+      "tokens": 2780
+    },
+    {
+      "prompt": "Present a small project status with a badge and metrics.",
+      "expected": "native",
+      "expectedComponents": [
+        "badge",
+        "metric"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "badge",
+        "grid",
+        "metric",
+        "metric",
+        "metric"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1532,
+      "tokens": 3024
+    },
+    {
+      "prompt": "Show the plan tiers as cards with their prices.",
+      "expected": "native",
+      "expectedComponents": [
+        "card",
+        "metric",
+        "grid",
+        "comparison"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "grid",
+        "card",
+        "metric",
+        "divider",
+        "badge",
+        "card",
+        "metric",
+        "divider",
+        "badge",
+        "card",
+        "metric",
+        "divider",
+        "badge"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1861,
+      "tokens": 3006
+    },
+    {
+      "prompt": "Make a settings form with a toggle and a slider.",
+      "expected": "native",
+      "expectedComponents": [
+        "switch",
+        "slider",
+        "checkbox",
+        "input"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "section",
+        "switch",
+        "slider",
+        "metric",
+        "switch",
+        "slider",
+        "metric"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1705,
+      "tokens": 2976
+    },
+    {
+      "prompt": "What is the current stock price of Apple? Just the number.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 1530,
+      "tokens": 2818
+    },
+    {
+      "prompt": "Summarize these three options for me to choose from.",
+      "expected": "native",
+      "expectedComponents": [
+        "comparison"
+      ],
+      "got": "markdown",
+      "channelOk": false,
+      "componentOk": false,
+      "latency": 1478,
+      "tokens": 2737
+    },
+    {
+      "prompt": "Show a data table of user signups per month.",
+      "expected": "native",
+      "expectedComponents": [
+        "table"
+      ],
+      "got": "native",
+      "component": "stack",
+      "components": [
+        "stack",
+        "table"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1346,
+      "tokens": 2991
+    },
+    {
+      "prompt": "Give me a compact metric for the uptime percentage.",
+      "expected": "native",
+      "expectedComponents": [
+        "metric"
+      ],
+      "got": "native",
+      "component": "metric",
+      "components": [
+        "metric"
+      ],
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2107,
+      "tokens": 3104
+    },
+    {
+      "prompt": "Explain how HTTPS works.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2498,
+      "tokens": 3210
+    },
+    {
+      "prompt": "What is the capital of Australia?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 818,
+      "tokens": 2646
+    },
+    {
+      "prompt": "Describe the plot of Hamlet briefly.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2186,
+      "tokens": 2915
+    },
+    {
+      "prompt": "How do I change a car tyre?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 3404,
+      "tokens": 3297
+    },
+    {
+      "prompt": "What are good habits for remote work?",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 2791,
+      "tokens": 3150
+    },
+    {
+      "prompt": "Explain the difference between a list and a tuple in Python.",
+      "expected": "markdown",
+      "got": "markdown",
+      "channelOk": true,
+      "componentOk": true,
+      "latency": 1507,
+      "tokens": 2907
+    }
+  ]
+}

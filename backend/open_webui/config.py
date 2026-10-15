@@ -2226,6 +2226,10 @@ ENABLE_CONTEXT_COMPACTION = os.getenv('ENABLE_CONTEXT_COMPACTION', 'False').lowe
 # admin explicitly turns it on (then per-user / per-chat Auto|On|Off applies).
 ENABLE_INTELLIGENT_UI = os.getenv('ENABLE_INTELLIGENT_UI', 'False').lower() == 'true'
 
+# Opt-in escape hatch: allow the model to emit fully custom HTML/CSS/JS widgets
+# (rendered in a sandboxed iframe). Default OFF.
+ENABLE_INTELLIGENT_UI_HTML = os.getenv('ENABLE_INTELLIGENT_UI_HTML', 'False').lower() == 'true'
+
 ENABLE_TOOL_PERMISSIONS = os.getenv('ENABLE_TOOL_PERMISSIONS', 'False').lower() == 'true'
 
 CONTEXT_COMPACTION_TOKEN_THRESHOLD = int(os.getenv('CONTEXT_COMPACTION_TOKEN_THRESHOLD', '80000'))
@@ -3211,6 +3215,7 @@ DEFAULT_CONFIG = {
     'task.model.external': TASK_MODEL_EXTERNAL,
     'task.model.params': TASK_MODEL_PARAMS,
     'intelligent_ui.enable': ENABLE_INTELLIGENT_UI,
+    'intelligent_ui.html.enable': ENABLE_INTELLIGENT_UI_HTML,
     'chat.context_compaction.model': CONTEXT_COMPACTION_MODEL,
     'chat.context_compaction.enable': ENABLE_CONTEXT_COMPACTION,
     'chat.context_compaction.token_threshold': CONTEXT_COMPACTION_TOKEN_THRESHOLD,

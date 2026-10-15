@@ -385,6 +385,7 @@ type Config = {
 		enable_context_compaction?: boolean;
 		enable_tool_permissions?: boolean;
 		enable_intelligent_ui?: boolean;
+		enable_intelligent_ui_html?: boolean;
 		enable_community_sharing: boolean;
 		enable_memories: boolean;
 		enable_plugins?: boolean;

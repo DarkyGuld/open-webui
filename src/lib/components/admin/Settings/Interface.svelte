@@ -45,6 +45,7 @@
 
 	let chatConfig = {
 		ENABLE_INTELLIGENT_UI: false,
+		ENABLE_INTELLIGENT_UI_HTML: false,
 		CONTEXT_COMPACTION_MODEL: '',
 		ENABLE_CONTEXT_COMPACTION: false,
 		CONTEXT_COMPACTION_TOKEN_THRESHOLD: 80000,
@@ -99,7 +100,8 @@
 							...current.features,
 							enable_context_compaction: chatConfig.ENABLE_CONTEXT_COMPACTION,
 							enable_tool_permissions: chatConfig.ENABLE_TOOL_PERMISSIONS,
-							enable_intelligent_ui: chatConfig.ENABLE_INTELLIGENT_UI
+							enable_intelligent_ui: chatConfig.ENABLE_INTELLIGENT_UI,
+							enable_intelligent_ui_html: chatConfig.ENABLE_INTELLIGENT_UI_HTML
 						}
 					}
 				: current
@@ -306,6 +308,19 @@
 					let:labelId
 				>
 					<Switch bind:state={chatConfig.ENABLE_INTELLIGENT_UI} ariaLabelledbyId={labelId} />
+				</AdminSettingRow>
+
+				<AdminSettingRow
+					label={$i18n.t('Rich widgets (custom HTML)')}
+					description={$i18n.t(
+						'Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the "no arbitrary HTML" rule — enable only if you trust the models. Off = native components only.'
+					)}
+					let:labelId
+				>
+					<Switch
+						bind:state={chatConfig.ENABLE_INTELLIGENT_UI_HTML}
+						ariaLabelledbyId={labelId}
+					/>
 				</AdminSettingRow>
 
 				{#if chatConfig.ENABLE_CONTEXT_COMPACTION}

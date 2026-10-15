@@ -28,6 +28,7 @@
 	import Clipboard from '$lib/components/icons/Clipboard.svelte';
 	import ColonFenceBlock from './ColonFenceBlock.svelte';
 	import IntelligentUIBlock from '$lib/intelligent-ui/components/IntelligentUIBlock.svelte';
+	import RichWidget from '$lib/intelligent-ui/components/RichWidget.svelte';
 
 	export let id: string;
 	export let chatId = '';
@@ -636,9 +637,13 @@
 			{done}
 			partial={token.partial ?? false}
 		/>
+	{:else if token.type === 'intelligentUiHtml'}
+		<RichWidget html={token.text ?? ''} />
 	{:else if token.type === 'colonFence'}
 		{#if token.fenceType === 'intelligent-ui'}
 			<IntelligentUIBlock id={`${id}-${tokenIdx}`} {token} {done} />
+		{:else if token.fenceType === 'intelligent-ui-html'}
+			<RichWidget html={token.text ?? ''} />
 		{:else}
 			<ColonFenceBlock
 				id={`${id}-${tokenIdx}`}

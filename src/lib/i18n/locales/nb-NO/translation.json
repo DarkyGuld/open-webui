@@ -4001,5 +4001,8 @@
 	"Intelligent UI unavailable": "Intelligent UI er ikke tilgjengelig",
 	"Allow the model to render richer, interactive answers (tables, comparisons, metrics) when helpful. Requires your administrator to enable Intelligent UI.": "La modellen vise rikere, interaktive svar (tabeller, sammenligninger, nøkkeltall) når det er nyttig. Krever at administratoren har slått på Intelligent UI.",
 	"Allow the model to choose richer, interactive answer formats (tables, comparisons, metrics) rendered with native Open WebUI components. Off = stock Open WebUI. Per-user and per-chat Auto/On/Off apply only when this is on.": "La modellen velge rikere, interaktive svarformater (tabeller, sammenligninger, nøkkeltall) rendret med native Open WebUI-komponenter. Av = vanlig Open WebUI. Per-bruker og per-chat Auto/På/Av gjelder bare når denne er på.",
-	"Auto lets the model decide; On encourages richer UI; Off is plain Markdown.": "Auto lar modellen bestemme; På oppfordrer til rikere UI; Av er vanlig Markdown."
+	"Auto lets the model decide; On encourages richer UI; Off is plain Markdown.": "Auto lar modellen bestemme; På oppfordrer til rikere UI; Av er vanlig Markdown.",
+	"Rich widget": "Rik widget",
+	"Rich widgets (custom HTML)": "Rike widgets (egendefinert HTML)",
+	"Allow the model to emit fully custom HTML/CSS/JS widgets, rendered in a sandboxed iframe (no same-origin, no network). This relaxes the \"no arbitrary HTML\" rule — enable only if you trust the models. Off = native components only.": "La modellen sende helt egendefinerte HTML/CSS/JS-widgets, rendret i en sandkasse-iframe (ingen same-origin, ingen nettverk). Dette lemper på «ingen vilkårlig HTML»-regelen — slå på bare hvis du stoler på modellene. Av = kun native komponenter."
 }

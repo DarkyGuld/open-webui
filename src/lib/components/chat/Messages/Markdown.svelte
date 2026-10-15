@@ -7,6 +7,7 @@
 	import { mentionExtension } from '$lib/utils/marked/mention-extension';
 	import colonFenceExtension from '$lib/utils/marked/colon-fence-extension';
 	import intelligentUiExtension from '$lib/utils/marked/intelligent-ui-extension';
+	import intelligentUiHtmlExtension from '$lib/utils/marked/intelligent-ui-html-extension';
 	import footnoteExtension from '$lib/utils/marked/footnote-extension';
 	import citationExtension from '$lib/utils/marked/citation-extension';
 
@@ -18,6 +19,7 @@
 	marked.use(markedExtension(options));
 	marked.use(citationExtension(options));
 	marked.use(footnoteExtension(options));
+	marked.use(intelligentUiHtmlExtension(options)); // must precede intelligentUi (prefix match)
 	marked.use(intelligentUiExtension(options)); // must precede colonFence
 	marked.use(colonFenceExtension(options));
 	marked.use(disableSingleTilde);

@@ -106,6 +106,16 @@ introduced here.
 - Catalog bumped to **v2** (optional interaction fields; v1 still valid); prompt regenerated.
 - Core edits: `structuredOutput.ts` (+5) + 4 i18n/label files. All else is new/our files.
 
+### Milestone 5 (recursive native layout composition) addendum
+
+- `vitest run` → **49 passed** (adds layout tests; catalog/registry updated to 10 components).
+- `pytest tests/intelligent_ui` → **36 passed** (structured output now catalog_version 3).
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 3 screenshots under `audit/local/intelligent-ui/milestone-5/`; recursive layout
+  (Row→Badges, Grid→Cards→Metrics, Divider, Section→Table) renders natively; 0 errors.
+- catalog_version **3**; limits nodes 120 / depth 6 / children 12.
+- **No core files touched.** All changes are our own files + generated prompt + tests.
+
 ## Reproduce
 
 ```bash

@@ -133,3 +133,13 @@ All other M4 changes are our own files (`src/lib/intelligent-ui/*`,
 Chat.svelte, ResponseMessage.svelte, socket, streaming, provider APIs, or the message DB model.
 
 **Cumulative M1–M4:** ~11 core files, ~150 lines.
+
+## Milestone 5 — actual upstream/core changes
+
+**None.** Recursive layout composition is entirely our own files:
+`src/lib/intelligent-ui/{action-schema,catalog,schema,validation,limits,types,registry,engines/openui}.ts`,
+`components/{NodeRenderer,Badge,Divider,IntelligentUIBlock}.svelte`,
+`scripts/intelligent-ui/generate-prompt.ts`, `catalog_prompt.py`, tests/fixtures, audit script.
+No changes to Open WebUI core, middleware, streaming, provider APIs, or the message DB model.
+
+**Cumulative M1–M5:** still ~11 core files, ~150 lines.

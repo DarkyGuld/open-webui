@@ -23,6 +23,7 @@ A customized Open WebUI product aiming for:
 | 2 — native rendering | ✅ complete | `:::intelligent-ui` token, adapter, OpenUI engine, metric/comparison/table, fallback |
 | 3 — generation/orchestration | ✅ complete | catalog prompt + Filter injection (Auto/On/Off); real model output validated |
 | 4 — interaction/state/output/i18n | ✅ complete | safe actions + confirmation, durable local state, `output[]` artifacts, i18n |
+| 5 — layout composition | ✅ complete | recursive native layouts (stack/row/grid/section/card/divider/badge); 10 components |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:
@@ -165,13 +166,19 @@ Details: `setup/mcp/MCP_INVENTORY.md`. Restart OpenCode after editing `opencode.
 Never commit values. `.env`, `backend/data/`, `.local/`, browser profiles, and `research/` are
 gitignored.
 
-## Next recommended milestone (Milestone 5)
+## Next recommended milestone (Milestone 6)
 
-1. **Catalog expansion:** chart, form, tabs, list, image/gallery, progress, timeline behind the
-   same adapter + action/state framework.
-2. **Provider capability matrix:** per-model generation/render policy + auto-detection.
-3. **Server-durable state / prefer output[] for render.**
-4. **i18n** for remaining locales.
-5. **Visual regression baselines** + package the Filter for one-command install.
+**Logic/state/expression layer from `@openuidev/lang-core`** (no new dependencies):
+- Expose OpenUI v0.5 `$state`, two-way binding, ternary (conditionals), `@Each` (loops), and action
+  steps (`@Set/@Reset/@Run`) through our adapter.
+- Wire `createStore` + `evaluate`/`evaluateElementProps` so props can be expressions and children can
+  be generated.
+- **Requirement:** do NOT implement a parallel state/expression/action engine if lang-core already
+  provides the primitive — wrap and expose the existing runtime.
+
+Then: M7 incremental streaming (`createStreamingParser`), M8 server normalization + data/tool
+bindings + fallbackMarkdown, M9 optional AppBlock sandbox, M10 planner/router only if needed.
+Remaining M5 component families (tabs/forms/charts/media) can be folded in alongside.
 
 Do **not** re-research or redesign the existing architecture unless tests/source show it is broken.
+See `docs/intelligent-ui/CHATGPT_PARITY_PLAN.md`.

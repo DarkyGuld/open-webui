@@ -64,6 +64,15 @@ in Milestone 2.
 - **Versioning:** transport `version`, `output_schema_version`, and `catalog_version` (now 2;
   v1 still valid) enforced independently.
 
+## Implemented layout layer (Milestone 5)
+
+- **Recursive tree**: single root → nested composition (`Stack/Row/Grid/Section/Card` contain
+  children; leaves `Metric/Comparison/Table/Badge/Divider`).
+- **Catalog = OpenUI library** (single source); prompt regenerated (catalog_version 3).
+- **Recursive renderer** `NodeRenderer.svelte` (`svelte:self`); native styling.
+- Limits: nodes 120, depth 6, children 12.
+- Zero new dependencies; no core changes.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

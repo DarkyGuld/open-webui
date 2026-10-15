@@ -176,6 +176,17 @@ introduced here.
 - **No new dependencies; no core files.** Phase B (Query/Mutation/tool bindings) deferred by design
   (see `QUERY_MUTATION.md`).
 
+### Milestone 9.3 (Query / Mutation / tool bindings) addendum
+
+- `vitest run` → **69 passed** (adds `query-mutation.test.ts`: allow-list, unknown-id rejection,
+  normalization, row caps, backend-error propagation, confirm-risk).
+- `pytest tests/intelligent_ui` → **46 passed**.
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 10 screenshots under `audit/local/intelligent-ui/milestone-9.3/`; query success/empty/
+  error verified, mutation confirmation → cancel (no POST) / confirm (POST) / denied (403, no crash),
+  and **reload → no replay POST**. 1 expected console error (forced 403).
+- **No new dependencies; no core files.** See `MILESTONE_9_3_REPORT.md`, `TOOL_BINDINGS_SECURITY.md`.
+
 ## Reproduce
 
 ```bash

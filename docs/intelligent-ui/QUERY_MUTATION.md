@@ -1,9 +1,14 @@
-# Intelligent UI — Query / Mutation / Tool Bindings (design)
+# Intelligent UI — Query / Mutation / Tool Bindings
 
-Status: **designed, not implemented** (deferred to the next milestone). Phase A of Milestone 9.2
-(@Set/@Reset) is complete; Phase B introduces a data/permission surface that must not be rushed and
-must reuse Open WebUI's existing tool/permission infrastructure rather than create a parallel
-privileged executor.
+Status: **implemented (Milestone 9.3).** See `MILESTONE_9_3_REPORT.md` and
+`TOOL_BINDINGS_SECURITY.md` for what shipped. Phase A of Milestone 9.2 (@Set/@Reset) is complete;
+Phase B (this file) reuses Open WebUI's existing REST endpoints with the user's token rather than
+creating a parallel privileged executor. The design below is kept as the reference; where
+implementation diverged it is noted inline.
+
+**Shipped:** query registry (`conversation.notes`, `library.files`, `knowledge.collections`),
+mutation registry (`notes.create`, confirm-risk), `Data` component, `Button` second-arg =
+registered mutation id, limits, replay protection, tests, screenshots. No core changes, no new deps.
 
 ## Principles
 

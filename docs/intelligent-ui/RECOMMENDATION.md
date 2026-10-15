@@ -110,6 +110,17 @@ in Milestone 2.
   re-evaluation). `@ToAssistant`/`@OpenUrl` supported. No model call. See `LOGIC_ACTIONS.md`.
 - Phase B (Query/Mutation/tool bindings) is designed but deferred: `QUERY_MUTATION.md`.
 
+## Implemented query / mutation bindings (Milestone 9.3)
+
+- **Query registry** (`queries.ts`): allow-listed read-only sources `conversation.notes`
+  (`GET /api/v1/notes/`), `library.files` (`GET /api/v1/files/`), `knowledge.collections`
+  (`GET /api/v1/knowledge/`); results normalized to `{columns, rows}` with limits (50 rows, 64 KB,
+  10 s timeout, 3 concurrent, 12 columns) and idle/loading/success/error states via `Data`.
+- **Mutation registry** (`mutations.ts`): allow-listed `notes.create` (`POST /api/v1/notes/create`),
+  `risk: 'confirm'` → native `ConfirmDialog`; runs only on explicit click (replay-proof).
+- Reuses existing Open WebUI REST endpoints with the user's token — no parallel privileged executor,
+  no core changes, no new dependencies. See `MILESTONE_9_3_REPORT.md`, `TOOL_BINDINGS_SECURITY.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

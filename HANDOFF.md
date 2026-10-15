@@ -29,7 +29,8 @@ A customized Open WebUI product aiming for:
 | 8 — server fallback + @Each | ✅ complete | `fallbackMarkdown` in output items; `@Each` loops render (tool/Query bindings prepared) |
 | 9 — AppBlock / rich widget | ✅ complete | opt-in `:::intelligent-ui-html` in the sandboxed iframe; theme vars + bridge; flagged, default off |
 | 9.1 — rich widget control parity | ✅ complete | global + user + chat Auto/On/Off via the shared resolver; historical render preserved |
-| 9.2 — local declarative actions | ✅ complete (Phase A) | `@Set`/`@Reset` via lang-core + `Button`; local state, no model call. Phase B (Query/Mutation) deferred — design in `QUERY_MUTATION.md` |
+| 9.2 — local declarative actions | ✅ complete (Phase A) | `@Set`/`@Reset` via lang-core + `Button`; local state, no model call |
+| 9.3 — query/mutation tool bindings | ✅ complete | allow-listed read-only query registry + confirm-risk mutation registry; `Data` component; native confirmation; replay-proof; no core changes, no new deps. See `MILESTONE_9_3_REPORT.md` |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:

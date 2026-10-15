@@ -204,3 +204,11 @@ Backend (ours): `mode.py`, `filter.py`, `catalog_prompt.py` (generated).
 Phase B (Query/Mutation) not implemented (designed in `QUERY_MUTATION.md`).
 
 **Cumulative M1–M9.2:** still ~20 core files, ~235 lines.
+
+## Milestone 9.3 — actual upstream/core changes
+
+**None.** The query/mutation registries, `Data` component, action normalization, prompt, and tests are
+entirely our own files. All reads/writes go through existing Open WebUI REST endpoints with the user's
+token (no new backend, no new dependency).
+
+**Cumulative M1–M9.3:** still ~20 core files, ~235 lines.

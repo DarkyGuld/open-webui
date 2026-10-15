@@ -162,3 +162,10 @@ middleware, streaming, or the message DB model.
 New file (ours): `src/lib/utils/marked/intelligent-ui-extension.ts`.
 
 **Cumulative M1–M7:** ~13 core files, ~160 lines.
+
+## Milestone 8 — actual upstream/core changes
+
+**None.** Server fallbackMarkdown (Filter, Python), `@Each` flattening (engine), schema/type
+updates, and tests are all our own files. No new dependencies.
+
+**Cumulative M1–M8:** still ~13 core files, ~160 lines.

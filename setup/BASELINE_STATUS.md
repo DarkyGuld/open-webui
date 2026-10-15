@@ -136,6 +136,15 @@ introduced here.
 - Core edits: `Markdown.svelte` (+2), `MarkdownTokens.svelte` (+8); new util
   `intelligent-ui-extension.ts`. Cumulative ~13 core files, ~160 lines.
 
+### Milestone 8 (server fallback + @Each) addendum
+
+- `vitest run` → **58 passed** (adds @Each expansion; versioning accepts fallback_markdown).
+- `pytest tests/intelligent_ui` → **39 passed** (adds fallbackMarkdown tests).
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 2 screenshots under `audit/local/intelligent-ui/milestone-8/`; `@Each` renders all
+  items; 0 errors.
+- **No new dependencies; no new core files.** Tool/Query bindings + `@Set`/`@Reset` prepared, not wired.
+
 ## Reproduce
 
 ```bash

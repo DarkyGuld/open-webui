@@ -121,6 +121,19 @@ in Milestone 2.
 - Reuses existing Open WebUI REST endpoints with the user's token — no parallel privileged executor,
   no core changes, no new dependencies. See `MILESTONE_9_3_REPORT.md`, `TOOL_BINDINGS_SECURITY.md`.
 
+## Implemented native composition & component breadth (Milestone 9.4)
+
+- Layout primitives compose recursively (Stack/Row/Grid/Section/Card/Divider) and now nest tabs,
+  charts and forms.
+- New native components: **Tabs** (local state, keyboard-accessible), **Chart** (chart.js — already
+  a dependency; line/bar/area/pie/donut; query-bindable), **Progress** (0–100), **Timeline**,
+  **Gallery** (reuses Open WebUI's safe `Image` primitive), **Textarea**, **Radio**, **Field**,
+  **Form** (+ validation message).
+- Query/state/action bindings validated inside the new components; no second data-binding mechanism.
+- `catalog_version` 3 → 4 (v1–v3 still render). **No new dependencies, no core changes.**
+- Map evaluated and deferred (leaflet exists but remote tiles conflict with the no-arbitrary-remote
+  rule). See `MILESTONE_9_4_REPORT.md`, `NATIVE_COMPONENT_CATALOG.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

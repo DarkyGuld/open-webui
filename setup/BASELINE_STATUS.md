@@ -187,6 +187,20 @@ introduced here.
   and **reload → no replay POST**. 1 expected console error (forced 403).
 - **No new dependencies; no core files.** See `MILESTONE_9_3_REPORT.md`, `TOOL_BINDINGS_SECURITY.md`.
 
+### Milestone 9.4 (native composition & component breadth) addendum
+
+- `vitest run` → **104 passed** (adds `components-9_4.test.ts`, 35 tests; catalog/registry/versioning
+  updated to 27 components, catalog_version 4).
+- `pytest tests/intelligent_ui` → **46 passed** (catalog_version 4).
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 13 screenshots under `audit/local/intelligent-ui/milestone-9.4/` (dashboard dark/light/
+  mobile, tabs, chart, query-backed chart, progress, timeline, gallery, form, form confirmation,
+  nested, invalid-limit fallback); **0 unexpected console errors**.
+- `svelte-check`: only pre-existing errors (5931 across 319 files, unchanged baseline); the new
+  components add no errors/warnings.
+- **No new dependencies (chart.js reused); no core files.** Map deferred. See
+  `MILESTONE_9_4_REPORT.md`, `NATIVE_COMPONENT_CATALOG.md`.
+
 ## Reproduce
 
 ```bash

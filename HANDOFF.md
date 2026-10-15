@@ -31,6 +31,7 @@ A customized Open WebUI product aiming for:
 | 9.1 — rich widget control parity | ✅ complete | global + user + chat Auto/On/Off via the shared resolver; historical render preserved |
 | 9.2 — local declarative actions | ✅ complete (Phase A) | `@Set`/`@Reset` via lang-core + `Button`; local state, no model call |
 | 9.3 — query/mutation tool bindings | ✅ complete | allow-listed read-only query registry + confirm-risk mutation registry; `Data` component; native confirmation; replay-proof; no core changes, no new deps. See `MILESTONE_9_3_REPORT.md` |
+| 9.4 — native composition & breadth | ✅ complete | Tabs, Chart (chart.js), Progress, Timeline, Gallery, Textarea, Radio, Field, Form; recursive nesting; catalog_version 4; map deferred. See `MILESTONE_9_4_REPORT.md`, `NATIVE_COMPONENT_CATALOG.md` |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:

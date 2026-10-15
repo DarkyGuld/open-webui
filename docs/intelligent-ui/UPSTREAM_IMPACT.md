@@ -212,3 +212,11 @@ entirely our own files. All reads/writes go through existing Open WebUI REST end
 token (no new backend, no new dependency).
 
 **Cumulative M1–M9.3:** still ~20 core files, ~235 lines.
+
+## Milestone 9.4 — actual upstream/core changes
+
+**None.** New components, query-binding helper, catalog/schema/types/engine/renderer updates,
+regenerated prompt, fixtures, tests and audit scripts are all our own files. Charts reuse the
+existing `chart.js`; Gallery reuses the existing `Image` primitive. No new dependency.
+
+**Cumulative M1–M9.4:** still ~20 core files, ~235 lines.

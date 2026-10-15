@@ -89,6 +89,13 @@ in Milestone 2.
   complete content creates the interactive runtime.
 - Registered before colonFence (2 core edits + 1 new util file).
 
+## Implemented AppBlock / rich widget (Milestone 9)
+
+- Opt-in `:::intelligent-ui-html{v="1"}` fence → `RichWidget` → Open WebUI's sandboxed
+  `FullHeightIframe` (`allow-scripts`, no same-origin; strict CSP `default-src 'none'` = no network).
+- Theme `--viz-*` variables + autosize (ResizeObserver) + allow-listed `GenUI.sendPrompt`/`copy` bridge.
+- Gated by the global flag `intelligent_ui.html.enable` (default OFF); safe fallback when off.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

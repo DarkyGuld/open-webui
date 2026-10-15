@@ -27,6 +27,7 @@ A customized Open WebUI product aiming for:
 | 6 — logic/state layer | ✅ complete | lang-core runtime: `$state`, expressions, ternary, two-way binding; inputs; 15 components |
 | 7 — incremental streaming | ✅ complete | open/closed fence tokenizer + `createStreamingParser`; progressive render; last-good tree |
 | 8 — server fallback + @Each | ✅ complete | `fallbackMarkdown` in output items; `@Each` loops render (tool/Query bindings prepared) |
+| 9 — AppBlock / rich widget | ✅ complete | opt-in `:::intelligent-ui-html` in the sandboxed iframe; theme vars + bridge; flagged, default off |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:
@@ -169,13 +170,14 @@ Details: `setup/mcp/MCP_INVENTORY.md`. Restart OpenCode after editing `opencode.
 Never commit values. `.env`, `backend/data/`, `.local/`, browser profiles, and `research/` are
 gitignored.
 
-## Next recommended milestone (Milestone 9)
+## Next recommended milestone (Milestone 10 / remaining work)
 
-**AppBlock escape hatch**: new `:::intelligent-ui-html{v="1"}` fence rendered via Open WebUI's
-existing sandboxed `FullHeightIframe` (allow-scripts, no same-origin), theme CSS variables injected,
-autosize via ResizeObserver, allow-listed `sendPrompt`/`openLink` bridge (postMessage, validated),
-opt-in flag, native/Markdown fallback. Then M10 planner/router only if needed. Also fold in
-`Query`/`Mutation` tool bindings and `@Set`/`@Reset`, and remaining M5 component families.
+1. **M10 planner/router** — only if one-pass routing proves insufficient (a Filter planner that picks
+   text vs UI and filters tools).
+2. **`Query`/`Mutation` tool bindings** (server data) and **`@Set`/`@Reset`** → store.
+3. **Remaining M5 component families** — tabs, charts, media (native, existing repo libs).
+4. **Per-user/per-chat flag for rich widgets**; `openLink` bridge.
+5. Visual regression baselines; i18n for remaining locales; package the Filter for one-command install.
 
 **Requirement:** do NOT implement a parallel engine if lang-core already provides the primitive —
 wrap and expose the existing runtime.

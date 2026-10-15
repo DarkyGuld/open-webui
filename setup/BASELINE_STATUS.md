@@ -145,6 +145,16 @@ introduced here.
   items; 0 errors.
 - **No new dependencies; no new core files.** Tool/Query bindings + `@Set`/`@Reset` prepared, not wired.
 
+### Milestone 9 (AppBlock / rich widget) addendum
+
+- `vitest run` → **58 passed**; `pytest tests/intelligent_ui` → **39 passed** (unchanged).
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: 4 screenshots under `audit/local/intelligent-ui/milestone-9/`; rich widget renders in
+  the sandboxed iframe, counter increments, `sendPrompt` bridge sends a message; 0 errors.
+- Core edits: `Markdown.svelte`, `MarkdownTokens.svelte`, `config.py`, `routers/chats.py`, `main.py`,
+  `stores/index.ts`, `admin/Settings/Interface.svelte`, i18n. Opt-in flag default **OFF**.
+  Cumulative ~18 core files, ~195 lines.
+
 ## Reproduce
 
 ```bash

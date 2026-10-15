@@ -169,3 +169,17 @@ New file (ours): `src/lib/utils/marked/intelligent-ui-extension.ts`.
 updates, and tests are all our own files. No new dependencies.
 
 **Cumulative M1–M8:** still ~13 core files, ~160 lines.
+
+## Milestone 9 — actual upstream/core changes
+
+| File | Purpose | ~Lines |
+|---|---|---|
+| `chat/Messages/Markdown.svelte` | register the html extension | +2 |
+| `chat/Messages/Markdown/MarkdownTokens.svelte` | dispatch `intelligentUiHtml` + colonFence variant | +9 |
+| `config.py`, `routers/chats.py`, `main.py` | opt-in flag `intelligent_ui.html.enable` + `/api/config` | +8 |
+| `stores/index.ts`, `admin/Settings/Interface.svelte` | flag type + admin row | +10 |
+| i18n en-US / nb-NO | 3 keys each | +6 |
+
+New files (ours): `intelligent-ui-html-extension.ts`, `RichWidget.svelte`.
+
+**Cumulative M1–M9:** ~18 core files, ~195 lines.

@@ -8,7 +8,7 @@
 	export let onBind: (name: string, value: unknown) => void = () => {};
 </script>
 
-<div class="my-3">
+<div>
 	<div class="mb-1 flex justify-between text-sm text-gray-600 dark:text-gray-300">
 		<span>{label}</span>
 		<span class="font-mono font-bold text-indigo-600 dark:text-indigo-400">{value}</span>

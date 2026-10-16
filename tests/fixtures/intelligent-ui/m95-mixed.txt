@@ -1,0 +1,12 @@
+User: Compare these three VPS plans and tell me which is best.
+
+Here is a quick comparison of the three plans:
+
+:::intelligent-ui{v="1"}
+root = Stack([cmp1, sec1])
+cmp1 = Comparison("", [{name: "Basic", attributes: ["1 vCPU", "1 GB RAM", "20 GB SSD"]}, {name: "Pro", attributes: ["2 vCPU", "4 GB RAM", "80 GB SSD"]}, {name: "Team", attributes: ["4 vCPU", "8 GB RAM", "160 GB SSD"]}])
+sec1 = Section("Recommendation", [m1])
+m1 = Metric("Best value", "Pro", "Best balance of price and headroom")
+:::
+
+The **Pro** plan is the best balance for most users: it doubles the CPU and RAM over Basic for a modest increase, while Team is only worth it if you expect heavy concurrent load.

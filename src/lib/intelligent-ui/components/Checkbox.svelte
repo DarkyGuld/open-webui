@@ -5,7 +5,7 @@
 	export let onBind: (name: string, value: unknown) => void = () => {};
 </script>
 
-<label class="my-2 flex cursor-pointer items-center gap-2">
+<label class="flex cursor-pointer items-center gap-2">
 	<input
 		type="checkbox"
 		checked={value}

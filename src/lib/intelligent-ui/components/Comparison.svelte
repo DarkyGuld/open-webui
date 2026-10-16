@@ -18,7 +18,7 @@
 	}
 </script>
 
-<div class="my-3 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+<div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
 	{#if title}
 		<div class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">{title}</div>
 	{/if}

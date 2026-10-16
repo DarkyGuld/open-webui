@@ -1,0 +1,11 @@
+Here is a custom interactive widget:
+
+:::intelligent-ui-html{v="1"}
+<div style="padding:16px;font:14px ui-sans-serif,system-ui,sans-serif;color:var(--viz-text)">
+  <h3 style="margin:0 0 8px">Custom widget</h3>
+  <p style="margin:0;color:var(--viz-muted)">A fully custom, sandboxed HTML/CSS/JS widget.</p>
+  <button onclick="window.GenUI.sendPrompt('Tell me more')" style="margin-top:12px;padding:6px 12px;border-radius:8px;border:1px solid var(--viz-border);background:var(--viz-panel);color:var(--viz-text);cursor:pointer">Tell me more</button>
+</div>
+:::
+
+This renders in an isolated sandboxed iframe.

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getContext, onDestroy } from 'svelte';
+	import { toast } from 'svelte-sonner';
 	import { chatId } from '$lib/stores';
 	import {
 		createIntelligentUIRuntime,
@@ -68,6 +69,8 @@
 	let confirmOpen = false;
 	let confirmMessage = '';
 	let confirmResolve: ((v: boolean) => void) | null = null;
+	// Prevents double-submit while a mutation is executing.
+	let mutationBusy = false;
 	function confirm(opts: { title?: string; message?: string }): Promise<boolean> {
 		confirmMessage = opts.message ?? '';
 		confirmOpen = true;
@@ -129,13 +132,24 @@
 					console.debug('[intelligent-ui] unknown mutation id:', step.id);
 					continue;
 				}
+				if (mutationBusy) continue; // prevent double-submit
 				const approved = await confirm({ message: mutation.description(step.args) });
 				if (!approved) continue;
+				mutationBusy = true;
 				try {
 					const token = typeof localStorage !== 'undefined' ? localStorage.token : '';
-					await mutation.run(token, step.args);
-				} catch (e) {
-					console.debug('[intelligent-ui] mutation failed:', (e as Error).message);
+					// Clear idle -> executing -> success/error feedback loop.
+					const run = mutation.run(token, step.args);
+					toast.promise(run, {
+						loading: $i18n.t('Saving…'),
+						success: mutation.title ?? $i18n.t('Done'),
+						error: $i18n.t('Could not complete the action')
+					});
+					await run;
+				} catch {
+					// failure is surfaced by the toast; keep the UI stable
+				} finally {
+					mutationBusy = false;
 				}
 			}
 		}
@@ -144,13 +158,15 @@
 </script>
 
 {#if tree}
-	<NodeRenderer
-		node={tree}
-		onAction={handleAction}
-		{selected}
-		onBind={handleBind}
-		onOpenUIAction={handleOpenUIAction}
-	/>
+	<div class="my-3">
+		<NodeRenderer
+			node={tree}
+			onAction={handleAction}
+			{selected}
+			onBind={handleBind}
+			onOpenUIAction={handleOpenUIAction}
+		/>
+	</div>
 {:else if !partial && fallbackReason !== null}
 	<IntelligentUIFallback content={token?.text ?? ''} reason={fallbackReason} />
 {/if}

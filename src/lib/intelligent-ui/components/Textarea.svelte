@@ -6,7 +6,7 @@
 	export let onBind: (name: string, value: unknown) => void = () => {};
 </script>
 
-<div class="my-3">
+<div>
 	<div class="mb-1 text-sm text-gray-600 dark:text-gray-300">{label}</div>
 	<textarea
 		{placeholder}

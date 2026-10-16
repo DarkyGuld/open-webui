@@ -8,7 +8,7 @@
 	const group = `iu-radio-${Math.random().toString(36).slice(2, 8)}`;
 </script>
 
-<fieldset class="my-3" disabled={!binding}>
+<fieldset disabled={!binding}>
 	<legend class="mb-1 text-sm text-gray-600 dark:text-gray-300">{label}</legend>
 	<div class="flex flex-col gap-1.5">
 		{#each options as opt (opt)}

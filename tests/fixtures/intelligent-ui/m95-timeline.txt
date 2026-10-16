@@ -1,0 +1,3 @@
+root = Stack([p1, tl1])
+p1 = Progress("Project completion", 72, "72%")
+tl1 = Timeline("Milestones", [{title: "Kickoff", timestamp: "Jan 2", status: "done"}, {title: "Design", timestamp: "Jan 20", status: "done"}, {title: "Build", timestamp: "Feb 10", status: "active"}, {title: "Launch", timestamp: "Mar 1", status: "pending"}])

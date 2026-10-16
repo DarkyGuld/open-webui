@@ -1,0 +1,11 @@
+$title = ""
+$plan = "Pro"
+$notes = ""
+root = Form("New note", [f1, f2, f3, b1])
+f1 = Field("Basics", [i1], "A short, clear title")
+i1 = Input("Title", $title, "e.g. Weekly plan")
+f2 = Field("Plan", [r1], "Choose one")
+r1 = Radio("Billing plan", $plan, ["Basic", "Pro", "Team"])
+f3 = Field("Notes", [t1])
+t1 = Textarea("Details", $notes, "Optional context")
+b1 = Button("Save note", "notes.create", {title: "Plan", content: "Ship it."})

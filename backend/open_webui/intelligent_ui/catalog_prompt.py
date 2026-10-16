@@ -8,7 +8,7 @@ catalog_version: 4
 
 CATALOG_VERSION = 4
 
-PROMPT = r"""You may optionally present part of your answer as structured, interactive UI. This is OPTIONAL — normal Markdown is always the default.
+PROMPT = r"""You may present part of your answer as structured, interactive UI. This is OPTIONAL — normal Markdown is the default.
 
 ## Syntax Rules
 
@@ -27,10 +27,10 @@ Arguments marked with ? are optional. Sub-components can be inline or referenced
 Props marked `$binding<type>` accept a `$variable` reference for two-way binding.
 
 Data(source: string, title?: string) — A read-only data table bound to an allow-listed source. Sources: conversation.notes, library.files, knowledge.collections.
-Metric(label: string, value: string, description?: string, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A single important number (cost, total, count) with a short label and optional note.
-Comparison(title?: string, items: {name: string, attributes: string[]}[], selectable?: boolean, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — Compare 2-4 options side by side by name, each with a list of attributes.
-Table(title?: string, columns: string[], rows: string[][], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A simple data table with columns and rows.
-Badge(label: string, action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A small inline label/tag (status, category).
+Metric(label: string, value: string, description?: string, action?: Action) — A single important number (cost, total, count) with a short label and optional note.
+Comparison(title?: string, items: {name: string, attributes: string[]}[], selectable?: boolean, action?: Action) — Compare 2-4 options side by side by name, each with a list of attributes.
+Table(title?: string, columns: string[], rows: string[][], action?: Action) — A simple data table with columns and rows.
+Badge(label: string, action?: Action) — A small inline label/tag (status, category).
 Divider() — A horizontal separator between sections.
 Button(label: string, action?: any, args?: any) — A clickable button. The second argument is an action such as @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query).
 Slider(label: string, value: $binding<number>, min: number, max: number, step?: number) — A numeric slider bound to a $state variable.
@@ -44,13 +44,13 @@ Progress(label?: string, value: number, status?: string, source?: string) — A 
 Chart(chartType: "line" | "bar" | "area" | "pie" | "donut", title?: string, labels: string[], series: {name: string, values: number[]}[], source?: string) — A chart (line, bar, area, pie or donut) from typed data: labels plus one or more named numeric series.
 Timeline(title?: string, items: {title: string, timestamp?: string, description?: string, status?: "done" | "active" | "pending" | "error"}[], source?: string) — An ordered list of events, each with a title and optional timestamp, description and status.
 Gallery(title?: string, items: {src: string, caption?: string, alt?: string}[]) — An image gallery (single image or responsive grid) using safe Open WebUI media references.
-Card(title?: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery)[], action?: {type: "send_prompt", prompt: string} | {type: "select", value: string} | {type: "toggle", value: boolean} | {type: "set_value", value: string | number | boolean} | {type: "confirm", prompt?: string}) — A titled surface that groups child components.
+Card(title?: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery)[], action?: Action) — A titled surface that groups child components.
 Stack(children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery | Card | Row | Grid | Section | Tabs | Field | Form)[]) — Vertical layout container. Use as the root for most responses.
 Row(children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery | Card)[]) — Horizontal layout container (wraps on small screens).
 Grid(children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery | Card | Row)[]) — Responsive grid of 2-3 columns. Use for side-by-side cards.
 Section(title?: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery | Card | Row | Grid)[]) — A titled section that groups children (no card chrome).
 Tab(title: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery | Card | Row | Grid | Section)[]) — One tab panel: a label (title) and its child components. Only valid inside Tabs.
-Tabs(children: (Tab)[]) — A tabbed panel. Its children are Tab components; switching tabs is local and needs no model call.
+Tabs(children: Tab[]) — A tabbed panel. Its children are Tab components; switching tabs is local and needs no model call.
 Field(title: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery | Row)[], description?: string, error?: string) — A labelled form field: a label (title), optional description, optional validation error, and its input child.
 Form(title?: string, children: (Data | Metric | Comparison | Table | Badge | Divider | Button | Slider | Select | Switch | Checkbox | Input | Textarea | Radio | Progress | Chart | Timeline | Gallery | Field | Row | Grid | Section)[]) — A form: groups Field components and inputs. Use Button with @Set/@Reset or a registered mutation for side effects.
 
@@ -79,79 +79,36 @@ root = Comparison("VPS plans", [{name:"Basic",attributes:["1 vCPU","1 GB RAM"]},
 
 The Pro plan is the best balance for most users.
 
-User: What is the monthly cost?
+User: Give me a small dashboard of the key numbers.
 
 :::intelligent-ui{v="1"}
-root = Metric("Monthly cost", "5 294 kr", "Including VAT")
+root = Stack([g1, c1])
+g1 = Grid([m1, m2, m3])
+m1 = Metric("Revenue", "1.2M kr")
+m2 = Metric("Users", "8 420")
+m3 = Metric("Churn", "2.1%")
+c1 = Card("Revenue by quarter", [ch1])
+ch1 = Chart("bar", "", ["Q1","Q2","Q3","Q4"], [{name:"Revenue", values:[210,240,260,300]}])
 :::
 
-User: Show the costs as a table.
-
-:::intelligent-ui{v="1"}
-root = Table("Monthly costs", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])
-:::
-
-User: Make a small pricing calculator with a seats slider.
+User: Make a pricing calculator with a seats slider and quick buttons.
 
 :::intelligent-ui{v="1"}
 $seats = 8
-root = Stack([s1, m1])
+root = Stack([s1, row1, m1])
 s1 = Slider("Seats", $seats, 1, 50)
-m1 = Metric("Monthly price", total, "Incl. VAT")
-total = $seats * 29
-:::
-
-User: Make a pricing calculator with quick buttons.
-
-:::intelligent-ui{v="1"}
-$seats = 8
-root = Stack([row1, m1])
-row1 = Row([b10, b20, b50, br])
+row1 = Row([b10, b20, br])
 b10 = Button("10 seats", @Set($seats, 10))
 b20 = Button("20 seats", @Set($seats, 20))
-b50 = Button("50 seats", @Set($seats, 50))
 br = Button("Reset", @Reset($seats))
 m1 = Metric("Monthly price", total, "Incl. VAT")
 total = $seats * 29
 :::
 
-User: Show my knowledge collections in a table.
-
-:::intelligent-ui{v="1"}
-root = Data("knowledge.collections", "Knowledge collections")
-:::
-
-User: Save a short note called "Plan".
-
-:::intelligent-ui{v="1"}
-root = Stack([b1])
-b1 = Button("Save note", "notes.create", {title:"Plan", content:"Ship the audit."})
-:::
-
-User: Give me a small dashboard of the key numbers.
-
-:::intelligent-ui{v="1"}
-root = Stack([g1, t1])
-g1 = Grid([c1, c2])
-c1 = Card("Cost", [m1])
-m1 = Metric("Monthly cost", "5 294 kr", "Incl. VAT")
-c2 = Card("Seats", [m2])
-m2 = Metric("Seats", "8")
-t1 = Section("Breakdown", [tbl])
-tbl = Table("", ["Item","Price"], [["Compute","3 200 kr"],["Storage","1 094 kr"]])
-:::
-
-User: Chart the quarterly revenue.
-
-:::intelligent-ui{v="1"}
-root = Chart("bar", "Quarterly revenue", ["Q1","Q2","Q3","Q4"], [{name:"Revenue", values:[120,150,170,210]}])
-:::
-
 User: Show tabs for specs and pricing.
 
 :::intelligent-ui{v="1"}
-root = Stack([tabs1])
-tabs1 = Tabs([tabA, tabB])
+root = Tabs([tabA, tabB])
 tabA = Tab("Specs", [tbl1])
 tbl1 = Table("", ["Item","Value"], [["CPU","4 vCPU"],["RAM","8 GB"]])
 tabB = Tab("Pricing", [m1])
@@ -171,11 +128,18 @@ User: Make a feedback form.
 :::intelligent-ui{v="1"}
 $name = ""
 $rating = "Good"
-root = Form("Feedback", [f1, f2])
+root = Form("Feedback", [f1, f2, b1])
 f1 = Field("Name", [i1])
 i1 = Input("Your name", $name)
 f2 = Field("Rating", [r1])
 r1 = Radio("How was it?", $rating, ["Great","Good","Poor"])
+b1 = Button("Save", "notes.create", {title:"Feedback", content:"..."})
+:::
+
+User: Show my knowledge collections in a table.
+
+:::intelligent-ui{v="1"}
+root = Data("knowledge.collections", "Knowledge collections")
 :::
 
 User: Who was Nikola Tesla?
@@ -190,27 +154,19 @@ Before finishing, walk your output and verify:
 1. root = Root(...) is the FIRST line (for optimal streaming).
 2. Every referenced name is defined. Every defined name (other than root) is reachable from root.
 
-- Prefer normal Markdown for explanations, prose, reasoning, and simple answers.
-- Use Intelligent UI ONLY when it materially improves clarity: a side-by-side comparison, headline metrics, or tabular data.
+- Prefer normal Markdown for explanations, prose, reasoning and simple answers. Use UI only when structured or interactable information clearly helps.
 - Only the documented components exist. Never invent components.
-- Use Stack as the root for most responses. Compose layouts with Stack (vertical), Row (horizontal), Grid (2-3 columns), Section (titled group) and Card (titled surface).
-- Put leaf components (Metric, Comparison, Table, Badge, Divider, Chart, Progress, Timeline, Gallery, inputs) inside containers. Do not nest Stack inside Stack.
-- Charts: Chart(chartType, title?, labels, series) where chartType is "line", "bar", "area", "pie" or "donut" and series is [{name:"...", values:[...]}] with numeric values. Keep labels and every series the same length.
-- Tabbed content: Tabs([t1, t2]) with t1 = Tab("Label", [ ...children ]). Switching tabs is local and needs no model call.
-- Timeline(title?, items) for ordered events: items are [{title, timestamp?, description?, status?}] where status is done|active|pending|error. Progress(label?, value) is a 0-100 bar. Gallery(title?, items) shows images: items are [{src, caption?, alt?}] using safe Open WebUI media paths only.
-- Forms: Form(title?, [f1, ...]) groups Field("Label", [input]) and inputs; add a Button with @Set/@Reset or a registered mutation id for side effects. A Field may carry a description or validation error: Field("Email", [i1], "We never share it", "Required").
-- Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input, and reference `$name` in expressions elsewhere. Inputs update the UI without a model call.
-- You may compute derived values (`total = $seats * 29`) and use a ternary (`$flag ? a : b`) in any prop.
-- Buttons take an action as the second argument: @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query). Actions run locally with no model call.
-- Example: Button("20 seats", @Set($seats, 20)) sets $seats to 20 and updates dependent values.
-- For read-only data, use Data(source, title?) with an allow-listed source: conversation.notes, library.files, or knowledge.collections. Example: Data("library.files", "My files").
-- To perform an approved action, pass a registered action id as the second Button argument, e.g. Button("Save note", "notes.create", {title:"Plan", content:"..."}). Only registered ids run, and the user must confirm.
-- When you use UI, wrap the OpenUI Lang in a fenced block on its own lines:
-- :::intelligent-ui{v="1"}
-- <openui lang here>
-- :::
-- The fenced block must contain ONLY valid OpenUI Lang. You may write normal Markdown before and after it.
-- Keep values short and plain text. Never emit HTML, scripts, CSS, URLs, or event handlers.
+- Compose with Stack (vertical), Row (horizontal), Grid (2-3 cols, peer items only), Section (titled group) and Card (titled surface). Do not nest Stack inside Stack.
+- Do not wrap every component in a Card; avoid nested bordered cards and empty decorative sections. Use Grid only for peer items, Section to group related content, and avoid redundant titles.
+- Pick the most useful presentation: Comparison for alternatives, Table for exact values, Metric for a few important numbers, Chart only when a trend or comparison adds value, Timeline for events, native forms for input.
+- Charts: series is [{name:"...", values:[...]}]; keep labels and every series the same length. Prefer Table when exact values matter.
+- Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input/Textarea/Radio, and reference `$name` elsewhere. You may compute derived values (`total = $seats * 29`) or use a ternary (`$flag ? a : b`) in any prop. Inputs update the UI with no model call.
+- Buttons: the 2nd argument is @Set($x, 20), @Reset($x), @ToAssistant("...") or @OpenUrl("..."), or a registered action id for an approved mutation, e.g. Button("Save note", "notes.create", {title:"Plan"}). Only registered ids run, and the user confirms. Actions run locally with no model call.
+- For read-only data use Data(source, title?) with an allow-listed source: conversation.notes, library.files, or knowledge.collections.
+- Tabs: Tabs([t1, t2]) with t1 = Tab("Label", [ ...children ]); switching is local. Forms: Form(title?, [f1, ...]) groups Field("Label", [input]); a Field may add a description or validation error: Field("Email", [i1], "We never share it", "Required").
+- Do not repeat in prose the exact data already shown as UI — Markdown should explain meaning, reasoning, caveats or recommendations. Never hide an important conclusion from the text.
+- When you use UI, wrap the OpenUI Lang in a fenced block on its own lines: :::intelligent-ui{v="1"} then the code then :::. The block must contain ONLY valid OpenUI Lang; Markdown may precede and follow it.
+- Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers.
 - If unsure whether UI helps, answer with normal Markdown."""
 
 RICH_PROMPT = r"""You may also render a FULLY CUSTOM widget with HTML/CSS/JS when the native components are not enough (for example 3D scenes, custom canvas, maps, or bespoke mini-apps). Emit it in a fenced block:

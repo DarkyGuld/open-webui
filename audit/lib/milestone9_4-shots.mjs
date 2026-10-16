@@ -122,8 +122,8 @@ await page.screenshot({ path: path.join(OUT, '12-nested-layout.png'), fullPage: 
 
 // 13 invalid-limit fallback
 await openChat(ids.invalid, 'dark');
-await page.getByText('Intelligent UI unavailable').first().waitFor({ timeout: 20000 }).catch(() => {});
-results.push(`fallback shown: ${await page.getByText('Intelligent UI unavailable').count()}`);
+await page.getByText('Interactive view unavailable').first().waitFor({ timeout: 20000 }).catch(() => {});
+results.push(`fallback shown: ${await page.getByText('Interactive view unavailable').count()}`);
 await page.screenshot({ path: path.join(OUT, '13-invalid-limit-fallback.png'), fullPage: true });
 
 await browser.close();

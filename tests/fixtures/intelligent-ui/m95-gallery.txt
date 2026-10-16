@@ -1,0 +1,1 @@
+root = Gallery("Product shots", [{src: "/favicon.png", caption: "App icon", alt: "App icon"}, {src: "/favicon.png", caption: "Home screen", alt: "Home screen"}, {src: "/favicon.png", caption: "Settings", alt: "Settings"}])

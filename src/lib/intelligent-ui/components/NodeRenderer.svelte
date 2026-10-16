@@ -66,7 +66,7 @@
 {:else if node.type === 'table'}
 	<Table title={node.title} columns={node.columns} rows={node.rows} action={node.action} {onAction} />
 {:else if node.type === 'badge'}
-	<div class="my-1">
+	<div>
 		<Badge label={node.label} action={node.action} {onAction} />
 	</div>
 {:else if node.type === 'divider'}
@@ -124,29 +124,29 @@
 {:else if node.type === 'radio'}
 	<Radio label={node.label} value={node.value} options={node.options} binding={node.binding} {onBind} />
 {:else if node.type === 'stack'}
-	<div class="my-3 flex flex-col gap-3">
+	<div class="flex flex-col gap-3">
 		{#each node.children as child, i (i)}
 			<svelte:self node={child} {onAction} {selected} {onBind} {onOpenUIAction} />
 		{/each}
 	</div>
 {:else if node.type === 'row'}
-	<div class="my-3 flex flex-wrap gap-3">
+	<div class="flex flex-wrap gap-3">
 		{#each node.children as child, i (i)}
-			<div class="min-w-[12rem] flex-1">
+			<div class="min-w-[10rem] flex-1">
 				<svelte:self node={child} {onAction} {selected} {onBind} {onOpenUIAction} />
 			</div>
 		{/each}
 	</div>
 {:else if node.type === 'grid'}
-	<div class="my-3 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+	<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
 		{#each node.children as child, i (i)}
 			<svelte:self node={child} {onAction} {selected} {onBind} {onOpenUIAction} />
 		{/each}
 	</div>
 {:else if node.type === 'section'}
-	<div class="my-3">
+	<div>
 		{#if node.title}
-			<div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">{node.title}</div>
+			<div class="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">{node.title}</div>
 		{/if}
 		<div class="flex flex-col gap-3">
 			{#each node.children as child, i (i)}
@@ -155,9 +155,9 @@
 		</div>
 	</div>
 {:else if node.type === 'card'}
-	<div class="my-3 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+	<div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
 		{#if node.title}
-			<div class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">{node.title}</div>
+			<div class="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">{node.title}</div>
 		{/if}
 		<div class="flex flex-col gap-3">
 			{#each node.children as child, i (i)}
@@ -167,9 +167,9 @@
 		<ActionButton action={node.action} {onAction} />
 	</div>
 {:else if node.type === 'tabs'}
-	<div class="my-3">
+	<div>
 		<div
-			class="flex flex-wrap gap-1 border-b border-gray-100 dark:border-gray-800"
+			class="flex items-center gap-1 overflow-x-auto border-b border-gray-100 dark:border-gray-800"
 			role="tablist"
 		>
 			{#each node.children as tab, i (i)}
@@ -180,7 +180,8 @@
 					aria-selected={activeTab === i}
 					aria-controls={`iu-tabpanel-${uid}-${i}`}
 					tabindex={activeTab === i ? 0 : -1}
-					class="-mb-px cursor-pointer border-b-2 px-3 py-1.5 text-sm transition {activeTab === i
+					class="-mb-px max-w-[14rem] cursor-pointer truncate rounded-t-md border-b-2 px-3 py-1.5 text-sm whitespace-nowrap transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-hidden {activeTab ===
+					i
 						? 'border-indigo-500 font-medium text-indigo-600 dark:text-indigo-400'
 						: 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}"
 					on:click={() => (activeTab = i)}
@@ -207,13 +208,13 @@
 		{/each}
 	</div>
 {:else if node.type === 'tab'}
-	<div class="my-3 flex flex-col gap-3">
+	<div class="flex flex-col gap-3">
 		{#each node.children as child, i (i)}
 			<svelte:self node={child} {onAction} {selected} {onBind} {onOpenUIAction} />
 		{/each}
 	</div>
 {:else if node.type === 'field'}
-	<div class="my-3">
+	<div>
 		<div class="text-sm font-medium text-gray-700 dark:text-gray-200">{node.title}</div>
 		{#if node.description}
 			<div class="mb-1 text-xs text-gray-400 dark:text-gray-500">{node.description}</div>
@@ -227,11 +228,11 @@
 	</div>
 {:else if node.type === 'form'}
 	<form
-		class="my-3 flex flex-col gap-1 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+		class="flex flex-col gap-2 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
 		on:submit|preventDefault
 	>
 		{#if node.title}
-			<div class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">{node.title}</div>
+			<div class="text-sm font-semibold text-gray-700 dark:text-gray-200">{node.title}</div>
 		{/if}
 		{#each node.children as child, i (i)}
 			<svelte:self node={child} {onAction} {selected} {onBind} {onOpenUIAction} />

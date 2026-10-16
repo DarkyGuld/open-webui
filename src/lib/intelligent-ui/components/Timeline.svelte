@@ -1,7 +1,6 @@
 <script lang="ts">
 	// Ordered events. Items may be given directly, or derived from an
 	// allow-listed query ([title, timestamp, description, status]).
-	import { getContext } from 'svelte';
 	import {
 		emptyBinding,
 		loadBoundQuery,
@@ -9,8 +8,7 @@
 		type QueryBinding
 	} from '$lib/intelligent-ui/query-binding';
 	import type { TimelineItem } from '$lib/intelligent-ui/types';
-
-	const i18n: any = getContext('i18n');
+	import QueryState from './QueryState.svelte';
 
 	export let title: string | undefined = undefined;
 	export let items: TimelineItem[] = [];
@@ -19,16 +17,22 @@
 	let binding: QueryBinding = emptyBinding();
 	let loadedSource: string | undefined = undefined;
 
-	$: if (source && source !== loadedSource) {
-		loadedSource = source;
+	function load() {
+		if (!source) return;
 		binding = emptyBinding();
 		loadBoundQuery(source, (b) => (binding = b));
+	}
+
+	$: if (source && source !== loadedSource) {
+		loadedSource = source;
+		load();
 	}
 
 	$: shown =
 		source && binding.status === 'success' && binding.result
 			? timelineFromQuery(binding.result)
 			: items;
+	$: status = source ? binding.status : 'success';
 
 	function dotClass(status: string | undefined): string {
 		switch (status) {
@@ -44,22 +48,17 @@
 	}
 </script>
 
-<div class="my-3">
+<div>
 	{#if title}
 		<div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">{title}</div>
 	{/if}
 
-	{#if source && (binding.status === 'idle' || binding.status === 'loading')}
-		<div class="space-y-3" aria-busy="true">
-			{#each [1, 2, 3] as i (i)}
-				<div class="h-4 w-2/3 animate-pulse rounded bg-gray-100 dark:bg-gray-800"></div>
-			{/each}
-		</div>
-	{:else if source && binding.status === 'error'}
-		<div class="text-sm text-red-500 dark:text-red-400">{$i18n.t('Could not load data')}</div>
-	{:else if shown.length === 0}
-		<div class="text-sm text-gray-400">{$i18n.t('No data')}</div>
-	{:else}
+	<QueryState
+		{status}
+		error={binding.error}
+		empty={shown.length === 0}
+		onRetry={source ? load : undefined}
+	>
 		<ol class="relative flex flex-col gap-4 border-l border-gray-100 pl-5 dark:border-gray-800">
 			{#each shown as ev, i (i)}
 				<li class="relative">
@@ -82,5 +81,5 @@
 				</li>
 			{/each}
 		</ol>
-	{/if}
+	</QueryState>
 </div>

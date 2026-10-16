@@ -52,14 +52,18 @@ def _fallback_markdown(block: str) -> str:
 log = logging.getLogger(__name__)
 
 AUTO_HEADER = (
-    "Intelligent UI is AVAILABLE but optional and conservative. "
-    "Prefer normal Markdown for explanations and prose. Use Intelligent UI only when it "
-    "clearly improves clarity (a side-by-side comparison, one headline metric, or tabular data)."
+    "Intelligent UI is AVAILABLE but optional. Prefer normal Markdown for explanations, prose and "
+    "reasoning. Use a native component when the content is clearly structured or interactable: "
+    "comparing alternatives -> Comparison (or a Table); an exact dataset or list of values -> Table; "
+    "a single important computed value -> Metric; a trend over time -> Chart; an interactive "
+    "calculation or input -> native state/form UI; a sequence of events -> Timeline. "
+    "Do not force UI for normal explanatory questions."
 )
 ON_HEADER = (
-    "Intelligent UI is ENABLED. Actively consider structured UI (comparison, metric, table) "
-    "whenever it meaningfully improves the answer, while still using normal Markdown where UI "
-    "adds little value. Do not force decorative widgets."
+    "Intelligent UI is ENABLED. Prefer presenting structured or interactable information (a "
+    "comparison, an exact table, a few headline metrics, a trend chart, an interactive calculator, a "
+    "timeline) as native UI, while still using normal Markdown for explanation, reasoning and "
+    "caveats. Do not force decorative widgets."
 )
 RICH_HEADER = (
     "Rich widgets (custom HTML) are AVAILABLE. You may emit a fully custom HTML/CSS/JS widget when "

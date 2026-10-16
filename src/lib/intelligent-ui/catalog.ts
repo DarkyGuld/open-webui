@@ -9,12 +9,18 @@
  * Layout primitives (stack/row/grid/section/card) compose recursively; leaves
  * (metric/comparison/table/badge/divider) are terminals. catalog_version = 3.
  */
-import { createLibrary, defineComponent, markReactive } from '@openuidev/lang-core';
+import { createLibrary, defineComponent, markReactive, tagSchemaId } from '@openuidev/lang-core';
 import { z } from 'zod';
 import { actionSchema } from './action-schema';
 import { CATALOG_VERSION, LIMITS } from './limits';
 
 export const CATALOG_VERSION_ID = CATALOG_VERSION;
+
+// Abbreviate the shared action union in generated signatures: without this the
+// full union is re-expanded for every component that accepts an `action`,
+// which dominates the catalog prompt. `tagSchemaId` affects prompt output only
+// (JSON Schema $defs are unchanged), so parsing/validation are unaffected.
+tagSchemaId(actionSchema, 'Action');
 
 const str = () => z.string().min(1).max(LIMITS.MAX_STRING_LENGTH);
 const placeholder = { component: 'intelligent-ui' };

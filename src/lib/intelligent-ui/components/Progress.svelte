@@ -36,7 +36,7 @@
 	$: loading = !!source && (binding.status === 'idle' || binding.status === 'loading');
 </script>
 
-<div class="my-3">
+<div>
 	{#if label || status}
 		<div class="mb-1 flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
 			<span>{label ?? ''}</span>
@@ -59,6 +59,6 @@
 		></div>
 	</div>
 	{#if source && binding.status === 'error'}
-		<div class="mt-1 text-xs text-red-500 dark:text-red-400">{$i18n.t('Could not load data')}</div>
+		<div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{$i18n.t('Couldn’t load this data')}</div>
 	{/if}
 </div>

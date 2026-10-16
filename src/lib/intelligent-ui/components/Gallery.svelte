@@ -12,7 +12,7 @@
 	$: single = items.length === 1;
 </script>
 
-<div class="my-3">
+<div>
 	{#if title}
 		<div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">{title}</div>
 	{/if}

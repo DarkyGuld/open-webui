@@ -66,6 +66,7 @@
 		const type = chartType === 'area' ? 'line' : chartType === 'donut' ? 'doughnut' : chartType;
 		const circular = chartType === 'pie' || chartType === 'donut';
 
+		const sparse = data.labels.length <= 12;
 		const datasets = data.series.map((s, i) => {
 			const color = PALETTE[i % PALETTE.length];
 			return {
@@ -76,7 +77,8 @@
 				borderWidth: circular ? 0 : 2,
 				fill: chartType === 'area',
 				tension: 0.3,
-				pointRadius: chartType === 'bar' || circular ? 0 : 2,
+				pointRadius: chartType === 'bar' || circular ? 0 : sparse ? 3 : 1,
+				pointHoverRadius: chartType === 'bar' || circular ? 0 : 5,
 				borderRadius: chartType === 'bar' ? 3 : 0
 			};
 		});
@@ -107,7 +109,15 @@
 					: {
 							x: {
 								grid: { display: false },
-								ticks: { color: textColor, maxRotation: 0, autoSkip: true },
+								ticks: {
+									color: textColor,
+									maxRotation: 0,
+									autoSkip: true,
+									callback: function (value: number) {
+										const label = String(this.getLabelForValue(value) ?? '');
+										return label.length > 14 ? `${label.slice(0, 13)}…` : label;
+									}
+								},
 								border: { display: false }
 							},
 							y: {
@@ -135,7 +145,7 @@
 	});
 </script>
 
-<div class="my-3 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+<div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
 	{#if title}
 		<div class="mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">{title}</div>
 	{/if}
@@ -145,8 +155,8 @@
 			<div class="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-indigo-500 dark:border-gray-700"></div>
 		</div>
 	{:else if errorState}
-		<div class="flex h-64 items-center justify-center text-sm text-red-500 dark:text-red-400">
-			{$i18n.t('Could not load data')}
+		<div class="flex h-64 items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+			{$i18n.t('Couldn’t load this data')}
 		</div>
 	{:else if empty}
 		<div class="flex h-64 items-center justify-center text-sm text-gray-400">{$i18n.t('No data')}</div>

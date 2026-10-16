@@ -6,9 +6,10 @@ from open_webui.intelligent_ui.catalog_prompt import CATALOG_VERSION, PROMPT
 
 def test_catalog_prompt_is_compact():
     # Guard against prompt bloat (the routing benchmark showed system-prompt
-    # tokens dominate cheap model calls). M9.4 was ~14467 chars; M9.5 trims it.
+    # tokens dominate cheap model calls). M9.4 was ~14467 chars; M9.5 trimmed it;
+    # M9.8 added targeted guidance (still well under the pre-M9.5 size).
     assert CATALOG_VERSION == 4
-    assert 3000 < len(PROMPT) < 13000
+    assert 3000 < len(PROMPT) < 14000
 
 
 def test_prompt_has_result_context_guidance():

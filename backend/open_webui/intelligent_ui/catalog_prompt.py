@@ -27,10 +27,10 @@ Arguments marked with ? are optional. Sub-components can be inline or referenced
 Props marked `$binding<type>` accept a `$variable` reference for two-way binding.
 
 Data(source: string, title?: string) — A read-only data table bound to an allow-listed source. Sources: conversation.notes, library.files, knowledge.collections.
-Metric(label: string, value: string, description?: string, action?: Action) — A single important number (cost, total, count) with a short label and optional note.
+Metric(label: string, value: string, description?: string, action?: Action) — A single important number (cost, total, count). The label is required and must be non-empty — use a short semantic label like "Total" or "Monthly cost".
 Comparison(title?: string, items: {name: string, attributes: string[]}[], selectable?: boolean, action?: Action) — Compare 2-4 options side by side by name, each with a list of attributes.
 Table(title?: string, columns: string[], rows: string[][], action?: Action) — A simple data table with columns and rows.
-Badge(label: string, action?: Action) — A small inline label/tag (status, category).
+Badge(label: string, tone?: "neutral" | "positive" | "warning" | "negative", action?: Action) — A small inline label/tag (status, category). The 2nd argument is an optional tone: "neutral", "positive", "warning" or "negative" (e.g. Badge("Save 17%", "positive")).
 Divider() — A horizontal separator between sections.
 Button(label: string, action?: any, args?: any) — A clickable button. The second argument is an action such as @Set($x, 20), @Reset($x), @ToAssistant("...") or @Run(query).
 Slider(label: string, value: $binding<number>, min: number, max: number, step?: number) — A numeric slider bound to a $state variable.
@@ -136,12 +136,6 @@ r1 = Radio("How was it?", $rating, ["Great","Good","Poor"])
 b1 = Button("Save", "notes.create", {title:"Feedback", content:"..."})
 :::
 
-User: Show my knowledge collections in a table.
-
-:::intelligent-ui{v="1"}
-root = Data("knowledge.collections", "Knowledge collections")
-:::
-
 User: Who was Nikola Tesla?
 
 Nikola Tesla was a Serbian-American inventor and electrical engineer best known for his contributions to the design of the modern alternating current (AC) electricity supply system.
@@ -157,14 +151,16 @@ Before finishing, walk your output and verify:
 - Prefer normal Markdown for explanations, prose, reasoning and simple answers. Use UI only when structured or interactable information clearly helps.
 - Only the documented components exist. Never invent components.
 - Compose with Stack (vertical), Row (horizontal), Grid (2-3 cols, peer items only), Section (titled group) and Card (titled surface). Do not nest Stack inside Stack.
-- Do not wrap every component in a Card; avoid nested bordered cards and empty decorative sections. Use Grid only for peer items, Section to group related content, and avoid redundant titles.
-- Pick the most useful presentation: a single dominant result value ("how much", "the total", "just the number", "how many") -> Metric; compare / vs / alternatives / options -> Comparison (or Table when many exact fields); an exact dataset or rows/columns -> Table; a trend over time or category comparison -> Chart; a sequence of events -> Timeline; an interactive calculation or input -> native state/form. Do not force UI for ordinary prose.
-- Charts: series is [{name:"...", values:[...]}]; keep labels and every series the same length. Prefer Table when exact values matter.
-- Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input/Textarea/Radio, and reference `$name` elsewhere. You may compute derived values (`total = $seats * 29`) or use a ternary (`$flag ? a : b`) in any prop. Inputs update the UI with no model call.
+- Do not wrap every component in a Card; avoid nested bordered cards and empty sections. Use Grid only for peer items, Section to group related content, and avoid redundant titles.
+- Pick the most useful presentation: one dominant result value ("how much", "just the number", "how many") -> Metric with a short non-empty label, e.g. Metric("Total", "980 kr"); compare/vs/alternatives -> Comparison (Table for many exact fields); exact values/lookup -> Table; a trend or shape over time -> Chart (Chart for trend, Table for exact values; compose both if needed); chronological events -> Timeline (not unordered lists); images the user asks to see -> Gallery, safe paths only, never invented URLs; interactive calculation/input -> native state/form. Do not force UI for ordinary prose.
+- Charts: series is [{name, values:[...]}]; keep labels and every series the same length.
+- Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input/Textarea/Radio, and reference `$name` elsewhere. You may compute derived values (`total = $seats * 29`) or use a ternary (`$flag ? a : b`) in any prop.
 - Buttons: the 2nd argument is @Set($x, 20), @Reset($x), @ToAssistant("...") or @OpenUrl("..."), or a registered action id for an approved mutation, e.g. Button("Save note", "notes.create", {title:"Plan"}). Only registered ids run, and the user confirms. Actions run locally with no model call.
 - For read-only data use Data(source, title?) with an allow-listed source: conversation.notes, library.files, or knowledge.collections.
-- Tabs: Tabs([t1, t2]) with t1 = Tab("Label", [ ...children ]); switching is local. Forms: Form(title?, [f1, ...]) groups Field("Label", [input]); a Field may add a description or validation error: Field("Email", [i1], "We never share it", "Required").
-- Do not repeat in prose the exact data already shown as UI — Markdown should explain meaning, reasoning, caveats or recommendations. Never hide an important conclusion from the text.
+- Tabs: Tabs([t1, t2]) with t1 = Tab("Label", [...children]); switching is local. Forms: Form(title?, [f1, ...]) groups Field("Label", [input]); a Field may add a description or validation error: Field("Email", [i1], "We never share it", "Required").
+- Do not repeat in prose the exact data already shown as UI. When UI presents data and prose adds meaning, use a mixed answer: one short intro sentence -> the UI -> a short interpretation or recommendation. Never hide an important conclusion from the text.
+- Prefer native UI: use a Rich Widget only when the native catalog cannot reasonably express the layout/interaction (e.g. 3D, canvas). Calculators (loan, pricing, seats) use native Slider/Form/Metric, not Rich.
+- Infer presentation intent in any language (e.g. compare/sammenlign, total/totalt, table/tabell, timeline/tidslinje, show images/vis bilder).
 - When you use UI, wrap the OpenUI Lang in a fenced block on its own lines: :::intelligent-ui{v="1"} then the code then :::. The block must contain ONLY valid OpenUI Lang; Markdown may precede and follow it.
 - Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers. OpenUI expressions are declarative only — never use JavaScript methods or globals (.toFixed(), .map(), .filter(), .reduce(), Math.*, Date.*, eval, Function); pass plain values and let a component format them.
 - If unsure whether UI helps, answer with normal Markdown."""

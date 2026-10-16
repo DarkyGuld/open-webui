@@ -67,7 +67,7 @@
 	<Table title={node.title} columns={node.columns} rows={node.rows} action={node.action} {onAction} />
 {:else if node.type === 'badge'}
 	<div>
-		<Badge label={node.label} action={node.action} {onAction} />
+		<Badge label={node.label} tone={node.tone} action={node.action} {onAction} />
 	</div>
 {:else if node.type === 'divider'}
 	<Divider />

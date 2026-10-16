@@ -44,7 +44,12 @@ export const tableSchema = z
 	.strict();
 
 export const badgeSchema = z
-	.object({ type: z.literal('badge'), label: str(), action: actionSchema.optional() })
+	.object({
+		type: z.literal('badge'),
+		label: str(),
+		tone: z.enum(['neutral', 'positive', 'warning', 'negative']).optional(),
+		action: actionSchema.optional()
+	})
 	.strict();
 
 export const dividerSchema = z.object({ type: z.literal('divider') }).strict();

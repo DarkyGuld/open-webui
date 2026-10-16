@@ -116,7 +116,12 @@ function mapNode(element: ElementNode, store: Store | null): UINode {
 				...(p.action != null ? { action: p.action } : {})
 			};
 		case 'badge':
-			return { type: 'badge', label: String(p.label), ...(p.action != null ? { action: p.action } : {}) };
+			return {
+				type: 'badge',
+				label: String(p.label),
+				...(p.tone != null ? { tone: String(p.tone) as any } : {}),
+				...(p.action != null ? { action: p.action } : {})
+			};
 		case 'divider':
 			return { type: 'divider' };
 		case 'data':

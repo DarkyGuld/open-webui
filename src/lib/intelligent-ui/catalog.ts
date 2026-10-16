@@ -28,7 +28,8 @@ const placeholder = { component: 'intelligent-ui' };
 // --- Leaves ---
 const MetricDef = defineComponent({
 	name: 'Metric',
-	description: 'A single important number (cost, total, count) with a short label and optional note.',
+	description:
+		'A single important number (cost, total, count). The label is required and must be non-empty — use a short semantic label like "Total" or "Monthly cost".',
 	props: z.object({
 		label: str().describe('Short label, e.g. "Monthly cost"'),
 		value: str().describe('The value, e.g. "5 294 kr"'),
@@ -74,8 +75,13 @@ const TableDef = defineComponent({
 
 const BadgeDef = defineComponent({
 	name: 'Badge',
-	description: 'A small inline label/tag (status, category).',
-	props: z.object({ label: str(), action: actionSchema.optional() }),
+	description:
+		'A small inline label/tag (status, category). The 2nd argument is an optional tone: "neutral", "positive", "warning" or "negative" (e.g. Badge("Save 17%", "positive")).',
+	props: z.object({
+		label: str(),
+		tone: z.enum(['neutral', 'positive', 'warning', 'negative']).optional(),
+		action: actionSchema.optional()
+	}),
 	...placeholder
 });
 

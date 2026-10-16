@@ -47,9 +47,12 @@ export interface TableNode {
 	action?: UIAction;
 }
 
+export type BadgeTone = 'neutral' | 'positive' | 'warning' | 'negative';
+
 export interface BadgeNode {
 	type: 'badge';
 	label: string;
+	tone?: BadgeTone;
 	action?: UIAction;
 }
 

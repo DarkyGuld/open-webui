@@ -167,6 +167,18 @@ in Milestone 2.
 - **v1 not declared complete**; targeted fixes recommended (Metric example, Gallery rule, Mixed rule,
   Badge contract, multilingual note). **M10 still unnecessary.** See `ROUTING_BENCHMARK_V3.md`.
 
+## Targeted reliability hardening (Milestone 9.8, evaluation + guidance only)
+
+- Badge tone contract + Metric non-empty-label guidance; concise rules for Metric/Gallery/Mixed/
+  Chart-Table/Timeline; native-first calculator rule; multilingual note. Two tuning iterations
+  (second reverted). Prompt `PROMPT` +4.65%.
+- v3 re-run (frozen prompt, 3 runs): channel **81.1%** (was 77.2%), family **78.9%**, invalid **0%**,
+  clear subset channel **84.8%**.
+- Untouched holdout (33 prompts, 3 runs): channel **65.6%**, family **61.6%**.
+- **99% target not reached** — cat-jam-free plateaus ~81% (v3) / ~66% (holdout), a **model-capability**
+  limit (conservative under-use + phrasing sensitivity). Over-use ≈0, safety 0. **M10 still
+  unnecessary.** See `MILESTONE_9_8_REPORT.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

@@ -1,0 +1,45 @@
+{
+  "version": 4,
+  "name": "tuning",
+  "model": "cat-jam-free",
+  "notes": "Targeted tuning set for the weak families (Metric/Gallery/Mixed/Chart-Table/Timeline/Native-vs-Rich). Not the holdout; may be used for at most two micro-tuning iterations.",
+  "cases": [
+    { "id": "t-me1", "category": "Metric", "prompt": "How much does the Pro plan cost per month? Just the number.", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me2", "category": "Metric", "prompt": "What's the grand total for 15 licenses at 199 kr?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me3", "category": "Metric", "prompt": "How many open tickets are there in total?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me4", "category": "Metric", "prompt": "Hva koster det totalt for 10 seter?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me5", "category": "Metric", "prompt": "Give me the final price.", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me6", "category": "Metric", "prompt": "What's the average order value? One number.", "expected_channel": "native", "expected_family": "Metric" },
+
+    { "id": "t-ga1", "category": "Gallery", "prompt": "Show me the screenshots you have.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga2", "category": "Gallery", "prompt": "Vis bildene fra prosjektet.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga3", "category": "Gallery", "prompt": "Display the uploaded images.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga4", "category": "Gallery", "prompt": "I want to see the product photos.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga5", "category": "Gallery", "prompt": "Show a picture of the dashboard.", "expected_channel": "markdown", "ambiguous": true },
+
+    { "id": "t-mx1", "category": "Mixed", "prompt": "Compare the two plans and recommend one.", "expected_channel": "native", "expected_family": "Comparison", "expect_mixed": true },
+    { "id": "t-mx2", "category": "Mixed", "prompt": "Show the sales numbers and tell me if we're trending up.", "expected_channel": "native", "expected_family": "Chart", "expect_mixed": true },
+    { "id": "t-mx3", "category": "Mixed", "prompt": "Show the milestones and say what's next.", "expected_channel": "native", "expected_family": "Timeline", "expect_mixed": true },
+    { "id": "t-mx4", "category": "Mixed", "prompt": "Chart the revenue and explain the dip.", "expected_channel": "native", "expected_family": "Chart", "expect_mixed": true },
+    { "id": "t-mx5", "category": "Mixed", "prompt": "List the files and tell me which is biggest.", "expected_channel": "native", "expected_family": "Query", "expect_mixed": true },
+
+    { "id": "t-ct1", "category": "Chart/Table", "prompt": "Show revenue over the last 6 months.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "t-ct2", "category": "Chart/Table", "prompt": "Give me the exact monthly revenue for the last 6 months.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "t-ct3", "category": "Chart/Table", "prompt": "Visualize signups by channel.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "t-ct4", "category": "Chart/Table", "prompt": "How many signups per channel? Exact numbers.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "t-ct5", "category": "Chart/Table", "prompt": "Show the trend of active users this year.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "t-ct6", "category": "Chart/Table", "prompt": "List the top products with exact sales figures.", "expected_channel": "native", "expected_family": "Table" },
+
+    { "id": "t-tl1", "category": "Timeline", "prompt": "Show the project timeline with dates.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "t-tl2", "category": "Timeline", "prompt": "What happened in this release, in order?", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "t-tl3", "category": "Timeline", "prompt": "Give me a chronological history of the company.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "t-tl4", "category": "Timeline", "prompt": "List our roadmap milestones.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "t-tl5", "category": "Timeline", "prompt": "Explain how photosynthesis works.", "expected_channel": "markdown" },
+
+    { "id": "t-nr1", "category": "Native-vs-Rich", "prompt": "Make a mortgage calculator with sliders for amount and years.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-nr2", "category": "Native-vs-Rich", "prompt": "Build an interactive tipping calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-nr3", "category": "Native-vs-Rich", "prompt": "Create a savings goal calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-nr4", "category": "Native-vs-Rich", "prompt": "Make a 3D rotating logo.", "expected_channel": "rich" },
+    { "id": "t-nr5", "category": "Native-vs-Rich", "prompt": "Build a particle physics playground.", "expected_channel": "rich" }
+  ]
+}

@@ -8,10 +8,13 @@
 > channel accuracy 82.7%, invalid/fallback ≤2%, prompt −13%; **M10 not justified**), M9.7 (**prompt
 > hardening + capability benchmark v3** — native JS leakage fixed to 0; core families strong, but
 > aggregate channel 77.2% / family 73.3% on the harder v3 set; **v1 not yet complete; M10 still
-> unnecessary**) are **done**. Next: targeted fixes (Metric/Gallery/Mixed/Badge) + re-run v3. Catalog:
-> `NATIVE_COMPONENT_CATALOG.md`; rulebook: `UX_GUIDELINES.md`; benchmarks:
+> unnecessary**), M9.8 (**targeted reliability hardening** — Badge tone + Metric-label contract,
+> guidance for Metric/Gallery/Mixed/Chart-Table/Timeline; v3 re-run channel **81.1%** (clear 84.8%),
+> holdout **65.6%**; **99% target not reached — cat-jam-free plateaus ~66–85%**; M10 still
+> unnecessary) are **done**. Next: accept the cheap-model ceiling or evaluate a stronger model;
+> catalog: `NATIVE_COMPONENT_CATALOG.md`; rulebook: `UX_GUIDELINES.md`; benchmarks:
 > `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`; reports: `MILESTONE_9_4_REPORT.md`,
-> `MILESTONE_9_5_REPORT.md`.
+> `MILESTONE_9_5_REPORT.md`, `MILESTONE_9_8_REPORT.md`.
 
 Goal: get **as close to ChatGPT Intelligent UI as possible using ONLY what we already have**:
 `@openuidev/lang-core` (our engine), `zod`, native browser APIs (iframe/Worker/ResizeObserver/

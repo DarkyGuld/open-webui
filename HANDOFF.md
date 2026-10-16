@@ -35,6 +35,7 @@ A customized Open WebUI product aiming for:
 | 9.5 — visual & interaction polish | ✅ complete | spacing/density/hierarchy, tables/charts/tabs/forms, standardized query states, mutation toasts, fallback reword, prompt trimmed ~15%, AUTO tuned. See `MILESTONE_9_5_REPORT.md`, `PARITY_VISUAL_AUDIT.md`, `UX_GUIDELINES.md` |
 | 9.6 — routing benchmark v2 | ✅ complete (eval only) | cat-jam-free mean channel accuracy 82.7% (range 78–88%), invalid/fallback ≤2%, latency −25%, prompt −13%; failures conservative under-use; **M10 not justified**. See `ROUTING_BENCHMARK_V2.md` |
 | 9.7 — prompt hardening + capability benchmark v3 | ✅ complete (eval only) | Metric/Comparison triggers + no-JS rule (prompt +3.5%); new ~60-prompt dataset; cat-jam-free aggregate channel 77.2%/family 73.3% (clear subset 81.8%), invalid/fallback 2.2%, native JS leakage 0, rich over-use 1.7%; **v1 not yet complete; M10 still unnecessary**. See `ROUTING_BENCHMARK_V3.md` |
+| 9.8 — targeted reliability hardening | ✅ complete (eval + guidance) | Badge tone + Metric-label contract; Metric/Gallery/Mixed/Chart-Table/Timeline guidance + native-first + multilingual (PROMPT +4.65%); v3 re-run channel **81.1%**/family 78.9%/invalid 0%, holdout **65.6%**/61.6%; **99% target not reached (cheap-model plateau ~66–85%)**; M10 unnecessary. See `MILESTONE_9_8_REPORT.md` |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:

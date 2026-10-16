@@ -225,6 +225,18 @@ introduced here.
   empty Metric label). **v1 not yet complete; M10 still unnecessary.** See `ROUTING_BENCHMARK_V3.md`.
 - **No new dependencies; no core files.** (Benchmark tooling + docs only.)
 
+### Milestone 9.8 (targeted reliability hardening) addendum
+
+- Badge `tone` contract + Metric non-empty-label guidance; guidance for Metric/Gallery/Mixed/
+  Chart-Table/Timeline; native-first calculator rule; multilingual note. `PROMPT` 12 719 → **13 311
+  chars (+4.65%)**; AUTO header +180; prompt frozen before the benchmark.
+- Tuning set (32 prompts): baseline 50% → **67.7%** after one iteration (second reverted).
+- v3 re-run (3 runs): channel **81.1%** (was 77.2%), family **78.9%**, invalid **0%**, clear subset
+  **84.8%**. Holdout (33 prompts, 3 runs): channel **65.6%**, family **61.6%**.
+- **99% target not reached**; cat-jam-free plateau ~81% (v3) / ~66% (holdout), model-capability
+  limited. Tests: `vitest` **135 passed**, `pytest` **53 passed**, build **green**.
+- **No new dependencies; no core files.** See `MILESTONE_9_8_REPORT.md`.
+
 ## Reproduce
 
 ```bash

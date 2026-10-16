@@ -96,3 +96,15 @@ Native semantics (`progressbar`, `tablist/tab/tabpanel` + Arrow/Home/End, `field
 `figure/figcaption`, `role="img"` + `sr-only` chart summary, `role="alert"` validation). Every
 data-bound component implements loading / empty / error; interactive components have focus/keyboard
 states.
+
+## Density & spacing (M9.5)
+
+Spacing is centralized: the model cannot set pixels. Containers space their children with one
+`gap-3` rhythm; `IntelligentUIBlock` applies a single outer margin. Component defaults are "normal"
+density. See `UX_GUIDELINES.md` for the full policy.
+
+## Standardized states (M9.5)
+
+Query-backed components share `QueryState.svelte` (loading skeleton with stable height, "No data",
+"Couldn't load this data" + Retry). Tables right-align numeric columns and use a sticky header inside
+a bounded scroll area. Fallback wording is "Interactive view unavailable" (no internals exposed).

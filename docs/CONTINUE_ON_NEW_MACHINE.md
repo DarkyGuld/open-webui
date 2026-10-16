@@ -19,8 +19,8 @@ Before doing anything, read, in order:
 5. docs/intelligent-ui/MILESTONE_2_REPORT.md
 6. docs/intelligent-ui/MILESTONE_3_REPORT.md
 7. docs/intelligent-ui/MILESTONE_4_REPORT.md
-8. docs/intelligent-ui/MILESTONE_9_4_REPORT.md (and the other M5–M9.x reports)
-9. docs/intelligent-ui/NATIVE_COMPONENT_CATALOG.md + QUERY_MUTATION.md + TOOL_BINDINGS_SECURITY.md
+8. docs/intelligent-ui/MILESTONE_9_5_REPORT.md (and the other M5–M9.x reports)
+9. docs/intelligent-ui/UX_GUIDELINES.md + NATIVE_COMPONENT_CATALOG.md + PARITY_VISUAL_AUDIT.md
 10. docs/FRESH_MACHINE_SETUP.md
 
 Then:

@@ -220,3 +220,10 @@ regenerated prompt, fixtures, tests and audit scripts are all our own files. Cha
 existing `chart.js`; Gallery reuses the existing `Image` primitive. No new dependency.
 
 **Cumulative M1–M9.4:** still ~20 core files, ~235 lines.
+
+## Milestone 9.5 — actual upstream/core changes
+
+**None.** All polish is in our own components/styles/prompt/filter/i18n/tests/audit files. Toasts
+reuse the existing `svelte-sonner` dependency; charts reuse `chart.js`. No new dependency.
+
+**Cumulative M1–M9.5:** still ~20 core files, ~235 lines.

@@ -134,6 +134,17 @@ in Milestone 2.
 - Map evaluated and deferred (leaflet exists but remote tiles conflict with the no-arbitrary-remote
   rule). See `MILESTONE_9_4_REPORT.md`, `NATIVE_COMPONENT_CATALOG.md`.
 
+## Implemented visual & interaction polish (Milestone 9.5)
+
+- Centralized spacing (no cumulative margins), tighter density, clearer hierarchy; polished tables
+  (numeric alignment, sticky header, overflow), charts (sparse points, label truncation), tabs
+  (overflow/keyboard/focus), forms, and dark/light.
+- Standardized query states (`QueryState`: skeleton/empty/error+retry) and mutation feedback
+  (toast loop + double-submit guard). Fallback reworded to "Interactive view unavailable".
+- **Catalog prompt trimmed ~15%** (14 467 → 12 286 chars, ~−545 tokens/call); AUTO guidance tuned
+  (less timid, still conservative). **No new dependencies, no core changes.**
+- See `MILESTONE_9_5_REPORT.md`, `PARITY_VISUAL_AUDIT.md`, `UX_GUIDELINES.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

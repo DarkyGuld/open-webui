@@ -201,6 +201,19 @@ introduced here.
 - **No new dependencies (chart.js reused); no core files.** Map deferred. See
   `MILESTONE_9_4_REPORT.md`, `NATIVE_COMPONENT_CATALOG.md`.
 
+### Milestone 9.5 (visual & interaction polish) addendum
+
+- `vitest run` → **121 passed** (adds `polish-9_5.test.ts`).
+- `pytest tests/intelligent_ui` → **53 passed** (adds `test_prompt_m9_5.py`).
+- `NODE_OPTIONS=--max-old-space-size=8192 npm run build` → **green**.
+- Playwright: **21 screenshots** under `audit/local/intelligent-ui/milestone-9.5/`
+  (pricing dark/light/mobile, vps, dashboard dark/light/mobile, query loading/success/empty/error,
+  form/confirmation/success, timeline, gallery, tabs-mobile, mixed response, streaming
+  partial/complete, rich widget chrome); **0 unexpected console errors**.
+- Catalog prompt trimmed **14 467 → 12 286 chars** (~−545 tokens/call). AUTO/ON guidance tuned.
+- **No new dependencies; no core files.** See `MILESTONE_9_5_REPORT.md`, `PARITY_VISUAL_AUDIT.md`,
+  `UX_GUIDELINES.md`.
+
 ## Reproduce
 
 ```bash

@@ -4,9 +4,11 @@
 > fallback), M9 (rich-widget sandbox), M9.1 (rich-widget control parity), M9.2 Phase A (@Set/@Reset),
 > M9.3 (Query/Mutation/tool bindings), M9.4 (native composition + component breadth: tabs, charts,
 > progress, timeline, gallery, richer forms — catalog_version 4), M9.5 (ChatGPT-parity visual &
-> interaction polish; prompt trimmed ~15%) are **done**. Next: routing benchmark v2, and an M10
-> planner only if the benchmark proves it necessary. Catalog: `NATIVE_COMPONENT_CATALOG.md`;
-> rulebook: `UX_GUIDELINES.md`; reports: `MILESTONE_9_4_REPORT.md`, `MILESTONE_9_5_REPORT.md`.
+> interaction polish; prompt trimmed ~15%), M9.6 (**routing benchmark v2** — cat-jam-free mean
+> channel accuracy 82.7%, invalid/fallback ≤2%, prompt −13%; **M10 not justified**) are **done**.
+> Next: prompt micro-tuning + a v3 prompt set for the new families. Catalog:
+> `NATIVE_COMPONENT_CATALOG.md`; rulebook: `UX_GUIDELINES.md`; benchmark:
+> `ROUTING_BENCHMARK_V2.md`; reports: `MILESTONE_9_4_REPORT.md`, `MILESTONE_9_5_REPORT.md`.
 
 Goal: get **as close to ChatGPT Intelligent UI as possible using ONLY what we already have**:
 `@openuidev/lang-core` (our engine), `zod`, native browser APIs (iframe/Worker/ResizeObserver/

@@ -145,6 +145,16 @@ in Milestone 2.
   (less timid, still conservative). **No new dependencies, no core changes.**
 - See `MILESTONE_9_5_REPORT.md`, `PARITY_VISUAL_AUDIT.md`, `UX_GUIDELINES.md`.
 
+## Routing benchmark v2 (Milestone 9.6, evaluation only)
+
+- `cat-jam-free` (cheapest model), same 50 v1 prompts, live production AUTO prompt, 3 runs:
+  **channel accuracy 82.7%** (mean; range 78–88%), component 82.0%, **invalid/fallback ≤2%**,
+  latency **−25%** vs v1, system prompt **−13%**.
+- Failures remain conservative **under-use**; the one invalid case used JS `.toFixed()` in an
+  expression. **M10 planner not justified** (80–84% band, near-zero invalid, conservative errors).
+- Next: prompt micro-tuning ("just the number" trigger; avoid `.toFixed()`) + a separate v3 prompt
+  set for chart/timeline/gallery. See `ROUTING_BENCHMARK_V2.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

@@ -237,6 +237,17 @@ introduced here.
   limited. Tests: `vitest` **135 passed**, `pytest` **53 passed**, build **green**.
 - **No new dependencies; no core files.** See `MILESTONE_9_8_REPORT.md`.
 
+### Milestone 9.9 (strong-model ceiling benchmark) addendum
+
+- Evaluation only; system frozen (PROMPT 13 311 chars, catalog_version 4; hashes in the report).
+- **deepseek-v4.1-flash**, 3 runs × {v3 60, holdout 33} = 279 calls, 0 errors: v3 channel **91.7%** /
+  family 90.6% / clear-intent **92.7%**, invalid 0.6%; holdout channel **82.8%** / family 80.8%,
+  invalid 0%. Latency ~9.6 s (v3) / ~13.7 s (holdout) mean.
+- **Level C**: architecture strong and model-bound (DeepSeek fixes the weak families); near-99% not
+  reached; **v1 not declared complete; M10 unnecessary**.
+- Tests: `vitest` **135 passed**, `pytest` **53 passed**, build **green**. See
+  `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md`.
+
 ## Reproduce
 
 ```bash

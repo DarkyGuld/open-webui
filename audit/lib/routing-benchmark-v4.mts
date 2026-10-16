@@ -18,11 +18,13 @@ import { parseIntelligentUI } from '../../src/lib/intelligent-ui/adapter';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..', '..');
-const OUT = path.resolve(REPO, 'docs/intelligent-ui/routing-benchmark-v4');
+const OUT = process.env.BENCH_OUTDIR
+	? path.resolve(REPO, process.env.BENCH_OUTDIR)
+	: path.resolve(REPO, 'docs/intelligent-ui/routing-benchmark-v4');
 mkdirSync(OUT, { recursive: true });
 
 const KEY = process.env.OPENCODE_KEY || '';
-const MODEL = 'cat-jam-free';
+const MODEL = process.env.BENCH_MODEL || 'cat-jam-free';
 const URL = 'https://opencode.ai/zen/go/v1/chat/completions';
 
 const PY = path.join(REPO, '.venv', 'bin', 'python');

@@ -179,6 +179,17 @@ in Milestone 2.
   limit (conservative under-use + phrasing sensitivity). Over-use ≈0, safety 0. **M10 still
   unnecessary.** See `MILESTONE_9_8_REPORT.md`.
 
+## Strong-model ceiling (Milestone 9.9, evaluation only)
+
+- Same frozen system, **deepseek-v4.1-flash**, 279 calls: v3 channel **91.7%** / family 90.6% /
+  clear-intent **92.7%**, invalid 0.6%; holdout **82.8%** / 80.8%, invalid 0%.
+- DeepSeek **fixes the weak cat-jam-free families** (Metric 53→93, Timeline 73→100, Comparison
+  80→100, Mixed 42→75) → the cheap-model ceiling is **model-bound**, not architectural.
+- Still **Level C** (clear channel 92.7% < 99%; holdout 82.8% < 95%). Residual: Gallery (data
+  availability), calculator rich over-use (~1.7%), Norwegian under-use, 1 contract invalid (Metric
+  4th-arg `tone`). **v1 NOT declared complete; M10 unnecessary.** See
+  `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

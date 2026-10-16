@@ -1,0 +1,800 @@
+{
+  "model": "deepseek-v4.1-flash",
+  "v3": {
+    "summary": {
+      "run": 1,
+      "name": "v3",
+      "model": "deepseek-v4.1-flash",
+      "total": 60,
+      "errors": 0,
+      "channelAccuracy": 91.7,
+      "familyAccuracy": 91.7,
+      "clearChannelAccuracy": 91.7,
+      "clearFamilyAccuracy": 91.7,
+      "invalidRate": 1.7,
+      "fallbackRate": 1.7,
+      "jsLeakCases": [],
+      "errorTaxonomy": {
+        "under-use": 3,
+        "over-use": 0,
+        "wrong-family": 0,
+        "invalid": 1,
+        "rich-over-use": 1,
+        "rich-under-use": 0,
+        "not-mixed": 0,
+        "generation-failure": 0,
+        "other": 0
+      },
+      "categories": {
+        "Markdown": {
+          "total": 5,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Metric": {
+          "total": 5,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Comparison": {
+          "total": 5,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Table": {
+          "total": 5,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Chart": {
+          "total": 6,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Timeline": {
+          "total": 5,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Tabs/Composed": {
+          "total": 5,
+          "channelAccuracy": 80,
+          "familyAccuracy": 80
+        },
+        "Interactive/Form": {
+          "total": 6,
+          "channelAccuracy": 83.3,
+          "familyAccuracy": 83.3
+        },
+        "Gallery": {
+          "total": 4,
+          "channelAccuracy": 50,
+          "familyAccuracy": 50
+        },
+        "Query": {
+          "total": 4,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Mutation": {
+          "total": 3,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Rich Widget": {
+          "total": 3,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Mixed": {
+          "total": 4,
+          "channelAccuracy": 75,
+          "familyAccuracy": 75
+        }
+      },
+      "avgLatencyMs": 11095,
+      "medianLatencyMs": 7173,
+      "p95LatencyMs": 55168,
+      "totalTokens": 316186,
+      "avgTokens": 5270,
+      "avgPromptTokens": 3819,
+      "avgCompletionTokens": 1451,
+      "systemPromptChars": 15046
+    },
+    "means": {
+      "channelAccuracy": 91.7,
+      "familyAccuracy": 90.6,
+      "invalidRate": 0.6,
+      "fallbackRate": 0.6,
+      "avgLatencyMs": 9649.7,
+      "medianLatencyMs": 6536.3,
+      "p95LatencyMs": 43893.7,
+      "avgPromptTokens": 3819.0,
+      "avgCompletionTokens": 1332.3,
+      "avgTokens": 5151.3
+    },
+    "clearSubset": {
+      "n": 165,
+      "channelAccuracy": 92.7,
+      "familyAccuracy": 92.7
+    },
+    "runs": [
+      {
+        "run": 1,
+        "name": "v3",
+        "model": "deepseek-v4.1-flash",
+        "total": 60,
+        "errors": 0,
+        "channelAccuracy": 91.7,
+        "familyAccuracy": 91.7,
+        "clearChannelAccuracy": 91.7,
+        "clearFamilyAccuracy": 91.7,
+        "invalidRate": 1.7,
+        "fallbackRate": 1.7,
+        "jsLeakCases": [],
+        "errorTaxonomy": {
+          "under-use": 3,
+          "over-use": 0,
+          "wrong-family": 0,
+          "invalid": 1,
+          "rich-over-use": 1,
+          "rich-under-use": 0,
+          "not-mixed": 0,
+          "generation-failure": 0,
+          "other": 0
+        },
+        "categories": {
+          "Markdown": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Metric": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Comparison": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Table": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Chart": {
+            "total": 6,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Timeline": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Tabs/Composed": {
+            "total": 5,
+            "channelAccuracy": 80,
+            "familyAccuracy": 80
+          },
+          "Interactive/Form": {
+            "total": 6,
+            "channelAccuracy": 83.3,
+            "familyAccuracy": 83.3
+          },
+          "Gallery": {
+            "total": 4,
+            "channelAccuracy": 50,
+            "familyAccuracy": 50
+          },
+          "Query": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Mutation": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Rich Widget": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Mixed": {
+            "total": 4,
+            "channelAccuracy": 75,
+            "familyAccuracy": 75
+          }
+        },
+        "avgLatencyMs": 11095,
+        "medianLatencyMs": 7173,
+        "p95LatencyMs": 55168,
+        "totalTokens": 316186,
+        "avgTokens": 5270,
+        "avgPromptTokens": 3819,
+        "avgCompletionTokens": 1451,
+        "systemPromptChars": 15046
+      },
+      {
+        "run": 2,
+        "name": "v3",
+        "model": "deepseek-v4.1-flash",
+        "total": 60,
+        "errors": 0,
+        "channelAccuracy": 90,
+        "familyAccuracy": 88.3,
+        "clearChannelAccuracy": 90,
+        "clearFamilyAccuracy": 88.3,
+        "invalidRate": 0,
+        "fallbackRate": 0,
+        "jsLeakCases": [],
+        "errorTaxonomy": {
+          "under-use": 4,
+          "over-use": 1,
+          "wrong-family": 1,
+          "invalid": 0,
+          "rich-over-use": 1,
+          "rich-under-use": 0,
+          "not-mixed": 0,
+          "generation-failure": 0,
+          "other": 0
+        },
+        "categories": {
+          "Markdown": {
+            "total": 5,
+            "channelAccuracy": 80,
+            "familyAccuracy": 80
+          },
+          "Metric": {
+            "total": 5,
+            "channelAccuracy": 80,
+            "familyAccuracy": 80
+          },
+          "Comparison": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Table": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Chart": {
+            "total": 6,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Timeline": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Tabs/Composed": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Interactive/Form": {
+            "total": 6,
+            "channelAccuracy": 83.3,
+            "familyAccuracy": 83.3
+          },
+          "Gallery": {
+            "total": 4,
+            "channelAccuracy": 50,
+            "familyAccuracy": 25
+          },
+          "Query": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Mutation": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Rich Widget": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Mixed": {
+            "total": 4,
+            "channelAccuracy": 75,
+            "familyAccuracy": 75
+          }
+        },
+        "avgLatencyMs": 8691,
+        "medianLatencyMs": 5824,
+        "p95LatencyMs": 42666,
+        "totalTokens": 305971,
+        "avgTokens": 5100,
+        "avgPromptTokens": 3819,
+        "avgCompletionTokens": 1281,
+        "systemPromptChars": 15046
+      },
+      {
+        "run": 3,
+        "name": "v3",
+        "model": "deepseek-v4.1-flash",
+        "total": 60,
+        "errors": 0,
+        "channelAccuracy": 93.3,
+        "familyAccuracy": 91.7,
+        "clearChannelAccuracy": 93.3,
+        "clearFamilyAccuracy": 91.7,
+        "invalidRate": 0,
+        "fallbackRate": 0,
+        "jsLeakCases": [],
+        "errorTaxonomy": {
+          "under-use": 2,
+          "over-use": 1,
+          "wrong-family": 1,
+          "invalid": 0,
+          "rich-over-use": 1,
+          "rich-under-use": 0,
+          "not-mixed": 0,
+          "generation-failure": 0,
+          "other": 0
+        },
+        "categories": {
+          "Markdown": {
+            "total": 5,
+            "channelAccuracy": 80,
+            "familyAccuracy": 80
+          },
+          "Metric": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Comparison": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Table": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Chart": {
+            "total": 6,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Timeline": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Tabs/Composed": {
+            "total": 5,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Interactive/Form": {
+            "total": 6,
+            "channelAccuracy": 83.3,
+            "familyAccuracy": 83.3
+          },
+          "Gallery": {
+            "total": 4,
+            "channelAccuracy": 75,
+            "familyAccuracy": 50
+          },
+          "Query": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Mutation": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Rich Widget": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Mixed": {
+            "total": 4,
+            "channelAccuracy": 75,
+            "familyAccuracy": 75
+          }
+        },
+        "avgLatencyMs": 9163,
+        "medianLatencyMs": 6612,
+        "p95LatencyMs": 33847,
+        "totalTokens": 305024,
+        "avgTokens": 5084,
+        "avgPromptTokens": 3819,
+        "avgCompletionTokens": 1265,
+        "systemPromptChars": 15046
+      }
+    ]
+  },
+  "holdout": {
+    "summary": {
+      "run": 1,
+      "name": "holdout",
+      "model": "deepseek-v4.1-flash",
+      "total": 33,
+      "errors": 0,
+      "channelAccuracy": 81.8,
+      "familyAccuracy": 75.8,
+      "clearChannelAccuracy": 81.8,
+      "clearFamilyAccuracy": 75.8,
+      "invalidRate": 0,
+      "fallbackRate": 0,
+      "jsLeakCases": [],
+      "errorTaxonomy": {
+        "under-use": 4,
+        "over-use": 1,
+        "wrong-family": 2,
+        "invalid": 0,
+        "rich-over-use": 1,
+        "rich-under-use": 0,
+        "not-mixed": 0,
+        "generation-failure": 0,
+        "other": 0
+      },
+      "categories": {
+        "Metric": {
+          "total": 4,
+          "channelAccuracy": 75,
+          "familyAccuracy": 75
+        },
+        "Gallery": {
+          "total": 3,
+          "channelAccuracy": 33.3,
+          "familyAccuracy": 0
+        },
+        "Mixed": {
+          "total": 4,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Chart": {
+          "total": 4,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Timeline": {
+          "total": 3,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Rich-vs-Native": {
+          "total": 3,
+          "channelAccuracy": 33.3,
+          "familyAccuracy": 33.3
+        },
+        "Comparison": {
+          "total": 3,
+          "channelAccuracy": 100,
+          "familyAccuracy": 66.7
+        },
+        "Table": {
+          "total": 3,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Tabs": {
+          "total": 2,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Forms": {
+          "total": 3,
+          "channelAccuracy": 100,
+          "familyAccuracy": 100
+        },
+        "Markdown": {
+          "total": 1,
+          "channelAccuracy": 0,
+          "familyAccuracy": 0
+        }
+      },
+      "avgLatencyMs": 14976,
+      "medianLatencyMs": 7204,
+      "p95LatencyMs": 72777,
+      "totalTokens": 198020,
+      "avgTokens": 6001,
+      "avgPromptTokens": 3816,
+      "avgCompletionTokens": 2185,
+      "systemPromptChars": 15046
+    },
+    "means": {
+      "channelAccuracy": 82.8,
+      "familyAccuracy": 80.8,
+      "invalidRate": 0.0,
+      "fallbackRate": 0.0,
+      "avgLatencyMs": 13662.3,
+      "medianLatencyMs": 7454.7,
+      "p95LatencyMs": 56740.7,
+      "avgPromptTokens": 3816.0,
+      "avgCompletionTokens": 1956.7,
+      "avgTokens": 5772.0
+    },
+    "runs": [
+      {
+        "run": 1,
+        "name": "holdout",
+        "model": "deepseek-v4.1-flash",
+        "total": 33,
+        "errors": 0,
+        "channelAccuracy": 81.8,
+        "familyAccuracy": 75.8,
+        "clearChannelAccuracy": 81.8,
+        "clearFamilyAccuracy": 75.8,
+        "invalidRate": 0,
+        "fallbackRate": 0,
+        "jsLeakCases": [],
+        "errorTaxonomy": {
+          "under-use": 4,
+          "over-use": 1,
+          "wrong-family": 2,
+          "invalid": 0,
+          "rich-over-use": 1,
+          "rich-under-use": 0,
+          "not-mixed": 0,
+          "generation-failure": 0,
+          "other": 0
+        },
+        "categories": {
+          "Metric": {
+            "total": 4,
+            "channelAccuracy": 75,
+            "familyAccuracy": 75
+          },
+          "Gallery": {
+            "total": 3,
+            "channelAccuracy": 33.3,
+            "familyAccuracy": 0
+          },
+          "Mixed": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Chart": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Timeline": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Rich-vs-Native": {
+            "total": 3,
+            "channelAccuracy": 33.3,
+            "familyAccuracy": 33.3
+          },
+          "Comparison": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 66.7
+          },
+          "Table": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Tabs": {
+            "total": 2,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Forms": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Markdown": {
+            "total": 1,
+            "channelAccuracy": 0,
+            "familyAccuracy": 0
+          }
+        },
+        "avgLatencyMs": 14976,
+        "medianLatencyMs": 7204,
+        "p95LatencyMs": 72777,
+        "totalTokens": 198020,
+        "avgTokens": 6001,
+        "avgPromptTokens": 3816,
+        "avgCompletionTokens": 2185,
+        "systemPromptChars": 15046
+      },
+      {
+        "run": 2,
+        "name": "holdout",
+        "model": "deepseek-v4.1-flash",
+        "total": 33,
+        "errors": 0,
+        "channelAccuracy": 81.8,
+        "familyAccuracy": 81.8,
+        "clearChannelAccuracy": 81.8,
+        "clearFamilyAccuracy": 81.8,
+        "invalidRate": 0,
+        "fallbackRate": 0,
+        "jsLeakCases": [],
+        "errorTaxonomy": {
+          "under-use": 4,
+          "over-use": 1,
+          "wrong-family": 0,
+          "invalid": 0,
+          "rich-over-use": 1,
+          "rich-under-use": 0,
+          "not-mixed": 0,
+          "generation-failure": 0,
+          "other": 0
+        },
+        "categories": {
+          "Metric": {
+            "total": 4,
+            "channelAccuracy": 75,
+            "familyAccuracy": 75
+          },
+          "Gallery": {
+            "total": 3,
+            "channelAccuracy": 33.3,
+            "familyAccuracy": 33.3
+          },
+          "Mixed": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Chart": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Timeline": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Rich-vs-Native": {
+            "total": 3,
+            "channelAccuracy": 66.7,
+            "familyAccuracy": 66.7
+          },
+          "Comparison": {
+            "total": 3,
+            "channelAccuracy": 66.7,
+            "familyAccuracy": 66.7
+          },
+          "Table": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Tabs": {
+            "total": 2,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Forms": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Markdown": {
+            "total": 1,
+            "channelAccuracy": 0,
+            "familyAccuracy": 0
+          }
+        },
+        "avgLatencyMs": 12647,
+        "medianLatencyMs": 7533,
+        "p95LatencyMs": 55454,
+        "totalTokens": 184908,
+        "avgTokens": 5603,
+        "avgPromptTokens": 3816,
+        "avgCompletionTokens": 1788,
+        "systemPromptChars": 15046
+      },
+      {
+        "run": 3,
+        "name": "holdout",
+        "model": "deepseek-v4.1-flash",
+        "total": 33,
+        "errors": 0,
+        "channelAccuracy": 84.8,
+        "familyAccuracy": 84.8,
+        "clearChannelAccuracy": 84.8,
+        "clearFamilyAccuracy": 84.8,
+        "invalidRate": 0,
+        "fallbackRate": 0,
+        "jsLeakCases": [],
+        "errorTaxonomy": {
+          "under-use": 5,
+          "over-use": 0,
+          "wrong-family": 0,
+          "invalid": 0,
+          "rich-over-use": 0,
+          "rich-under-use": 0,
+          "not-mixed": 0,
+          "generation-failure": 0,
+          "other": 0
+        },
+        "categories": {
+          "Metric": {
+            "total": 4,
+            "channelAccuracy": 75,
+            "familyAccuracy": 75
+          },
+          "Gallery": {
+            "total": 3,
+            "channelAccuracy": 0,
+            "familyAccuracy": 0
+          },
+          "Mixed": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Chart": {
+            "total": 4,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Timeline": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Rich-vs-Native": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Comparison": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Table": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Tabs": {
+            "total": 2,
+            "channelAccuracy": 50,
+            "familyAccuracy": 50
+          },
+          "Forms": {
+            "total": 3,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          },
+          "Markdown": {
+            "total": 1,
+            "channelAccuracy": 100,
+            "familyAccuracy": 100
+          }
+        },
+        "avgLatencyMs": 13364,
+        "medianLatencyMs": 7627,
+        "p95LatencyMs": 41991,
+        "totalTokens": 188503,
+        "avgTokens": 5712,
+        "avgPromptTokens": 3816,
+        "avgCompletionTokens": 1897,
+        "systemPromptChars": 15046
+      }
+    ]
+  }
+}

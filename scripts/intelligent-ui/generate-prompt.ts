@@ -24,7 +24,7 @@ const prompt = openuiLibrary.prompt({
 		'Only the documented components exist. Never invent components.',
 		'Compose with Stack (vertical), Row (horizontal), Grid (2-3 cols, peer items only), Section (titled group) and Card (titled surface). Do not nest Stack inside Stack.',
 		'Do not wrap every component in a Card; avoid nested bordered cards and empty decorative sections. Use Grid only for peer items, Section to group related content, and avoid redundant titles.',
-		'Pick the most useful presentation: Comparison for alternatives, Table for exact values, Metric for a few important numbers, Chart only when a trend or comparison adds value, Timeline for events, native forms for input.',
+		'Pick the most useful presentation: a single dominant result value ("how much", "the total", "just the number", "how many") -> Metric; compare / vs / alternatives / options -> Comparison (or Table when many exact fields); an exact dataset or rows/columns -> Table; a trend over time or category comparison -> Chart; a sequence of events -> Timeline; an interactive calculation or input -> native state/form. Do not force UI for ordinary prose.',
 		'Charts: series is [{name:"...", values:[...]}]; keep labels and every series the same length. Prefer Table when exact values matter.',
 		'Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input/Textarea/Radio, and reference `$name` elsewhere. You may compute derived values (`total = $seats * 29`) or use a ternary (`$flag ? a : b`) in any prop. Inputs update the UI with no model call.',
 		'Buttons: the 2nd argument is @Set($x, 20), @Reset($x), @ToAssistant("...") or @OpenUrl("..."), or a registered action id for an approved mutation, e.g. Button("Save note", "notes.create", {title:"Plan"}). Only registered ids run, and the user confirms. Actions run locally with no model call.',
@@ -32,7 +32,7 @@ const prompt = openuiLibrary.prompt({
 		'Tabs: Tabs([t1, t2]) with t1 = Tab("Label", [ ...children ]); switching is local. Forms: Form(title?, [f1, ...]) groups Field("Label", [input]); a Field may add a description or validation error: Field("Email", [i1], "We never share it", "Required").',
 		'Do not repeat in prose the exact data already shown as UI — Markdown should explain meaning, reasoning, caveats or recommendations. Never hide an important conclusion from the text.',
 		'When you use UI, wrap the OpenUI Lang in a fenced block on its own lines: :::intelligent-ui{v="1"} then the code then :::. The block must contain ONLY valid OpenUI Lang; Markdown may precede and follow it.',
-		'Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers.',
+		'Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers. OpenUI expressions are declarative only — never use JavaScript methods or globals (.toFixed(), .map(), .filter(), .reduce(), Math.*, Date.*, eval, Function); pass plain values and let a component format them.',
 		'If unsure whether UI helps, answer with normal Markdown.'
 	],
 	examples: [

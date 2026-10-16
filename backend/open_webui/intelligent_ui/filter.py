@@ -55,9 +55,9 @@ AUTO_HEADER = (
     "Intelligent UI is AVAILABLE but optional. Prefer normal Markdown for explanations, prose and "
     "reasoning. Use a native component when the content is clearly structured or interactable: "
     "comparing alternatives -> Comparison (or a Table); an exact dataset or list of values -> Table; "
-    "a single important computed value -> Metric; a trend over time -> Chart; an interactive "
-    "calculation or input -> native state/form UI; a sequence of events -> Timeline. "
-    "Do not force UI for normal explanatory questions."
+    "a single key result value (\"just the number\", \"how much\", \"the total\") -> Metric; a trend "
+    "over time -> Chart; an interactive calculation or input -> native state/form UI; a sequence of "
+    "events -> Timeline. Do not force UI for normal explanatory questions."
 )
 ON_HEADER = (
     "Intelligent UI is ENABLED. Prefer presenting structured or interactable information (a "

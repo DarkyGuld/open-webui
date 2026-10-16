@@ -38,6 +38,10 @@ Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
 `MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:
 `OUTPUT_PERSISTENCE.md`.
 
+Milestone tags: `intelligent-ui-m3` … `intelligent-ui-m9.5`. Latest: M9.5 = commits `f05bcf51c`
+(feat) + `d0ac562c1` (docs), tag `intelligent-ui-m9.5`. Each milestone's report carries its own
+SHAs.
+
 ## Intelligent UI architecture (current path)
 
 ```

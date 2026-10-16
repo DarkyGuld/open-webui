@@ -152,8 +152,8 @@ form, query success/empty/error, mixed, rich, stream partial/complete). **21 scr
 
 ## GitHub
 
-- Commits + annotated tag `intelligent-ui-m9.5`; branch `intelligent-ui-foundation`.
-  (Fill exact SHAs in HANDOFF after push.)
+- Branch `intelligent-ui-foundation`; commits `f05bcf51c` (feat) + `d0ac562c1` (docs);
+  annotated tag `intelligent-ui-m9.5`.
 
 ## Readiness for routing benchmark v2
 

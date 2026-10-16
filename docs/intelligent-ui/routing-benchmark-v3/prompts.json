@@ -1,0 +1,79 @@
+{
+  "version": 3,
+  "model": "cat-jam-free",
+  "notes": "Capability benchmark for the post-M9.4 catalog. Real user-like prompts; the model must infer presentation. expected_channel in {markdown,native,rich}; expected_family is the primary native family. expect_mixed=true means the ideal answer is Markdown intro + native UI + short Markdown interpretation.",
+  "cases": [
+    { "id": "md1", "category": "Markdown", "prompt": "Explain what DNS is in two sentences.", "expected_channel": "markdown" },
+    { "id": "md2", "category": "Markdown", "prompt": "Who was Ada Lovelace?", "expected_channel": "markdown" },
+    { "id": "md3", "category": "Markdown", "prompt": "Write a short poem about autumn.", "expected_channel": "markdown" },
+    { "id": "md4", "category": "Markdown", "prompt": "Hva er fotosyntese? Forklar kort.", "expected_channel": "markdown" },
+    { "id": "md5", "category": "Markdown", "prompt": "How do I stay motivated when learning to code?", "expected_channel": "markdown" },
+
+    { "id": "me1", "category": "Metric", "prompt": "How much is it per month for 20 seats at 49 kr each? Just the number.", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "me2", "category": "Metric", "prompt": "What's the total if I buy 12 units at 250 kr?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "me3", "category": "Metric", "prompt": "How many employees do we have in total?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "me4", "category": "Metric", "prompt": "Hva blir totalen for 8 seter til 490 kr per sete?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "me5", "category": "Metric", "prompt": "Give me the headline revenue number.", "expected_channel": "native", "expected_family": "Metric" },
+
+    { "id": "co1", "category": "Comparison", "prompt": "Compare these three VPS plans: Basic, Pro, Team.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "co2", "category": "Comparison", "prompt": "Python vs JavaScript for backend development — which should I pick?", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "co3", "category": "Comparison", "prompt": "Compare iPhone and Android for a developer.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "co4", "category": "Comparison", "prompt": "Sammenlign de tre skyløsningene for meg.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "co5", "category": "Comparison", "prompt": "Which is better, PostgreSQL or MySQL? Compare them.", "expected_channel": "native", "expected_family": "Comparison" },
+
+    { "id": "ta1", "category": "Table", "prompt": "Show a table of monthly costs: compute, storage, backup.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "ta2", "category": "Table", "prompt": "List the top 5 programming languages with their market share.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "ta3", "category": "Table", "prompt": "Give me a table of the planets and their distances from the sun.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "ta4", "category": "Table", "prompt": "Tabulate the quarterly sales numbers.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "ta5", "category": "Table", "prompt": "Show this data as a table: 3 products with price and stock.", "expected_channel": "native", "expected_family": "Table" },
+
+    { "id": "ch1", "category": "Chart", "prompt": "Show the revenue trend over the last four quarters.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "ch2", "category": "Chart", "prompt": "Chart the monthly signups for January through June.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "ch3", "category": "Chart", "prompt": "Visualize the market share split between our three products.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "ch4", "category": "Chart", "prompt": "Show how our costs have changed month over month this year.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "ch5", "category": "Chart", "prompt": "Chart the number of active users per quarter.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "ch6", "category": "Chart", "prompt": "Give me the exact quarterly revenue for Q1 to Q4 as numbers.", "expected_channel": "native", "expected_family": "Table" },
+
+    { "id": "tl1", "category": "Timeline", "prompt": "Show the project milestones and their dates.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "tl2", "category": "Timeline", "prompt": "Give me a timeline of the main events of World War II.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "tl3", "category": "Timeline", "prompt": "Show the ordered steps in our deployment process.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "tl4", "category": "Timeline", "prompt": "List the release history of our app chronologically.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "tl5", "category": "Timeline", "prompt": "What is a for-loop and when would I use one?", "expected_channel": "markdown" },
+
+    { "id": "tc1", "category": "Tabs/Composed", "prompt": "Show specs and pricing in tabs.", "expected_channel": "native", "expected_family": "Tabs" },
+    { "id": "tc2", "category": "Tabs/Composed", "prompt": "Give me a dashboard with the key numbers and a cost breakdown.", "expected_channel": "native", "expected_family": "Composed" },
+    { "id": "tc3", "category": "Tabs/Composed", "prompt": "Lay out a summary with several metric cards side by side.", "expected_channel": "native", "expected_family": "Composed" },
+    { "id": "tc4", "category": "Tabs/Composed", "prompt": "Show an overview of the workspace with cost and seats.", "expected_channel": "native", "expected_family": "Composed" },
+    { "id": "tc5", "category": "Tabs/Composed", "prompt": "Present the plan tiers in tabs, each with its own comparison.", "expected_channel": "native", "expected_family": "Tabs" },
+
+    { "id": "in1", "category": "Interactive/Form", "prompt": "Build a pricing calculator with a seats slider.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "in2", "category": "Interactive/Form", "prompt": "Make a loan calculator where I can drag a slider for the number of months.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "in3", "category": "Interactive/Form", "prompt": "Let me choose a plan with a select and show the price.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "in4", "category": "Interactive/Form", "prompt": "Add a toggle to switch between monthly and yearly pricing.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "in5", "category": "Interactive/Form", "prompt": "Create a simple sign-up form with name and email.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "in6", "category": "Interactive/Form", "prompt": "Make a settings form with a toggle and a slider.", "expected_channel": "native", "expected_family": "Form" },
+
+    { "id": "ga1", "category": "Gallery", "prompt": "Show a gallery of the product screenshots.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "ga2", "category": "Gallery", "prompt": "Display these images in a grid with captions.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "ga3", "category": "Gallery", "prompt": "Show my uploaded files as a gallery of images.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "ga4", "category": "Gallery", "prompt": "Give me a single image view of the company logo.", "expected_channel": "native", "expected_family": "Gallery" },
+
+    { "id": "qu1", "category": "Query", "prompt": "Show my notes.", "expected_channel": "native", "expected_family": "Query" },
+    { "id": "qu2", "category": "Query", "prompt": "List my files.", "expected_channel": "native", "expected_family": "Query" },
+    { "id": "qu3", "category": "Query", "prompt": "Show my knowledge collections.", "expected_channel": "native", "expected_family": "Query" },
+    { "id": "qu4", "category": "Query", "prompt": "Show my saved notes in a table.", "expected_channel": "native", "expected_family": "Query" },
+
+    { "id": "mu1", "category": "Mutation", "prompt": "Let me save a short note titled \"Plan\".", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "mu2", "category": "Mutation", "prompt": "Add a button to this form that creates a note when I confirm.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "mu3", "category": "Mutation", "prompt": "Make a form that saves a note titled from the title field.", "expected_channel": "native", "expected_family": "Form" },
+
+    { "id": "ri1", "category": "Rich Widget", "prompt": "Build a custom 3D cube I can rotate with the mouse.", "expected_channel": "rich" },
+    { "id": "ri2", "category": "Rich Widget", "prompt": "Make a bespoke canvas animation with floating particles.", "expected_channel": "rich" },
+    { "id": "ri3", "category": "Rich Widget", "prompt": "Create a tiny custom mini-game widget with a moving paddle.", "expected_channel": "rich" },
+
+    { "id": "mx1", "category": "Mixed", "prompt": "Compare these three plans and tell me which is best.", "expected_channel": "native", "expected_family": "Comparison", "expect_mixed": true },
+    { "id": "mx2", "category": "Mixed", "prompt": "Show the revenue trend and explain what it means.", "expected_channel": "native", "expected_family": "Chart", "expect_mixed": true },
+    { "id": "mx3", "category": "Mixed", "prompt": "Show the project milestones and summarize the current status.", "expected_channel": "native", "expected_family": "Timeline", "expect_mixed": true },
+    { "id": "mx4", "category": "Mixed", "prompt": "Show my files and tell me which one is largest.", "expected_channel": "native", "expected_family": "Query", "expect_mixed": true }
+  ]
+}

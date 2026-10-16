@@ -155,6 +155,18 @@ in Milestone 2.
 - Next: prompt micro-tuning ("just the number" trigger; avoid `.toFixed()`) + a separate v3 prompt
   set for chart/timeline/gallery. See `ROUTING_BENCHMARK_V2.md`.
 
+## Capability benchmark v3 + prompt hardening (Milestone 9.7, evaluation only)
+
+- Minimal prompt hardening (Metric/Comparison triggers; explicit no-JS-method rule; AUTO header).
+- New ~60-prompt capability dataset (Chart/Timeline/Tabs/Form/Gallery/Query/Mutation/Rich/Mixed),
+  cat-jam-free, 3 runs: aggregate channel **77.2 %**, family **73.3 %**, invalid/fallback **2.2 %**,
+  rich over-use 1.7 %. Clear-intent subset: channel **81.8 %**.
+- **Native JS leakage fixed to 0.** Core families strong (Markdown/Mutation 100 %, Tabs 93 %,
+  Query 92 %, Rich 89 %); weak: Metric 53 %, Gallery 50 %, Mixed 42 % (mostly ambiguous/
+  data-dependent prompts).
+- **v1 not declared complete**; targeted fixes recommended (Metric example, Gallery rule, Mixed rule,
+  Badge contract, multilingual note). **M10 still unnecessary.** See `ROUTING_BENCHMARK_V3.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

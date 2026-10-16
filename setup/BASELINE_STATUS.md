@@ -214,6 +214,17 @@ introduced here.
 - **No new dependencies; no core files.** See `MILESTONE_9_5_REPORT.md`, `PARITY_VISUAL_AUDIT.md`,
   `UX_GUIDELINES.md`.
 
+### Milestone 9.7 (prompt hardening + capability benchmark v3) addendum
+
+- Prompt hardening: `PROMPT` 12 286 → **12 719 chars** (+3.5%); AUTO header +37 chars. No broad
+  rewrite. Tests: `vitest` **121 passed**, `pytest` **53 passed**, build **green**.
+- New ~60-prompt capability dataset (`docs/intelligent-ui/routing-benchmark-v3/prompts.json`);
+  cat-jam-free, 3 runs (180 calls, 0 generation errors): aggregate channel **77.2%** / family
+  **73.3%**, invalid/fallback **2.2%**, rich over-use 1.7%; clear-intent subset channel **81.8%**.
+- **Native JS leakage fixed to 0**; remaining 2 invalids are contract mismatches (Badge variant arg;
+  empty Metric label). **v1 not yet complete; M10 still unnecessary.** See `ROUTING_BENCHMARK_V3.md`.
+- **No new dependencies; no core files.** (Benchmark tooling + docs only.)
+
 ## Reproduce
 
 ```bash

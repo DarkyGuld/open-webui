@@ -3,6 +3,10 @@
 Single source of truth: `src/lib/intelligent-ui/catalog.ts` (model contract) and `schema.ts`
 (runtime validation). Both are kept in sync by tests. `catalog_version` = **4** (v1–v3 still valid).
 
+M9.12 persistence policy: existing slider/boolean/enumerated controls and Comparison selections may
+restore locally for the same authenticated user/chat/block/exact program. Input/Textarea and unknown
+variables are never automatically persisted. No server synchronization; see `PERSISTENT_STATE_DESIGN.md`.
+
 ## Signatures
 
 `?` = optional. `$binding<type>` = a `$variable` reference for two-way binding. Expressions

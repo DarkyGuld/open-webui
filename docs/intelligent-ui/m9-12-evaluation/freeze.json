@@ -1,0 +1,15 @@
+{
+  "datasetVersion": "m9.12-holdout-1",
+  "contractVersion": 8,
+  "status": "FROZEN_NOT_EXECUTED",
+  "holdoutSha256": "fa08b424614f40c443172c1d8e14fda89447a537a7319b0a08c2a72cbbeba826",
+  "developmentDatasetSha256": "4a0afa937db214f04d59d2be8e6500e50872a8f2faa35b5da5c20591330ab357",
+  "evaluatorSha256": "0cab470e4109464b738d123fc5e2fd11871018c17d1a4ced8771d84b17c59f78",
+  "productionPromptFileSha256": "39098440ee348e784c4189c52e3d44bd8c20ff5bb40fca816b6ecec260de1ef6",
+  "filterFileSha256": "a2fb9ef6193a39d43fbf68334b3ab5d2b32ee54f12b11718ca5d8cbecbaa62ac",
+  "modelsPlanned": ["cat-jam-free", "deepseek-v4.1-flash"],
+  "paidExecutionApproval": "NOT_GRANTED",
+  "runsPerDatasetPerModel": 3,
+  "holdoutCases": 50,
+  "languageCounts": {"en": 26, "no": 24}
+}

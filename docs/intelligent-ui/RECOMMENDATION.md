@@ -1,5 +1,12 @@
 # Intelligent UI — Recommendation
 
+**Current M9.12:** M9.11 merged via PR #1 (`110008de6`). Reviewable M9.12 subset restores only
+safe scoped controls locally; cross-device storage is designed but not enabled (chat variables are
+not private UI storage). No new routing measurements or prompt tuning. Frozen EN/NO holdout and
+cost plan await approval; see `M9_12_STATUS.md` and `m9-12-evaluation/PLAN.md`. Broader priorities
+are in `docs/PRODUCT_BACKLOG_CURRENT.md` (Files-backed Library first). Historical recommendations
+and benchmark measurements below are retained as historical context, not current completeness claims.
+
 ## DECISION (locked for MVP)
 
 | Decision | Choice |

@@ -1,5 +1,10 @@
 # ChatGPT Parity Plan — Intelligent UI (zero new dependencies)
 
+**Current:** M9.11 merged (`110008de6`); M9.12 is a separate safe implementation/preparation PR.
+Local control restoration is implemented; cross-device persistence and paid evaluation are pending.
+Read `M9_12_STATUS.md`, `PERSISTENT_STATE_DESIGN.md`, and `docs/PRODUCT_BACKLOG_CURRENT.md`.
+No planner, new component families, external integrations or benchmark-tuned production rules.
+
 > **Progress:** M5 (layout), M6 (logic/state/expressions), M7 (streaming), M8 (@Each + server
 > fallback), M9 (rich-widget sandbox), M9.1 (rich-widget control parity), M9.2 Phase A (@Set/@Reset),
 > M9.3 (Query/Mutation/tool bindings), M9.4 (native composition + component breadth: tabs, charts,

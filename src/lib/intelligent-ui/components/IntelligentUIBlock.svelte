@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext, onDestroy } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { chatId } from '$lib/stores';
+	import { chatId, user } from '$lib/stores';
 	import {
 		createIntelligentUIRuntime,
 		createIntelligentUIPartialRuntime,
@@ -10,8 +10,12 @@
 	} from '$lib/intelligent-ui/adapter';
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
 	import { getMutation } from '$lib/intelligent-ui/mutations';
-	import { loadState, saveState } from '$lib/intelligent-ui/state';
 	import { safeNavigationUrl } from '$lib/intelligent-ui/navigation';
+	import {
+		createInteractionScope, loadControlState, saveControlState,
+		type InteractionScope
+	} from '$lib/intelligent-ui/interaction-state';
+	import { isTemporaryChatId } from '$lib/utils/chatId';
 	import type { OpenUIAction, UIAction, UINode } from '$lib/intelligent-ui/types';
 	import NodeRenderer from '$lib/intelligent-ui/components/NodeRenderer.svelte';
 	import IntelligentUIFallback from '$lib/intelligent-ui/components/IntelligentUIFallback.svelte';
@@ -30,14 +34,30 @@
 	let fallbackReason: string | null = null;
 	let unsub: (() => void) | undefined;
 	let lastKey: string | null = null;
+	let scope: InteractionScope | null = null;
+	let userEdits = 0;
+	let disposed = false;
+	let selected: string | undefined = undefined;
 
 	// Re-parse when the fence content (or completion) changes.
 	// - partial: ONE persistent streaming runtime (parser + store reused across
 	//   chunks; user input survives between chunks) — keep last-good tree.
 	// - complete: full parse + live runtime, seeded with the user-touched values
 	//   from streaming so interactions survive the finalization.
-	$: key = `${partial ? 'p' : 'f'}:${token?.text ?? ''}`;
+	$: identity = JSON.stringify([$user?.id ?? '', $chatId ?? '', id]);
+	let lastIdentity = '';
+	$: key = `${identity}:${partial ? 'p' : 'f'}:${token?.text ?? ''}`;
 	$: if (key !== lastKey) {
+		if (identity !== lastIdentity) {
+			partialRt?.dispose();
+			partialRt = undefined;
+			unsub?.();
+			runtime = undefined;
+			tree = null;
+			selected = undefined;
+			lastIdentity = identity;
+		}
+		scope = null;
 		lastKey = key;
 		const input = { version: token?.attributes?.v, content: token?.text ?? '' };
 		if (partial) {
@@ -45,7 +65,7 @@
 			const p = partialRt.update(input);
 			if (p.ok && p.node) tree = p.node; // keep last-good tree on failure
 		} else {
-			const persisted = partialRt?.touchedValues();
+			const touched = partialRt?.touchedValues();
 			partialRt?.dispose();
 			partialRt = undefined;
 			unsub?.();
@@ -53,7 +73,7 @@
 			const outcome = createIntelligentUIRuntime(
 				input,
 				undefined,
-				persisted ? { persisted } : undefined
+				touched ? { persisted: touched } : undefined
 			);
 			if (outcome.ok) {
 				tree = outcome.node;
@@ -63,6 +83,8 @@
 					unsub = runtime.subscribe(() => {
 						tree = runtime!.evaluate();
 					});
+					// User input during this stream wins over any saved state.
+					void restoreInteractionState(key, !!touched && Object.keys(touched).length > 0);
 				}
 			} else {
 				tree = null;
@@ -72,14 +94,41 @@
 		}
 	}
 
+	// Deliberately local-only first slice. No raw text fields or model context.
+	async function restoreInteractionState(keyAtLoad: string, streamingInput: boolean) {
+		const chat = $chatId ?? '';
+		if (!chat || !id || isTemporaryChatId(chat)) return;
+		const rt = runtime;
+		const editsAtLoad = userEdits;
+		try {
+			const resolved = await createInteractionScope($user?.id ?? '', chat, id, token?.text ?? '');
+			if (disposed || key !== keyAtLoad || runtime !== rt || !resolved || !tree || !rt) return;
+			scope = resolved;
+			if (!streamingInput && userEdits === editsAtLoad) {
+				const saved = loadControlState(scope, tree);
+				for (const [name, value] of Object.entries(saved)) {
+					if (name === '_selection') selected = value as string;
+					else rt.setState(name, value);
+				}
+				tree = rt.evaluate();
+			} else {
+				persistInteractionState();
+			}
+		} catch {
+			// Crypto/storage unavailable: keep working entirely in memory.
+		}
+	}
+
+	function persistInteractionState() {
+		if (partialRt || !runtime || !tree || !scope) return;
+		saveControlState(scope, tree, { ...runtime.getState(), _selection: selected });
+	}
+
 	onDestroy(() => {
+		disposed = true;
 		unsub?.();
 		partialRt?.dispose();
 	});
-
-	// --- durable local state (comparison selection) ---
-	let uiState: Record<string, unknown> = loadState($chatId ?? '', id);
-	let selected: string | undefined = typeof uiState.selected === 'string' ? uiState.selected : undefined;
 
 	// --- native confirmation ---
 	let confirmOpen = false;
@@ -110,8 +159,8 @@
 		const result = await dispatchAction(action, ctx);
 		if (result.ok && result.kind === 'state' && result.action.type === 'select') {
 			selected = result.action.value;
-			uiState = { ...uiState, selected };
-			saveState($chatId ?? '', id, uiState);
+			userEdits++;
+			persistInteractionState();
 		}
 		if (!result.ok && result.reason !== 'cancelled') {
 			console.debug('[intelligent-ui] action rejected:', result.reason);
@@ -129,6 +178,7 @@
 	}
 
 	function handleBind(name: string, value: unknown) {
+		userEdits++;
 		if (partialRt) {
 			// Live binding during streaming — recorded in the persistent store
 			// and carried into the final runtime at completion.
@@ -138,6 +188,7 @@
 		}
 		runtime?.setState(name, value);
 		tree = runtime?.evaluate() ?? tree;
+		persistInteractionState();
 	}
 
 	// OpenUI actions (@Set / @Reset / @ToAssistant / @OpenUrl), already normalized
@@ -146,9 +197,11 @@
 		const steps = Array.isArray(action) ? action : [action];
 		for (const step of steps) {
 			if (step.type === 'set') {
+				userEdits++;
 				if (partialRt) partialRt.setState(step.target, step.value);
 				else runtime?.setState(step.target, step.value);
 			} else if (step.type === 'reset') {
+				userEdits++;
 				if (partialRt) partialRt.resetState(step.targets);
 				else runtime?.resetState(step.targets);
 			} else if (step.type === 'send_prompt') {
@@ -191,7 +244,10 @@
 			}
 		}
 		if (partialRt) refreshPartialTree();
-		else tree = runtime?.evaluate() ?? tree;
+		else {
+			tree = runtime?.evaluate() ?? tree;
+			persistInteractionState();
+		}
 	}
 </script>
 

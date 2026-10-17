@@ -7,11 +7,12 @@
  * Uses the production AUTO prompt (incl. rich instructions), the real adapter
  * and the real validation/fallback path. Historical v1–v5 results untouched.
  *
- * Usage:
- *   OPENCODE_KEY=... [BENCH_MODEL=cat-jam-free] [BENCH_RUNS=1] \
- *   npx tsx audit/lib/routing-benchmark-v6.mts
+ * Default: preflight only (no model requests). BENCH_DATASET selects frozen
+ * cases independently of a fresh BENCH_OUTDIR. BENCH_EXECUTE=1 explicitly
+ * enables requests; paid models additionally need user approval before setting
+ * BENCH_PAID_APPROVED=1. Historical output files are never overwritten.
  */
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -29,12 +30,20 @@ const REPO = path.resolve(__dirname, '..', '..');
 const OUT = process.env.BENCH_OUTDIR
 	? path.resolve(REPO, process.env.BENCH_OUTDIR)
 	: path.resolve(REPO, 'docs/intelligent-ui/routing-benchmark-v6');
-mkdirSync(OUT, { recursive: true });
 
 const KEY = process.env.OPENCODE_KEY || '';
 const MODEL = process.env.BENCH_MODEL || 'cat-jam-free';
 const RUNS = Number(process.env.BENCH_RUNS || 1);
 const URL = 'https://opencode.ai/zen/go/v1/chat/completions';
+const EXECUTE = process.env.BENCH_EXECUTE === '1';
+if (!Number.isInteger(RUNS) || RUNS < 1 || RUNS > 3) throw new Error('BENCH_RUNS must be 1–3');
+if (!['cat-jam-free', 'deepseek-v4.1-flash'].includes(MODEL)) throw new Error('Unapproved benchmark model');
+if (EXECUTE && MODEL !== 'cat-jam-free' && process.env.BENCH_PAID_APPROVED !== '1')
+	throw new Error('Paid calls require explicit user approval before setting BENCH_PAID_APPROVED=1');
+if (EXECUTE && !KEY) throw new Error('Missing OPENCODE_KEY');
+if (EXECUTE && existsSync(path.join(OUT, 'results-run1.json')))
+	throw new Error('Refusing to overwrite existing results; choose a fresh BENCH_OUTDIR');
+if (EXECUTE) mkdirSync(OUT, { recursive: true });
 
 const PY = path.join(REPO, '.venv', 'bin', 'python');
 const pyEnv = { ...process.env, PYTHONPATH: path.join(REPO, 'backend') };
@@ -52,7 +61,8 @@ const richAuto = `${RICH_HEADER} Use it only when it is clearly better than the 
 const SYSTEM = `${AUTO_HEADER}\n\n${PROMPT}\n\n${richAuto}\n\n${RICH_PROMPT}`;
 
 const CASES: EvaluationCase[] = JSON.parse(
-	readFileSync(path.join(OUT, 'prompts.json'), 'utf8')
+	readFileSync(process.env.BENCH_DATASET ? path.resolve(REPO, process.env.BENCH_DATASET) :
+		path.join(REPO, 'docs/intelligent-ui/routing-benchmark-v6/prompts.json'), 'utf8')
 ).cases;
 
 const JS_LEAK_RE = /\.toFixed\(|\.map\(|\.filter\(|\.reduce\(|Math\.|Date\.|eval\(|Function\(/g;
@@ -205,14 +215,19 @@ async function runOnce(run: number) {
 }
 
 const runs: any[] = [];
-for (let i = 1; i <= RUNS; i++) {
-	console.log(`\n===== v6 RUN ${i}/${RUNS} (${MODEL}) =====`);
-	runs.push(await runOnce(i));
+if (!EXECUTE) console.log(JSON.stringify({ mode: 'PREFLIGHT_NO_API_CALLS', model: MODEL,
+	cases: CASES.length, runs: RUNS, callsPlanned: CASES.length * RUNS,
+	contractVersion: EVAL_CONTRACT_VERSION, systemChars: SYSTEM.length, outdir: OUT }, null, 2));
+if (EXECUTE) {
+	for (let i = 1; i <= RUNS; i++) {
+		console.log(`\n===== v6 RUN ${i}/${RUNS} (${MODEL}) =====`);
+		runs.push(await runOnce(i));
+	}
+	const run1 = JSON.parse(readFileSync(path.join(OUT, 'results-run1.json'), 'utf8'));
+	writeFileSync(
+		path.join(OUT, 'results.json'),
+		JSON.stringify({ summary: run1.summary, runs: runs.map((r) => r.summary), results: run1.results }, null, 2)
+	);
+	console.log('\n=== v6 SUMMARY ===');
+	console.log(JSON.stringify(runs[runs.length - 1], null, 2));
 }
-const run1 = JSON.parse(readFileSync(path.join(OUT, 'results-run1.json'), 'utf8'));
-writeFileSync(
-	path.join(OUT, 'results.json'),
-	JSON.stringify({ summary: run1.summary, runs: runs.map((r) => r.summary), results: run1.results }, null, 2)
-);
-console.log('\n=== v6 SUMMARY ===');
-console.log(JSON.stringify(runs[runs.length - 1], null, 2));

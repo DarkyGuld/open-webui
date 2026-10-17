@@ -17,6 +17,13 @@ A customized Open WebUI product aiming for:
 
 ## Current status
 
+**Latest:** M9.11 PR #1 merged into `intelligent-ui-foundation` as **`110008de6`**, merge CI green.
+M9.12 safe subset is on **`feat/intelligent-ui-m9-12`**: filtered local calculator/selection
+restoration, no text persistence, server-state security design, a frozen 50-case EN/NO holdout and
+approval-gated evaluation preflight. **Cross-device sync and paid model runs are NOT completed.**
+Read `docs/intelligent-ui/M9_12_STATUS.md`, `PERSISTENT_STATE_DESIGN.md` and
+`docs/PRODUCT_BACKLOG_CURRENT.md` before continuing. No automatic M9.12 merge.
+
 | Milestone | Status | Summary |
 |---|---|---|
 | 1 — gating & settings | ✅ complete | global/user/chat/model toggles + resolver; OFF = stock no-op |
@@ -38,7 +45,8 @@ A customized Open WebUI product aiming for:
 | 9.8 — targeted reliability hardening | ✅ complete (eval + guidance) | Badge tone + Metric-label contract; Metric/Gallery/Mixed/Chart-Table/Timeline guidance + native-first + multilingual (PROMPT +4.65%); v3 re-run channel **81.1%**/family 78.9%/invalid 0%, holdout **65.6%**/61.6%; **99% target not reached (cheap-model plateau ~66–85%)**; M10 unnecessary. See `MILESTONE_9_8_REPORT.md` |
 | 9.9 — strong-model ceiling benchmark | ✅ complete (eval only) | deepseek-v4.1-flash, frozen system, 279 calls: v3 channel **91.7%**/family 90.6%/clear 92.7%, holdout **82.8%**/80.8%, invalid 0.6%; **Level C — architecture strong, model-bound; near-99% not reached; v1 NOT declared complete; M10 unnecessary**. See `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md` |
 | 9.10 — deepseek targeted hardening | ✅ complete (contract + guidance + eval) | **Metric tone** contract (shared with Badge); native-first calculators / Gallery intent / multilingual / mixed guidance (PROMPT +3.9%); deepseek v3 channel **92.8%**/family 90.0%, legacy holdout 83.8%/82.8%, **NEW holdout 82.1%/79.8% (clear 87.8%)**; invalid 1.1–2.4% (model errors); **Level C — near-99% not reached; v1 NOT complete; M10 unnecessary**. See `MILESTONE_9_10_REPORT.md` |
-| 9.11 — correctness & reliability | ✅ complete (on `feat/intelligent-ui-m9-11-reliability`, PR into this branch) | upstream 0.12.3 + **lang-core 1.0.1** synced (post-M9.10 commits); **lifecycle-safe streaming runtime** (one parser+store per block; user input survives chunks AND finalization); component-limit prompt rule (within guard); evaluation **contract v8** (intent vs data availability vs fabrication vs authorized retrieval; REAL rich safety contract; honest factCheck); Chart/engine typing fixes. Vitest **175** / pytest **53** / build green; **browser e2e 31/31, 0 console errors**. See `M9_11_STATUS.md` |
+| 9.11 — correctness & reliability | ✅ merged PR #1 (`110008de6`) | upstream 0.12.3 + **lang-core 1.0.1**; lifecycle-safe streaming; contract v8; Vitest **175** / pytest **53**; build and merge CI green. See `M9_11_STATUS.md` |
+| 9.12 — safe persistence/evaluation preparation | Reviewable subset on `feat/intelligent-ui-m9-12` | Scoped filtered LOCAL control restoration; atomic server-state design (cross-device NOT activated); frozen EN/NO holdout, spend guards, cost plan and product backlog. See `M9_12_STATUS.md`. No paid calls; do not auto-merge. |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md` … `MILESTONE_9_10_REPORT.md` (see each row),
 plus benchmarks `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`,
@@ -46,9 +54,8 @@ plus benchmarks `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`,
 `UX_GUIDELINES.md`, `PARITY_VISUAL_AUDIT.md`. Actions: `ACTIONS.md`. Persistence:
 `OUTPUT_PERSISTENCE.md`.
 
-Milestone tags: `intelligent-ui-m3` … `intelligent-ui-m9.10`. Latest: `intelligent-ui-m9.10` (M9.11
-sits on `feat/intelligent-ui-m9-11-reliability` pending PR into `intelligent-ui-foundation`). Each
-milestone's report carries its own SHAs.
+Milestone tags: `intelligent-ui-m3` … `intelligent-ui-m9.10`. M9.11 merged as `110008de6` via PR #1;
+M9.12 is a separate working branch pending review. No M9.11/M9.12 tag was requested.
 
 ## Intelligent UI architecture (current path)
 
@@ -202,13 +209,15 @@ gitignored.
 
 ## Next recommended milestone
 
-The architecture is **stable and model-bound**; the cheap-model plateau and the strong-model ceiling
-are both measured, and the evaluation methodology is now fair (contract v8). **M10 planner is NOT
-justified** (failures are conservative/model/data, not structural). M9.11 fixed the streaming-state
-and component-limit issues; next:
+Current recommendation: finish the reviewed atomic,
+owner-scoped server-state API and privacy/conflict design, or build the first read-only Unified
+Library over existing Files. Paid DeepSeek evaluation needs explicit budget approval first;
+holdout is frozen and has not been executed. See `M9_12_STATUS.md` and
+`m9-12-evaluation/PLAN.md` under `docs/intelligent-ui/`.
 
-**M9.12 — v6 benchmark under deepseek-v4.1-flash (3 runs + frozen v6 holdout; report cost before
-running) + server-side durable interaction state design.**
+The architecture is stable; historic model-ceiling measurements and the static contract v8 are
+documented. Contract metrics are not proof of factual/functional correctness. M10 remains deferred
+without new evidence. M9.12 prepared the evaluation but did not execute it.
 
 Smaller targeted items: reduce residual prose over-use; rich-under-use for bespoke canvas/3D;
 Norwegian compare/table cues; Gallery integration with the user's file library.

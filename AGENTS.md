@@ -102,8 +102,10 @@ Intelligent UI **v1 is implemented through Milestone 9.11** (27 native component
 streaming runtime, Query/Mutation bindings, Rich Widgets, hardened security, UX polish, and a
 measured routing-quality record — see `HANDOFF.md` and `docs/intelligent-ui/M9_11_STATUS.md`).
 The **upstream sync (Open WebUI 0.12.3) and `@openuidev/lang-core` 1.0.1 migration are complete**.
-Active work is **correctness/reliability and evaluation-methodology hardening** on
-`feat/intelligent-ui-m9-11-reliability` (PR into `intelligent-ui-foundation`, never `main`).
+M9.11 was merged via PR #1 as `110008de6` (post-merge CI passed). Active work is the **M9.12
+safe local persistence slice, reviewed server-state design and frozen evaluation preparation** on
+`feat/intelligent-ui-m9-12` (PR into `intelligent-ui-foundation`, never `main`). Cross-device state
+and paid model evaluations are pending, not shipped. Read `docs/intelligent-ui/M9_12_STATUS.md`.
 
 Source of truth for current state: `HANDOFF.md`, `docs/intelligent-ui/M9_11_STATUS.md` (audit
 matrix + P0/P1/P2 backlog), `docs/intelligent-ui/NATIVE_COMPONENT_CATALOG.md`,

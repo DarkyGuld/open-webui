@@ -10,6 +10,7 @@
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
 	import { getMutation } from '$lib/intelligent-ui/mutations';
 	import { loadState, saveState } from '$lib/intelligent-ui/state';
+	import { safeNavigationUrl } from '$lib/intelligent-ui/navigation';
 	import type { OpenUIAction, UIAction, UINode } from '$lib/intelligent-ui/types';
 	import NodeRenderer from '$lib/intelligent-ui/components/NodeRenderer.svelte';
 	import IntelligentUIFallback from '$lib/intelligent-ui/components/IntelligentUIFallback.svelte';
@@ -122,8 +123,10 @@
 					window.location.origin
 				);
 			} else if (step.type === 'open_url') {
-				const approved = await confirm({ message: step.url });
-				if (approved) window.open(step.url, '_blank', 'noopener');
+				const url = safeNavigationUrl(step.url);
+				if (!url) continue;
+				const approved = await confirm({ message: url });
+				if (approved) window.open(url, '_blank', 'noopener,noreferrer');
 			} else if (step.type === 'run') {
 				// Registered mutation only; unknown id is rejected. Runs solely from a
 				// user click (never on render/reload), after native confirmation.

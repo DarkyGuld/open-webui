@@ -58,8 +58,9 @@ AUTO_HEADER = (
     "a single key result value (\"just the number\", \"how much\", \"the total\") -> Metric; a trend "
     "over time -> Chart; an interactive calculation or input -> native state/form UI; a sequence of "
     "events -> Timeline. If the user explicitly asks to see/show/compare/chart/list/tabulate or asks "
-    "for a number, provide the native UI even when exact values are unavailable (use representative "
-    "values). Do not force UI for normal explanatory questions."
+    "for a number, use native UI when the data are available or obtained from an authorized source. If "
+    "numbers, facts or image references are missing, ask for them or explain the limitation; "
+    "never invent or substitute representative values. Do not force UI for normal explanatory questions."
 )
 ON_HEADER = (
     "Intelligent UI is ENABLED. Prefer presenting structured or interactable information (a "

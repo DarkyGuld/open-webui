@@ -16,7 +16,7 @@ import { openuiLibrary, CATALOG_VERSION_ID } from '../../src/lib/intelligent-ui/
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 
-const prompt = openuiLibrary.prompt({
+const generatedPrompt = openuiLibrary.prompt({
 	preamble:
 		'You may present part of your answer as structured, interactive UI. This is OPTIONAL — normal Markdown is the default.',
 	additionalRules: [
@@ -31,22 +31,30 @@ const prompt = openuiLibrary.prompt({
 		'For read-only data use Data(source, title?) with an allow-listed source: conversation.notes, library.files, or knowledge.collections.',
 		'Tabs: Tabs([t1, t2]) with t1 = Tab("Label", [...children]); switching is local. Forms: Form(title?, [f1, ...]) groups Field("Label", [input]); a Field may add a description or validation error: Field("Email", [i1], "We never share it", "Required").',
 		'Do not repeat in prose the exact data already shown as UI. When UI presents data and prose adds meaning, use a mixed answer: one short intro sentence -> the UI -> a short interpretation or recommendation. Never hide an important conclusion from the text.',
-		'Prefer native UI: build any calculator (loan, mortgage, BMI, pricing, seats, savings, percentage, converter) with native Input/Slider/Select/Switch/Metric/Chart and $state/@Set/@Reset — never Rich for these. Use a Rich Widget only when native cannot express the layout/interaction (e.g. 3D, canvas, a custom mini-app).',
-		'Infer presentation intent semantically in any language — not by English keywords (compare/sammenlign, total/totalt, how much/hvor mye, how many/hvor mange, table/tabell, chart/graf, timeline/tidslinje, calculate/beregn, show images/vis bilder). These cues warrant the matching native UI in every language, even without data.',
+		'Prefer native UI for calculators supported by available state, arithmetic and components (e.g. BMI, seats, pricing). Do not invent formulas; use Rich when native genuinely lacks the needed operations. Use a Rich Widget only when native cannot express the layout/interaction (e.g. 3D, canvas, a custom mini-app).',
+		'Infer presentation intent semantically in any language — not by English keywords (compare/sammenlign, total/totalt, how much/hvor mye, how many/hvor mange, table/tabell, chart/graf, timeline/tidslinje, calculate/beregn, show images/vis bilder). These cues warrant native UI when the necessary data exist; if data are missing, ask or explain without inventing facts.',
 		'When you use UI, wrap the OpenUI Lang in a fenced block on its own lines: :::intelligent-ui{v="1"} then the code then :::. The block must contain ONLY valid OpenUI Lang; Markdown may precede and follow it.',
 		'Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers. OpenUI expressions are declarative only — never use JavaScript methods or globals (.toFixed(), .map(), .filter(), .reduce(), Math.*, Date.*, eval, Function); pass plain values and let a component format them.',
 		'If unsure whether UI helps, answer with normal Markdown.'
 	],
 	examples: [
-		`User: Compare these three VPS plans.\n\nHere is a quick comparison:\n\n:::intelligent-ui{v="1"}\nroot = Comparison("VPS plans", [{name:"Basic",attributes:["1 vCPU","1 GB RAM"]},{name:"Pro",attributes:["2 vCPU","4 GB RAM"]},{name:"Team",attributes:["4 vCPU","8 GB RAM"]}])\n:::\n\nThe Pro plan is the best balance for most users.`,
-		`User: Give me a small dashboard of the key numbers.\n\n:::intelligent-ui{v="1"}\nroot = Stack([g1, c1])\ng1 = Grid([m1, m2, m3])\nm1 = Metric("Revenue", "1.2M kr")\nm2 = Metric("Users", "8 420")\nm3 = Metric("Churn", "2.1%")\nc1 = Card("Revenue by quarter", [ch1])\nch1 = Chart("bar", "", ["Q1","Q2","Q3","Q4"], [{name:"Revenue", values:[210,240,260,300]}])\n:::`,
+		`User: Compare three VPS plans: Basic (1 vCPU, 1 GB RAM), Pro (2 vCPU, 4 GB RAM), Team (4 vCPU, 8 GB RAM).\n\nHere is a quick comparison:\n\n:::intelligent-ui{v="1"}\nroot = Comparison("VPS plans", [{name:"Basic",attributes:["1 vCPU","1 GB RAM"]},{name:"Pro",attributes:["2 vCPU","4 GB RAM"]},{name:"Team",attributes:["4 vCPU","8 GB RAM"]}])\n:::\n\nThe Pro plan offers 4 GB RAM; the best value depends on prices and workload.`,
+		`User: Create an illustrative dashboard using revenue 1.2M kr, 8 420 users, churn 2.1%, and Q1–Q4 sample revenue 210/240/260/300.\n\n:::intelligent-ui{v="1"}\nroot = Stack([g1, c1])\ng1 = Grid([m1, m2, m3])\nm1 = Metric("Revenue", "1.2M kr")\nm2 = Metric("Users", "8 420")\nm3 = Metric("Churn", "2.1%")\nc1 = Card("Revenue by quarter", [ch1])\nch1 = Chart("bar", "", ["Q1","Q2","Q3","Q4"], [{name:"Revenue", values:[210,240,260,300]}])\n:::`,
 		`User: Make a pricing calculator with a seats slider and quick buttons.\n\n:::intelligent-ui{v="1"}\n$seats = 8\nroot = Stack([s1, row1, m1])\ns1 = Slider("Seats", $seats, 1, 50)\nrow1 = Row([b10, b20, br])\nb10 = Button("10 seats", @Set($seats, 10))\nb20 = Button("20 seats", @Set($seats, 20))\nbr = Button("Reset", @Reset($seats))\nm1 = Metric("Monthly price", total, "Incl. VAT")\ntotal = $seats * 29\n:::`,
-		`User: Show tabs for specs and pricing.\n\n:::intelligent-ui{v="1"}\nroot = Tabs([tabA, tabB])\ntabA = Tab("Specs", [tbl1])\ntbl1 = Table("", ["Item","Value"], [["CPU","4 vCPU"],["RAM","8 GB"]])\ntabB = Tab("Pricing", [m1])\nm1 = Metric("Monthly", "490 kr")\n:::`,
-		`User: Show the deploy progress and steps.\n\n:::intelligent-ui{v="1"}\nroot = Stack([p1, tl1])\np1 = Progress("Rollout", 72)\ntl1 = Timeline("Steps", [{title:"Build",status:"done"},{title:"Deploy",status:"active"},{title:"Verify",status:"pending"}])\n:::`,
+		`User: Show fictional example tabs for specs and pricing.\n\n:::intelligent-ui{v="1"}\nroot = Tabs([tabA, tabB])\ntabA = Tab("Specs", [tbl1])\ntbl1 = Table("", ["Item","Value"], [["CPU","4 vCPU"],["RAM","8 GB"]])\ntabB = Tab("Pricing", [m1])\nm1 = Metric("Monthly", "490 kr")\n:::`,
+		`User: Show a fictional rollout at 72%: Build done, Deploy active, Verify pending.\n\n:::intelligent-ui{v="1"}\nroot = Stack([p1, tl1])\np1 = Progress("Rollout", 72)\ntl1 = Timeline("Steps", [{title:"Build",status:"done"},{title:"Deploy",status:"active"},{title:"Verify",status:"pending"}])\n:::`,
 		`User: Make a feedback form.\n\n:::intelligent-ui{v="1"}\n$name = ""\n$rating = "Good"\nroot = Form("Feedback", [f1, f2, b1])\nf1 = Field("Name", [i1])\ni1 = Input("Your name", $name)\nf2 = Field("Rating", [r1])\nr1 = Radio("How was it?", $rating, ["Great","Good","Poor"])\nb1 = Button("Save", "notes.create", {title:"Feedback", content:"..."})\n:::`,
 		`User: Who was Nikola Tesla?\n\nNikola Tesla was a Serbian-American inventor and electrical engineer best known for his contributions to the design of the modern alternating current (AC) electricity supply system.`
 	]
 });
+
+// OpenUI 0.x emits a fictitious Root() instruction for catalogs with no Root.
+const prompt = generatedPrompt
+	.replace('every program must define `root = Root(...)`', 'every program must assign root to a documented component, e.g. `root = Stack([item])`')
+	.replaceAll('root = Root(...)', 'root = Stack([item])')
+	.replace('Always write the root = Stack([item]) statement first', 'Write the root assignment early')
+	.replace('1. root = Stack([item]) is the FIRST line', '1. Assign root to a real documented component near the start');
+if (prompt.includes('Root(...)')) throw new Error('Fictitious Root component in prompt');
 
 const richPrompt = `You may also render a FULLY CUSTOM widget with HTML/CSS/JS when the native components are not enough (for example 3D scenes, custom canvas, maps, or bespoke mini-apps). Emit it in a fenced block:
 

@@ -77,7 +77,9 @@ html,body{margin:0;background:transparent;color:var(--viz-text);font-family:ui-s
 			iframeClassName="w-full"
 			allowScripts={true}
 			allowSameOrigin={false}
-			allowForms={true}
+			allowForms={false}
+			allowDownloads={false}
+			allowFullscreen={false}
 			allowPopups={false}
 		/>
 	</div>

@@ -13,7 +13,7 @@ PROMPT = r"""You may present part of your answer as structured, interactive UI. 
 ## Syntax Rules
 
 1. Each statement is on its own line: `identifier = Expression`
-2. `root` is the entry point — every program must define `root = Root(...)`
+2. `root` is the entry point — every program must assign root to a documented component, e.g. `root = Stack([item])`
 3. Expressions are: strings ("..."), numbers, booleans (true/false), null, arrays ([...]), objects ({...}), or component calls TypeName(arg1, arg2, ...)
 4. Use references for readability: define `name = ...` on one line, then use `name` later
 5. EVERY variable (except root) MUST be referenced by at least one other variable. Unreferenced variables are silently dropped and will NOT render. Always include defined variables in their parent's children/items array.
@@ -61,15 +61,15 @@ openui-lang supports hoisting: a reference can be used BEFORE it is defined. The
 During streaming, the output is re-parsed on every chunk. Undefined references are temporarily unresolved and appear once their definitions stream in. This creates a progressive top-down reveal — structure first, then data fills in.
 
 **Recommended statement order for optimal streaming:**
-1. `root = Root(...)` — UI shell appears immediately
+1. `root = Stack([item])` — UI shell appears immediately
 2. Component definitions — fill in as they stream
 3. Data values — leaf content last
 
-Always write the root = Root(...) statement first so the UI shell appears immediately, even before child data has streamed in.
+Write the root assignment early so the UI shell appears immediately, even before child data has streamed in.
 
 ## Examples
 
-User: Compare these three VPS plans.
+User: Compare three VPS plans: Basic (1 vCPU, 1 GB RAM), Pro (2 vCPU, 4 GB RAM), Team (4 vCPU, 8 GB RAM).
 
 Here is a quick comparison:
 
@@ -77,9 +77,9 @@ Here is a quick comparison:
 root = Comparison("VPS plans", [{name:"Basic",attributes:["1 vCPU","1 GB RAM"]},{name:"Pro",attributes:["2 vCPU","4 GB RAM"]},{name:"Team",attributes:["4 vCPU","8 GB RAM"]}])
 :::
 
-The Pro plan is the best balance for most users.
+The Pro plan offers 4 GB RAM; the best value depends on prices and workload.
 
-User: Give me a small dashboard of the key numbers.
+User: Create an illustrative dashboard using revenue 1.2M kr, 8 420 users, churn 2.1%, and Q1–Q4 sample revenue 210/240/260/300.
 
 :::intelligent-ui{v="1"}
 root = Stack([g1, c1])
@@ -105,7 +105,7 @@ m1 = Metric("Monthly price", total, "Incl. VAT")
 total = $seats * 29
 :::
 
-User: Show tabs for specs and pricing.
+User: Show fictional example tabs for specs and pricing.
 
 :::intelligent-ui{v="1"}
 root = Tabs([tabA, tabB])
@@ -115,7 +115,7 @@ tabB = Tab("Pricing", [m1])
 m1 = Metric("Monthly", "490 kr")
 :::
 
-User: Show the deploy progress and steps.
+User: Show a fictional rollout at 72%: Build done, Deploy active, Verify pending.
 
 :::intelligent-ui{v="1"}
 root = Stack([p1, tl1])
@@ -145,7 +145,7 @@ Nikola Tesla was a Serbian-American inventor and electrical engineer best known 
 
 ## Final Verification
 Before finishing, walk your output and verify:
-1. root = Root(...) is the FIRST line (for optimal streaming).
+1. Assign root to a real documented component near the start (for optimal streaming).
 2. Every referenced name is defined. Every defined name (other than root) is reachable from root.
 
 - Prefer normal Markdown for explanations, prose, reasoning and simple answers. Use UI only when structured or interactable information clearly helps.
@@ -159,8 +159,8 @@ Before finishing, walk your output and verify:
 - For read-only data use Data(source, title?) with an allow-listed source: conversation.notes, library.files, or knowledge.collections.
 - Tabs: Tabs([t1, t2]) with t1 = Tab("Label", [...children]); switching is local. Forms: Form(title?, [f1, ...]) groups Field("Label", [input]); a Field may add a description or validation error: Field("Email", [i1], "We never share it", "Required").
 - Do not repeat in prose the exact data already shown as UI. When UI presents data and prose adds meaning, use a mixed answer: one short intro sentence -> the UI -> a short interpretation or recommendation. Never hide an important conclusion from the text.
-- Prefer native UI: build any calculator (loan, mortgage, BMI, pricing, seats, savings, percentage, converter) with native Input/Slider/Select/Switch/Metric/Chart and $state/@Set/@Reset — never Rich for these. Use a Rich Widget only when native cannot express the layout/interaction (e.g. 3D, canvas, a custom mini-app).
-- Infer presentation intent semantically in any language — not by English keywords (compare/sammenlign, total/totalt, how much/hvor mye, how many/hvor mange, table/tabell, chart/graf, timeline/tidslinje, calculate/beregn, show images/vis bilder). These cues warrant the matching native UI in every language, even without data.
+- Prefer native UI for calculators supported by available state, arithmetic and components (e.g. BMI, seats, pricing). Do not invent formulas; use Rich when native genuinely lacks the needed operations. Use a Rich Widget only when native cannot express the layout/interaction (e.g. 3D, canvas, a custom mini-app).
+- Infer presentation intent semantically in any language — not by English keywords (compare/sammenlign, total/totalt, how much/hvor mye, how many/hvor mange, table/tabell, chart/graf, timeline/tidslinje, calculate/beregn, show images/vis bilder). These cues warrant native UI when the necessary data exist; if data are missing, ask or explain without inventing facts.
 - When you use UI, wrap the OpenUI Lang in a fenced block on its own lines: :::intelligent-ui{v="1"} then the code then :::. The block must contain ONLY valid OpenUI Lang; Markdown may precede and follow it.
 - Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers. OpenUI expressions are declarative only — never use JavaScript methods or globals (.toFixed(), .map(), .filter(), .reduce(), Math.*, Date.*, eval, Function); pass plain values and let a component format them.
 - If unsure whether UI helps, answer with normal Markdown."""

@@ -42,6 +42,7 @@ from open_webui.models.users import (
     Users,
 )
 from open_webui.socket.main import (
+    encryption,
     emit_to_users,
     enter_room_for_users,
     get_user_ids_from_room,
@@ -657,6 +658,7 @@ async def update_is_active_member_by_id_and_user_id(
     if not await Channels.is_user_channel_member(channel.id, user.id, db=db):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND)
 
+    await encryption.invalidate(id)
     await Channels.update_member_active_status(channel.id, user.id, form_data.is_active, db=db)
     await publish_event(
         request,
@@ -753,6 +755,7 @@ async def remove_members_by_id(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.DEFAULT())
 
     try:
+        await encryption.invalidate(id)
         deleted = await Channels.remove_members_from_channel(channel.id, form_data.user_ids, db=db)
         if channel.type == 'group':
             await leave_room_for_users(f'channel:{channel.id}', form_data.user_ids)
@@ -803,6 +806,7 @@ async def update_channel_by_id(
     previous_access_grants = channel.access_grants
 
     try:
+        await encryption.invalidate(id)
         channel = await Channels.update_channel_by_id(id, form_data, db=db)
         # Group and DM channels use membership instead of access grants.
         if form_data.access_grants is not None and channel.type not in ['group', 'dm']:
@@ -847,6 +851,7 @@ async def delete_channel_by_id(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.DEFAULT())
 
     try:
+        await encryption.invalidate(id)
         await Channels.delete_channel_by_id(id, db=db)
         await sio.close_room(f'channel:{id}')
         await publish_event(
@@ -1462,6 +1467,8 @@ async def post_new_message(
     db: AsyncSession = Depends(get_async_session),
 ):
     await check_channels_access(request, user)
+    # Message metadata is set by the server only.
+    form_data.meta = None
 
     try:
         message, channel = await new_message_handler(request, id, form_data, user, db)
@@ -1678,6 +1685,8 @@ async def get_channel_thread_messages(
     message_id: str,
     skip: int = 0,
     limit: int = 50,
+    around: str | None = None,
+    before: str | None = None,
     user=Depends(get_verified_user),
     db: AsyncSession = Depends(get_async_session),
 ):
@@ -1693,7 +1702,9 @@ async def get_channel_thread_messages(
         if user.role != 'admin' and not await channel_has_access(user.id, channel, permission='read', db=db):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.DEFAULT())
 
-    message_list = await Messages.get_messages_by_parent_id(id, message_id, skip, limit, db=db)
+    message_list = await Messages.get_messages_by_parent_id(
+        id, message_id, skip, min(max(limit, 1), 100), db=db, around=around, before=before
+    )
 
     if not message_list:
         return []
@@ -1769,6 +1780,7 @@ async def update_message_by_id(
         if user.role != 'admin' and message.user_id != user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.DEFAULT())
 
+    form_data.meta = None
     try:
         await Messages.update_message_by_id(message_id, form_data, db=db)
         message = await Messages.get_message_by_id(message_id, db=db)

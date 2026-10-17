@@ -1,0 +1,50 @@
+{
+  "version": 5,
+  "name": "tuning",
+  "model": "deepseek-v4.1-flash",
+  "notes": "Targeted tuning set for M9.9 measured gaps (Metric / native-vs-rich calculators / Gallery intent / Norwegian / Mixed / Comparison / Timeline). Allowed for tuning (<=2 iterations).",
+  "cases": [
+    { "id": "t-me1", "category": "Metric", "prompt": "What's the monthly price for 25 seats?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me2", "category": "Metric", "prompt": "Hvor mye koster det per måned?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me3", "category": "Metric", "prompt": "Give me the total after tax.", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me4", "category": "Metric", "prompt": "How many users signed up?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me5", "category": "Metric", "prompt": "Hva er totalen?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me6", "category": "Metric", "prompt": "What's the final amount?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-me7", "category": "Metric", "prompt": "Give me the number of active subscriptions.", "expected_channel": "native", "expected_family": "Metric" },
+
+    { "id": "t-calc1", "category": "Calculator", "prompt": "Build a loan calculator with a slider for the amount.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-calc2", "category": "Calculator", "prompt": "Make a mortgage calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-calc3", "category": "Calculator", "prompt": "Create a BMI calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-calc4", "category": "Calculator", "prompt": "Build a savings calculator with a monthly deposit slider.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-calc5", "category": "Calculator", "prompt": "Make a percentage calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-calc6", "category": "Calculator", "prompt": "Create a unit converter.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "t-calc7", "category": "Calculator", "prompt": "Build a seat-based pricing calculator.", "expected_channel": "native", "expected_family": "Form" },
+
+    { "id": "t-ga1", "category": "Gallery", "prompt": "Show me the screenshots.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga2", "category": "Gallery", "prompt": "Vis bildene.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga3", "category": "Gallery", "prompt": "Display the uploaded images as a gallery.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga4", "category": "Gallery", "prompt": "Show the product photos.", "expected_channel": "native", "expected_family": "Gallery" },
+    { "id": "t-ga5", "category": "Gallery", "prompt": "I want to see the pictures.", "expected_channel": "native", "expected_family": "Gallery" },
+
+    { "id": "t-no1", "category": "Norwegian", "prompt": "Sammenlign de tre planene.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "t-no2", "category": "Norwegian", "prompt": "Vis meg en tabell over kostnadene.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "t-no3", "category": "Norwegian", "prompt": "Lag et diagram over inntektene.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "t-no4", "category": "Norwegian", "prompt": "Vis tidslinjen for prosjektet.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "t-no5", "category": "Norwegian", "prompt": "Beregn totalen for 10 seter.", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "t-no6", "category": "Norwegian", "prompt": "Hvor mange ansatte har vi?", "expected_channel": "native", "expected_family": "Metric" },
+
+    { "id": "t-mx1", "category": "Mixed", "prompt": "Compare the plans and recommend one.", "expected_channel": "native", "expected_family": "Comparison", "expect_mixed": true },
+    { "id": "t-mx2", "category": "Mixed", "prompt": "Show the revenue trend and tell me what it means.", "expected_channel": "native", "expected_family": "Chart", "expect_mixed": true },
+    { "id": "t-mx3", "category": "Mixed", "prompt": "Show the milestones and summarize progress.", "expected_channel": "native", "expected_family": "Timeline", "expect_mixed": true },
+    { "id": "t-mx4", "category": "Mixed", "prompt": "Show the costs and explain the largest one.", "expected_channel": "native", "expected_family": "Table", "expect_mixed": true },
+
+    { "id": "t-co1", "category": "Comparison", "prompt": "Compare React vs Vue vs Svelte.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "t-co2", "category": "Comparison", "prompt": "Sammenlign AWS og Azure.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "t-co3", "category": "Comparison", "prompt": "Which is better for a startup, Stripe or Adyen?", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "t-co4", "category": "Comparison", "prompt": "Compare the two subscription tiers.", "expected_channel": "native", "expected_family": "Comparison" },
+
+    { "id": "t-tl1", "category": "Timeline", "prompt": "Show the project timeline.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "t-tl2", "category": "Timeline", "prompt": "Give me the release history in order.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "t-tl3", "category": "Timeline", "prompt": "Chronological list of company milestones.", "expected_channel": "native", "expected_family": "Timeline" }
+  ]
+}

@@ -190,6 +190,16 @@ in Milestone 2.
   4th-arg `tone`). **v1 NOT declared complete; M10 unnecessary.** See
   `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md`.
 
+## DeepSeek targeted hardening (Milestone 9.10)
+
+- **Metric `tone`** contract (shared with Badge) — fixes the only M9.9 invalid class; native-first
+  calculators / Gallery intent / multilingual / mixed guidance (PROMPT +3.9%).
+- Tuning 55.6% → **83.3%** (1 iteration). deepseek v3 channel **92.8%** / family 90.0%; legacy
+  holdout 83.8% / 82.8%; **NEW untouched holdout 82.1% / 79.8%** (clear-intent 87.8%). Invalid
+  1.1–2.4% (all model errors). Native calculators 100% native; rich under-use remains.
+- **Level C; near-99% not reached; v1 NOT complete; M10 unnecessary.** Remaining gap = model
+  behavior + missing data, not architecture. See `MILESTONE_9_10_REPORT.md`.
+
 ## The 15 questions
 
 1. **Is Intelligent UI possible?** Yes. The model can emit a controlled UI schema that a native renderer maps to Open WebUI components. Confirmed by a working spike (`docs/INTELLIGENT_UI_SPIKE.md`: OpenUI + json-render both rendered a native calculator, 0 errors, interactive).

@@ -170,7 +170,7 @@ async function runOnce(run: number) {
 		totalPrompt += r.usage?.prompt_tokens ?? 0;
 		totalCompletion += r.usage?.completion_tokens ?? 0;
 		results.push({
-			id: c.id, category: c.category, prompt: c.prompt, ambiguous: !!c.ambiguous,
+			id: c.id, category: c.category, prompt: c.prompt, ambiguous: !!c.ambiguous, gallery: !!(c as any).gallery,
 			expectedChannel: c.expected_channel, expectedFamily: c.expected_family,
 			actualChannel: s.cls.channel, primaryComponent: s.cls.component, componentTree: s.cls.components,
 			families: s.families, valid: s.cls.channel === 'native', fallback: s.cls.channel === 'invalid',

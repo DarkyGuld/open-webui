@@ -12,10 +12,10 @@ Single source of truth: `src/lib/intelligent-ui/catalog.ts` (model contract) and
 | Component | Signature | Node type |
 |---|---|---|
 | `Data` | `Data(source, title?)` | `data` |
-| `Metric` | `Metric(label, value, description?, action?)` | `metric` |
+| `Metric` | `Metric(label, value, description?, tone?, action?)` | `metric` |
 | `Comparison` | `Comparison(title?, items, selectable?, action?)` | `comparison` |
 | `Table` | `Table(title?, columns, rows, action?)` | `table` |
-| `Badge` | `Badge(label, action?)` | `badge` |
+| `Badge` | `Badge(label, tone?, action?)` | `badge` |
 | `Divider` | `Divider()` | `divider` |
 | `Progress` | `Progress(label?, value, status?, source?)` | `progress` |
 | `Chart` | `Chart(chartType, title?, labels, series, source?)` | `chart` |
@@ -31,6 +31,8 @@ Single source of truth: `src/lib/intelligent-ui/catalog.ts` (model contract) and
 | `Radio` | `Radio(label, value, options)` | `radio` |
 
 `value` on Slider/Select/Switch/Checkbox/Input/Textarea/Radio is a two-way `$state` binding.
+`tone` (shared by Badge and Metric) is one of `neutral|positive|warning|negative` (presentation-only;
+unknown values are rejected). Metric keeps a required non-empty `label`.
 
 ### Containers
 | Component | Signature | Node type |

@@ -1,0 +1,74 @@
+{
+  "v3": {
+    "means": {
+      "channelAccuracy": 92.8,
+      "familyAccuracy": 90.0,
+      "invalidRate": 1.1,
+      "fallbackRate": 1.1,
+      "avgLatencyMs": 7238.3,
+      "medianLatencyMs": 5291.7,
+      "p95LatencyMs": 24864.3,
+      "avgPromptTokens": 3957,
+      "avgCompletionTokens": 1164,
+      "avgTokens": 5121
+    },
+    "ranges": {
+      "channelAccuracy": [
+        91.7,
+        93.3
+      ],
+      "familyAccuracy": [
+        88.3,
+        91.7
+      ]
+    }
+  },
+  "legacy-holdout": {
+    "means": {
+      "channelAccuracy": 83.8,
+      "familyAccuracy": 82.8,
+      "invalidRate": 1,
+      "fallbackRate": 1,
+      "avgLatencyMs": 11519.7,
+      "medianLatencyMs": 6403.3,
+      "p95LatencyMs": 50757.3,
+      "avgPromptTokens": 3954,
+      "avgCompletionTokens": 1839.3,
+      "avgTokens": 5793.3
+    },
+    "ranges": {
+      "channelAccuracy": [
+        75.8,
+        90.9
+      ],
+      "familyAccuracy": [
+        75.8,
+        87.9
+      ]
+    }
+  },
+  "new-holdout": {
+    "means": {
+      "channelAccuracy": 82.1,
+      "familyAccuracy": 79.8,
+      "invalidRate": 2.4,
+      "fallbackRate": 2.4,
+      "avgLatencyMs": 12307,
+      "medianLatencyMs": 7103.7,
+      "p95LatencyMs": 53499.3,
+      "avgPromptTokens": 3954,
+      "avgCompletionTokens": 1928,
+      "avgTokens": 5882
+    },
+    "ranges": {
+      "channelAccuracy": [
+        80.4,
+        83.9
+      ],
+      "familyAccuracy": [
+        76.8,
+        82.1
+      ]
+    }
+  }
+}

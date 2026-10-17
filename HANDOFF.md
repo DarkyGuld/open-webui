@@ -37,14 +37,16 @@ A customized Open WebUI product aiming for:
 | 9.7 — prompt hardening + capability benchmark v3 | ✅ complete (eval only) | Metric/Comparison triggers + no-JS rule (prompt +3.5%); new ~60-prompt dataset; cat-jam-free aggregate channel 77.2%/family 73.3% (clear subset 81.8%), invalid/fallback 2.2%, native JS leakage 0, rich over-use 1.7%; **v1 not yet complete; M10 still unnecessary**. See `ROUTING_BENCHMARK_V3.md` |
 | 9.8 — targeted reliability hardening | ✅ complete (eval + guidance) | Badge tone + Metric-label contract; Metric/Gallery/Mixed/Chart-Table/Timeline guidance + native-first + multilingual (PROMPT +4.65%); v3 re-run channel **81.1%**/family 78.9%/invalid 0%, holdout **65.6%**/61.6%; **99% target not reached (cheap-model plateau ~66–85%)**; M10 unnecessary. See `MILESTONE_9_8_REPORT.md` |
 | 9.9 — strong-model ceiling benchmark | ✅ complete (eval only) | deepseek-v4.1-flash, frozen system, 279 calls: v3 channel **91.7%**/family 90.6%/clear 92.7%, holdout **82.8%**/80.8%, invalid 0.6%; **Level C — architecture strong, model-bound; near-99% not reached; v1 NOT declared complete; M10 unnecessary**. See `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md` |
+| 9.10 — deepseek targeted hardening | ✅ complete (contract + guidance + eval) | **Metric tone** contract (shared with Badge); native-first calculators / Gallery intent / multilingual / mixed guidance (PROMPT +3.9%); deepseek v3 channel **92.8%**/family 90.0%, legacy holdout 83.8%/82.8%, **NEW holdout 82.1%/79.8% (clear 87.8%)**; invalid 1.1–2.4% (model errors); **Level C — near-99% not reached; v1 NOT complete; M10 unnecessary**. See `MILESTONE_9_10_REPORT.md` |
 
-Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md`, `MILESTONE_2_REPORT.md`,
-`MILESTONE_3_REPORT.md`, `MILESTONE_4_REPORT.md`. Actions: `ACTIONS.md`. Persistence:
+Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md` … `MILESTONE_9_10_REPORT.md` (see each row),
+plus benchmarks `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`,
+`MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md`, and design docs `NATIVE_COMPONENT_CATALOG.md`,
+`UX_GUIDELINES.md`, `PARITY_VISUAL_AUDIT.md`. Actions: `ACTIONS.md`. Persistence:
 `OUTPUT_PERSISTENCE.md`.
 
-Milestone tags: `intelligent-ui-m3` … `intelligent-ui-m9.5`. Latest: M9.5 = commits `f05bcf51c`
-(feat) + `d0ac562c1` (docs), tag `intelligent-ui-m9.5`. Each milestone's report carries its own
-SHAs.
+Milestone tags: `intelligent-ui-m3` … `intelligent-ui-m9.10`. Latest: `intelligent-ui-m9.10`. Each
+milestone's report carries its own SHAs.
 
 ## Intelligent UI architecture (current path)
 
@@ -61,7 +63,8 @@ Open WebUI request
  → IntelligentUIBlock.svelte
  → adapter.ts  (version check → optional envelope unwrap → engine.parse → Zod validation)
  → engines/openui.ts  (@openuidev/lang-core)
- → registry.ts → native Metric / Comparison / Table   (else IntelligentUIFallback)
+ → registry.ts → 27 native components (layout/tabs/charts/timeline/gallery/forms/…)
+                 rendered by NodeRenderer.svelte   (else IntelligentUIFallback)
  → interactions: action dispatcher (allow-list + risk) → confirmation (ConfirmDialog)
                   → send_prompt (input:prompt:submit) | durable local state (localStorage)
  → durable artifact: Filter outlet attaches message.output[] item {intelligent_ui, versioned}
@@ -80,26 +83,36 @@ identically; the engine is not persisted.
 
 ## Supported components (allow-list)
 
-`metric`, `comparison`, `table` — nothing else. catalog_version = 1.
+27 components, **catalog_version = 4** (v1–v3 items still render). Full list + signatures + nesting
+rules: `docs/intelligent-ui/NATIVE_COMPONENT_CATALOG.md`. Leaves: Data, Metric, Comparison, Table,
+Badge, Divider, Button, Slider, Select, Switch, Checkbox, Input, Textarea, Radio, Progress, Chart,
+Timeline, Gallery. Containers: Stack, Row, Grid, Section, Card, Tabs/Tab, Field, Form. No arbitrary
+HTML/CSS/JS/URLs; Rich Widget is the separate opt-in `:::intelligent-ui-html` sandbox.
 
 ## Important design decisions
 
 - Native Open WebUI styling only; no external visual layer.
 - No arbitrary HTML/JS/CSS/URLs; strict Zod allow-list; safe Markdown fallback.
 - Adapter boundary: only the adapter imports an engine package.
-- Minimal upstream changes (~9 core files, ~120 lines total across M1–M3).
+- Minimal upstream changes (~20 core files, ~235 lines total across M1–M9.10; see
+  `docs/intelligent-ui/UPSTREAM_IMPACT.md`).
 - **OFF = byte-for-byte stock Open WebUI** (proven by tests).
-- Versioned transport (`v="1"`) + versioned catalog (`catalog_version = 1`).
+- Versioned transport (`v="1"`) + versioned catalog (`catalog_version = 4`).
 - The Intelligent UI Filter is an Open WebUI **Function** (installed, not core-bundled).
 
 ## Current limitations
 
-- Only one provider family validated (opencode gateway); latency high.
-- Single root component; no layout nesting; plain-text cells.
+- Routing quality is **model-dependent**: deepseek-v4.1-flash reaches v3 channel 92.8% / new-holdout
+  82.1%; cat-jam-free plateaus ~66–85%. Not yet near-99% (Level C).
+- **Gallery** requires safe image refs (none available in benchmarks); the model declines with a
+  textual explanation. **Map** deferred (remote tiles).
+- Remaining misses: conservative under-use, occasional over-use on prose, limit-exceeding invalids
+  (Table >50 rows, empty Gallery `src`), Norwegian ~7 pp below English.
 - Structured `output[]` artifacts are stored but rendering still uses `content` (equivalent; the
   "prefer output[]" render path is deferred — the block cannot see the parent message).
-- Interaction state is browser-local (`localStorage`), not server-synced across devices.
-- `tool` actions architected but not exposed; i18n covers en-US + nb-NO (others fall back).
+- Interaction state is browser-local (`localStorage`), not server-synced across devices; tab
+  selection is local.
+- i18n covers en-US + nb-NO (others fall back).
 - Filter must be installed/enabled manually (documented in `docs/FRESH_MACHINE_SETUP.md`).
 
 ## Important files
@@ -120,18 +133,20 @@ identically; the engine is not persisted.
 | json-render engine | `src/lib/intelligent-ui/engines/json-render.ts` |
 | Schema / limits | `src/lib/intelligent-ui/schema.ts`, `src/lib/intelligent-ui/limits.ts` |
 | Registry | `src/lib/intelligent-ui/registry.ts` |
-| Renderer + components | `src/lib/intelligent-ui/components/{IntelligentUIBlock,Metric,Comparison,Table,IntelligentUIFallback}.svelte` |
+| Renderer + components | `src/lib/intelligent-ui/components/{IntelligentUIBlock,NodeRenderer,QueryState,Metric,Comparison,Table,Chart,Timeline,Gallery,Form*,…}.svelte` |
+| Queries / mutations / tone | `src/lib/intelligent-ui/{queries,mutations,query-binding,table-utils,tone}.ts` |
+| Benchmarks | `audit/lib/routing-benchmark-v4.mts`, `docs/intelligent-ui/routing-benchmark-v3|v4|v5/` |
 | Markdown hook (core edit) | `src/lib/components/chat/Messages/Markdown/MarkdownTokens.svelte` |
 | Tests | `tests/intelligent_ui/*`, `src/lib/intelligent-ui/__tests__/*`, `tests/fixtures/intelligent-ui/*` |
 
 ## Tests
 
 ```bash
-# Backend (needs PYTHONPATH=backend)
-PYTHONPATH=backend .venv/bin/python -m pytest tests/intelligent_ui -q      # 31 passed
+# Backend (run from backend/)
+../.venv/bin/python -m pytest ../tests/intelligent_ui -q                 # 53 passed
 
 # Frontend
-npx vitest run --reporter=dot                                            # 27 passed
+npx vitest run --passWithNoTests                                         # 144 passed
 
 # Build
 NODE_OPTIONS=--max-old-space-size=8192 npm run build                     # green
@@ -183,17 +198,20 @@ Details: `setup/mcp/MCP_INVENTORY.md`. Restart OpenCode after editing `opencode.
 Never commit values. `.env`, `backend/data/`, `.local/`, browser profiles, and `research/` are
 gitignored.
 
-## Next recommended milestone (Milestone 10 / remaining work)
+## Next recommended milestone
 
-1. **M10 planner/router** — only if one-pass routing proves insufficient (a Filter planner that picks
-   text vs UI and filters tools).
-2. **`Query`/`Mutation` tool bindings** (server data) and **`@Set`/`@Reset`** → store.
-3. **Remaining M5 component families** — tabs, charts, media (native, existing repo libs).
-4. **Per-user/per-chat flag for rich widgets**; `openLink` bridge.
-5. Visual regression baselines; i18n for remaining locales; package the Filter for one-command install.
+The architecture is **stable and model-bound**; the cheap-model plateau and the strong-model ceiling
+are both measured. **M10 planner is NOT justified** (failures are conservative/model/data, not
+structural). Next work is **small targeted prompt/contract fixes** only:
+
+1. Prompt: respect component limits (Table ≤ 50 rows) and never emit empty `Gallery` `src`.
+2. Prompt: reduce over-use on purely explanatory prompts; reinforce rich-under-use for bespoke
+   canvas/3D; reinforce Norwegian compare/table cues.
+3. Optional: re-run the frozen M9.10 benchmark after those fixes; only reconsider M10 if clear-intent
+   routing becomes *harmful* (over-use/invalid), not merely conservative.
 
 **Requirement:** do NOT implement a parallel engine if lang-core already provides the primitive —
 wrap and expose the existing runtime.
 
 Do **not** re-research or redesign the existing architecture unless tests/source show it is broken.
-See `docs/intelligent-ui/CHATGPT_PARITY_PLAN.md`.
+See `docs/intelligent-ui/CHATGPT_PARITY_PLAN.md` and `docs/intelligent-ui/RECOMMENDATION.md`.

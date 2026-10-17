@@ -13,12 +13,15 @@
 > holdout **65.6%**; **99% target not reached — cat-jam-free plateaus ~66–85%**; M10 still
 > unnecessary), M9.9 (**strong-model ceiling benchmark** — deepseek-v4.1-flash, frozen system: v3
 > channel **91.7%**/clear 92.7%, holdout **82.8%**, invalid 0.6%; **Level C — architecture is strong
-> and model-bound; near-99% not reached; v1 NOT declared complete; M10 unnecessary**) are **done**.
-> Next: smallest targeted fixes (Metric `tone`, native-first calculators, Gallery intent,
-> multilingual) then re-run the frozen benchmark. Catalog: `NATIVE_COMPONENT_CATALOG.md`; rulebook:
-> `UX_GUIDELINES.md`; benchmarks: `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`; reports:
-> `MILESTONE_9_4_REPORT.md`, `MILESTONE_9_5_REPORT.md`, `MILESTONE_9_8_REPORT.md`,
-> `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md`.
+> and model-bound; near-99% not reached; v1 NOT declared complete; M10 unnecessary**), M9.10
+> (**deepseek targeted hardening** — Metric tone contract + native-first/Gallery/multilingual/mixed
+> guidance; deepseek v3 channel **92.8%**/family 90.0%, legacy holdout 83.8%, **NEW holdout 82.1%**
+> (clear 87.8%); **Level C; near-99% not reached; v1 NOT complete; M10 unnecessary**) are **done**.
+> Next: small targeted prompt/contract fixes (component limits, empty Gallery src, over-use on prose,
+> rich under-use, Norwegian) then re-run the frozen benchmark. Catalog: `NATIVE_COMPONENT_CATALOG.md`;
+> rulebook: `UX_GUIDELINES.md`; benchmarks: `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`;
+> reports: `MILESTONE_9_8_REPORT.md`, `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md`,
+> `MILESTONE_9_10_REPORT.md`.
 
 Goal: get **as close to ChatGPT Intelligent UI as possible using ONLY what we already have**:
 `@openuidev/lang-core` (our engine), `zod`, native browser APIs (iframe/Worker/ResizeObserver/

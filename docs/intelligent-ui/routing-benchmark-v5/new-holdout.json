@@ -1,0 +1,77 @@
+{
+  "version": 5,
+  "name": "new-holdout",
+  "model": "deepseek-v4.1-flash",
+  "notes": "NEW untouched holdout for M9.10 (primary generalization test). Natural phrasing, EN + NO. Gallery cases are marked ambiguous=true (no image data exists, so a textual 'images unavailable' answer is acceptable) and gallery=true for separate routing-intent scoring. Frozen before execution; never used for tuning.",
+  "cases": [
+    { "id": "n-md1", "category": "Markdown", "prompt": "Explain the difference between HTTP and HTTPS.", "expected_channel": "markdown" },
+    { "id": "n-md2", "category": "Markdown", "prompt": "What causes thunder?", "expected_channel": "markdown" },
+    { "id": "n-md3", "category": "Markdown", "prompt": "Hvordan fungerer en bilmotor?", "expected_channel": "markdown" },
+    { "id": "n-md4", "category": "Markdown", "prompt": "Give me three tips for better focus.", "expected_channel": "markdown" },
+    { "id": "n-md5", "category": "Markdown", "prompt": "Tell me a short story about a lighthouse.", "expected_channel": "markdown" },
+
+    { "id": "n-me1", "category": "Metric", "prompt": "What's the cost for 3 extra users?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "n-me2", "category": "Metric", "prompt": "How many orders did we get yesterday?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "n-me3", "category": "Metric", "prompt": "Totalt antall kilometer kjørt?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "n-me4", "category": "Metric", "prompt": "What's the average rating?", "expected_channel": "native", "expected_family": "Metric" },
+    { "id": "n-me5", "category": "Metric", "prompt": "Give me the grand total.", "expected_channel": "native", "expected_family": "Metric" },
+
+    { "id": "n-co1", "category": "Comparison", "prompt": "Compare the two hosting providers.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "n-co2", "category": "Comparison", "prompt": "Should I use Postgres or SQLite? Compare them.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "n-co3", "category": "Comparison", "prompt": "Sammenlign de tre mobilabonnementene.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "n-co4", "category": "Comparison", "prompt": "Compare the starter and pro packages.", "expected_channel": "native", "expected_family": "Comparison" },
+    { "id": "n-co5", "category": "Comparison", "prompt": "What's the difference between a router and a switch? Compare.", "expected_channel": "native", "expected_family": "Comparison" },
+
+    { "id": "n-ta1", "category": "Table", "prompt": "Show the inventory as a table.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "n-ta2", "category": "Table", "prompt": "List the countries with their capitals.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "n-ta3", "category": "Table", "prompt": "Tabell over de ansatte og avdelingene.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "n-ta4", "category": "Table", "prompt": "Give me a table of the weekly schedule.", "expected_channel": "native", "expected_family": "Table" },
+    { "id": "n-ta5", "category": "Table", "prompt": "Show the products with their prices and stock.", "expected_channel": "native", "expected_family": "Table" },
+
+    { "id": "n-ch1", "category": "Chart", "prompt": "Show the monthly expenses over the last year.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "n-ch2", "category": "Chart", "prompt": "Plot the number of signups per week.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "n-ch3", "category": "Chart", "prompt": "Vis utviklingen i besøkstall.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "n-ch4", "category": "Chart", "prompt": "Chart the revenue split by region.", "expected_channel": "native", "expected_family": "Chart" },
+    { "id": "n-ch5", "category": "Chart", "prompt": "Show the trend of support tickets this quarter.", "expected_channel": "native", "expected_family": "Chart" },
+
+    { "id": "n-tl1", "category": "Timeline", "prompt": "Show the order of events in the onboarding.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "n-tl2", "category": "Timeline", "prompt": "List the product launches by year.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "n-tl3", "category": "Timeline", "prompt": "Vis hendelsene i rekkefølge.", "expected_channel": "native", "expected_family": "Timeline" },
+    { "id": "n-tl4", "category": "Timeline", "prompt": "Give me the milestones with dates.", "expected_channel": "native", "expected_family": "Timeline" },
+
+    { "id": "n-tb1", "category": "Tabs", "prompt": "Show the dashboard in tabs.", "expected_channel": "native", "expected_family": "Tabs" },
+    { "id": "n-tb2", "category": "Tabs", "prompt": "Put the summary and details in tabs.", "expected_channel": "native", "expected_family": "Tabs" },
+    { "id": "n-tb3", "category": "Tabs", "prompt": "Vis oversikt og detaljer i faner.", "expected_channel": "native", "expected_family": "Tabs" },
+
+    { "id": "n-fo1", "category": "Forms", "prompt": "Make a feedback form with a rating.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-fo2", "category": "Forms", "prompt": "Create a form to collect name, email and a message.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-fo3", "category": "Forms", "prompt": "Lag et skjema for å melde interesse.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-fo4", "category": "Forms", "prompt": "Build a small contact form.", "expected_channel": "native", "expected_family": "Form" },
+
+    { "id": "n-ga1", "category": "Gallery", "prompt": "Show the photos I uploaded.", "expected_channel": "native", "expected_family": "Gallery", "gallery": true, "ambiguous": true },
+    { "id": "n-ga2", "category": "Gallery", "prompt": "Vis bildene fra mappen.", "expected_channel": "native", "expected_family": "Gallery", "gallery": true, "ambiguous": true },
+    { "id": "n-ga3", "category": "Gallery", "prompt": "Display the images as a gallery.", "expected_channel": "native", "expected_family": "Gallery", "gallery": true, "ambiguous": true },
+    { "id": "n-ga4", "category": "Gallery", "prompt": "Show me the pictures.", "expected_channel": "native", "expected_family": "Gallery", "gallery": true, "ambiguous": true },
+
+    { "id": "n-ca1", "category": "Calculator", "prompt": "Build a tip calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-ca2", "category": "Calculator", "prompt": "Make a salary calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-ca3", "category": "Calculator", "prompt": "Create a discount calculator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-ca4", "category": "Calculator", "prompt": "Lag en lånekalkulator.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-ca5", "category": "Calculator", "prompt": "Build a unit price calculator.", "expected_channel": "native", "expected_family": "Form" },
+
+    { "id": "n-ri1", "category": "Rich", "prompt": "Build a 3D spinning globe.", "expected_channel": "rich" },
+    { "id": "n-ri2", "category": "Rich", "prompt": "Make a custom particle simulator.", "expected_channel": "rich" },
+    { "id": "n-ri3", "category": "Rich", "prompt": "Create a bespoke canvas drawing tool.", "expected_channel": "rich" },
+
+    { "id": "n-mx1", "category": "Mixed", "prompt": "Compare the two plans and recommend one.", "expected_channel": "native", "expected_family": "Comparison", "expect_mixed": true },
+    { "id": "n-mx2", "category": "Mixed", "prompt": "Show the sales trend and explain it.", "expected_channel": "native", "expected_family": "Chart", "expect_mixed": true },
+    { "id": "n-mx3", "category": "Mixed", "prompt": "Show the milestones and say what's next.", "expected_channel": "native", "expected_family": "Timeline", "expect_mixed": true },
+    { "id": "n-mx4", "category": "Mixed", "prompt": "Show the costs and highlight the biggest.", "expected_channel": "native", "expected_family": "Table", "expect_mixed": true },
+
+    { "id": "n-qu1", "category": "Query", "prompt": "Show my notes.", "expected_channel": "native", "expected_family": "Query" },
+    { "id": "n-qu2", "category": "Query", "prompt": "List my files.", "expected_channel": "native", "expected_family": "Query" },
+
+    { "id": "n-mu1", "category": "Mutation", "prompt": "Let me save a note called Ideas.", "expected_channel": "native", "expected_family": "Form" },
+    { "id": "n-mu2", "category": "Mutation", "prompt": "Add a button that creates a note.", "expected_channel": "native", "expected_family": "Form" }
+  ]
+}

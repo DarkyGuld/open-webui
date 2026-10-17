@@ -21,10 +21,10 @@ Before doing anything, read, in order:
 7. docs/intelligent-ui/MILESTONE_4_REPORT.md
 8. docs/intelligent-ui/MILESTONE_9_5_REPORT.md (and the other M5–M9.x reports)
 9. docs/intelligent-ui/UX_GUIDELINES.md + NATIVE_COMPONENT_CATALOG.md + PARITY_VISUAL_AUDIT.md
-10. docs/intelligent-ui/ROUTING_BENCHMARK_V2.md + ROUTING_BENCHMARK_V3.md +
-    MILESTONE_9_8_REPORT.md + MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md (routing/capability evals;
-    cat-jam-free plateaus ~66–85%, deepseek-v4.1-flash v3 91.7%/clear 92.7%, holdout 82.8%; M10
-    deferred/unnecessary unless evidence changes; v1 not yet declared complete)
+10. docs/intelligent-ui/MILESTONE_9_10_REPORT.md + MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md +
+    ROUTING_BENCHMARK_V2.md + ROUTING_BENCHMARK_V3.md (routing/capability evals; cat-jam-free
+    plateaus ~66–85%, deepseek-v4.1-flash v3 92.8%/clear 92.8%, new holdout 82.1%; M10 deferred/
+    unnecessary; v1 not yet declared complete)
 10. docs/FRESH_MACHINE_SETUP.md
 
 Then:

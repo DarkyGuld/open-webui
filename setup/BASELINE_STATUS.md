@@ -248,6 +248,17 @@ introduced here.
 - Tests: `vitest` **135 passed**, `pytest` **53 passed**, build **green**. See
   `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md`.
 
+### Milestone 9.10 (deepseek targeted hardening) addendum
+
+- **Metric `tone`** contract added (shared with Badge); native-first calculators / Gallery intent /
+  multilingual / mixed guidance. `PROMPT` 13 311 → **13 836 chars (+3.9%)**. Frozen before the
+  final benchmarks.
+- Tuning 55.6% → **83.3%** (1 iteration). deepseek-v4.1-flash: v3 channel **92.8%** / family 90.0%;
+  legacy holdout 83.8% / 82.8%; **NEW untouched holdout 82.1% / 79.8%** (clear-intent 87.8%);
+  invalid 1.1–2.4% (all model errors); native calculators 100% native.
+- **Level C; near-99% not reached; v1 NOT complete; M10 unnecessary.** Tests: `vitest` **144
+  passed**, `pytest` **53 passed**, build **green**. See `MILESTONE_9_10_REPORT.md`.
+
 ## Reproduce
 
 ```bash

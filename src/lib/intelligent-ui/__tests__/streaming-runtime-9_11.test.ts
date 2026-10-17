@@ -122,4 +122,62 @@ describe('M9.11 — lifecycle-safe streaming runtime', () => {
 			expect(node.tone).toBeUndefined();
 		}
 	});
+
+	it('a REPLACED program does not leak stale touched values into the new defaults', () => {
+		const rt = createOpenUIPartialRuntime();
+		rt.update(`$seats = 8\nroot = Stack([m1])\nm1 = Metric("Seats", $seats)`);
+		rt.setState('$seats', 40); // user interacts with the OLD program
+		// the model replaces the program entirely (regeneration mid-stream):
+		rt.update(`$seats = 5\nroot = Stack([m1])\nm1 = Metric("Seats", $seats)`);
+		const m = findNode(rt.update(`$seats = 5\nroot = Stack([m1])\nm1 = Metric("Seats", $seats)`)!, 'metric');
+		// untouched-by-the-new-program semantics: the user value is retained for a
+		// name that still exists, but the NEW declaration default is NOT silently
+		// overridden by values from unrelated names — and unrelated old state is
+		// not carried into touchedValues() (only names the user actually touched):
+		expect(m && m.type === 'metric' ? m.value : '').toBe('40'); // touched value survives
+		const touched = rt.touchedValues();
+		expect(Object.keys(touched)).toEqual(['$seats']);
+		// finalization with the replaced program keeps the touched value and the
+		// new default for untouched names:
+		const final = createIntelligentUIRuntime(
+			{ version: '1', content: `$seats = 5\n$extra = 9\nroot = Stack([m1, m2])\nm1 = Metric("Seats", $seats)\nm2 = Metric("Extra", $extra)` },
+			undefined,
+			{ persisted: touched }
+		);
+		expect(final.ok).toBe(true);
+		if (final.ok) {
+			const seats = findNode(final.node, 'metric');
+			if (seats && seats.type === 'metric') expect(seats.value).toBe('40'); // touched survives
+			const extra = final.node.type === 'stack' ? final.node.children.find((c: any) => c.type === 'metric' && c.label === 'Extra') : null;
+			if (extra && extra.type === 'metric') expect(extra.value).toBe('9'); // new default applies
+		}
+		rt.dispose();
+	});
+
+	it('rapid successive user updates during partial mode all land (no lost interactions)', () => {
+		const rt = createIntelligentUIPartialRuntime();
+		expect(rt.update({ version: '1', content: CALC }).ok).toBe(true);
+		for (const v of [10, 20, 30, 40]) rt.setState('$seats', v);
+		const r = rt.refresh();
+		expect(r.ok).toBe(true);
+		const metric = findNode(r.node!, 'metric');
+		if (metric && metric.type === 'metric') expect(metric.value).toBe(String(40 * 29)); // last value wins
+		rt.dispose();
+	});
+
+	it('two independent partial runtimes never share state (block isolation)', () => {
+		const a = createIntelligentUIPartialRuntime();
+		const b = createIntelligentUIPartialRuntime();
+		a.update({ version: '1', content: CALC });
+		b.update({ version: '1', content: CALC });
+		a.setState('$seats', 50);
+		const ra = a.refresh();
+		const rb = b.refresh();
+		const ma = findNode(ra.node!, 'metric');
+		const mb = findNode(rb.node!, 'metric');
+		if (ma && ma.type === 'metric') expect(ma.value).toBe(String(50 * 29));
+		if (mb && mb.type === 'metric') expect(mb.value).toBe(String(8 * 29)); // b untouched
+		a.dispose();
+		b.dispose();
+	});
 });

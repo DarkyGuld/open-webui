@@ -1,0 +1,62 @@
+{
+  "version": 6,
+  "name": "v6",
+  "model": "pilot: cat-jam-free (free); full runs: deepseek-v4.1-flash (pending cost approval)",
+  "contract": "src/lib/intelligent-ui/evaluation.ts (EVAL_CONTRACT_VERSION 6). Distinguishes presentation intent, data availability (provided/model/queryable/unavailable), correct requests for missing data, and fabrication (ignored provided numbers / invented image sources). Historical v1-v5 results stay untouched.",
+  "cases": [
+    { "id": "v6-md1", "prompt": "Explain how a heat pump works.", "language": "en", "intent": "prose", "dataAvailable": "model", "expectedChannel": "markdown" },
+    { "id": "v6-md2", "prompt": "Hvordan virker en varmepumpe?", "language": "no", "intent": "prose", "dataAvailable": "model", "expectedChannel": "markdown" },
+    { "id": "v6-md3", "prompt": "Write a haiku about winter.", "language": "en", "intent": "prose", "dataAvailable": "model", "expectedChannel": "markdown" },
+    { "id": "v6-md4", "prompt": "What's the difference between TCP and UDP?", "language": "en", "intent": "prose", "dataAvailable": "model", "expectedChannel": "markdown" },
+    { "id": "v6-md5", "prompt": "Hva er forskjellen på HTTP og HTTPS?", "language": "no", "intent": "prose", "dataAvailable": "model", "expectedChannel": "markdown" },
+
+    { "id": "v6-co1", "prompt": "Compare our three plans: Basic 99 kr with 1 vCPU and 1 GB RAM, Pro 199 kr with 2 vCPU and 4 GB, Team 399 kr with 4 vCPU and 8 GB.", "language": "en", "intent": "comparison", "dataAvailable": "provided", "providedNumbers": [99, 199, 399], "expectedChannel": "native", "expectedFamily": "Comparison" },
+    { "id": "v6-co2", "prompt": "Sammenlign planene: Basis 99 kr, Pro 199 kr, Team 399 kr.", "language": "no", "intent": "comparison", "dataAvailable": "provided", "providedNumbers": [99, 199, 399], "expectedChannel": "native", "expectedFamily": "Comparison" },
+    { "id": "v6-co3", "prompt": "React vs Vue vs Svelte for a small team?", "language": "en", "intent": "comparison", "dataAvailable": "model", "expectedChannel": "native", "expectedFamily": "Comparison" },
+    { "id": "v6-co4", "prompt": "Compare the two quotes we got: A: 120000 kr and 3 weeks, B: 150000 kr and 2 weeks.", "language": "en", "intent": "comparison", "dataAvailable": "provided", "providedNumbers": [120000, 150000], "expectedChannel": "native", "expectedFamily": "Comparison" },
+    { "id": "v6-co5", "prompt": "Stripe vs Adyen for a Norwegian startup?", "language": "en", "intent": "comparison", "dataAvailable": "model", "expectedChannel": "native", "expectedFamily": "Comparison" },
+
+    { "id": "v6-ta1", "prompt": "Show this as a table: Apples 12 kr, Bread 30 kr, Milk 15 kr, Coffee 89 kr.", "language": "en", "intent": "table", "dataAvailable": "provided", "providedNumbers": [12, 30, 15, 89], "expectedChannel": "native", "expectedFamily": "Table" },
+    { "id": "v6-ta2", "prompt": "Tabell: Oslo 4 grader, Bergen 7 grader, Trondheim 2 grader, Tromsø -1 grad.", "language": "no", "intent": "table", "dataAvailable": "provided", "providedNumbers": [4, 7, 2], "expectedChannel": "native", "expectedFamily": "Table" },
+    { "id": "v6-ta3", "prompt": "List the top 5 planets by size with their diameters.", "language": "en", "intent": "table", "dataAvailable": "model", "expectedChannel": "native", "expectedFamily": "Table" },
+    { "id": "v6-ta4", "prompt": "Show our Q1-Q4 revenue as a table: 210, 240, 260, 300 (millions).", "language": "en", "intent": "table", "dataAvailable": "provided", "providedNumbers": [210, 240, 260, 300], "expectedChannel": "native", "expectedFamily": "Table" },
+    { "id": "v6-ta5", "prompt": "Create a table of our five team members and their roles.", "language": "en", "intent": "table", "dataAvailable": "unavailable", "expectedChannel": "native", "expectedFamily": "Table", "missingDataOk": true },
+
+    { "id": "v6-me1", "prompt": "What's the total for 12 licenses at 250 kr each?", "language": "en", "intent": "number", "dataAvailable": "provided", "providedNumbers": [12, 250], "expectedChannel": "native", "expectedFamily": "Metric" },
+    { "id": "v6-me2", "prompt": "Hvor mye blir det totalt for 8 seter à 490 kr?", "language": "no", "intent": "number", "dataAvailable": "provided", "providedNumbers": [8, 490], "expectedChannel": "native", "expectedFamily": "Metric" },
+    { "id": "v6-me3", "prompt": "What was our revenue last quarter?", "language": "en", "intent": "number", "dataAvailable": "unavailable", "expectedChannel": "native", "expectedFamily": "Metric", "missingDataOk": true },
+    { "id": "v6-me4", "prompt": "What is 18% of 2400?", "language": "en", "intent": "number", "dataAvailable": "provided", "providedNumbers": [2400], "expectedChannel": "native", "expectedFamily": "Metric" },
+
+    { "id": "v6-ch1", "prompt": "Chart our monthly signups: Jan 120, Feb 135, Mar 150, Apr 180, May 210, Jun 240.", "language": "en", "intent": "chart", "dataAvailable": "provided", "providedNumbers": [120, 135, 150, 180, 210, 240], "expectedChannel": "native", "expectedFamily": "Chart" },
+    { "id": "v6-ch2", "prompt": "Vis utviklingen i besøkstall: 40, 45, 52, 48, 60.", "language": "no", "intent": "chart", "dataAvailable": "provided", "providedNumbers": [40, 45, 52, 48, 60], "expectedChannel": "native", "expectedFamily": "Chart" },
+    { "id": "v6-ch3", "prompt": "Show the trend of global average temperature from 1880 to 2020.", "language": "en", "intent": "chart", "dataAvailable": "model", "expectedChannel": "native", "expectedFamily": "Chart" },
+    { "id": "v6-ch4", "prompt": "We need the exact figures for revenue by region: North 1.2M, South 0.8M, East 0.5M.", "language": "en", "intent": "chart", "dataAvailable": "provided", "providedNumbers": [1.2, 0.8, 0.5], "expectedChannel": "native", "expectedFamily": "Table" },
+
+    { "id": "v6-tl1", "prompt": "Show our roadmap as a timeline: Discovery (Jan), Design (Feb), Build (Mar-May), Launch (Jun).", "language": "en", "intent": "timeline", "dataAvailable": "provided", "expectedChannel": "native", "expectedFamily": "Timeline" },
+    { "id": "v6-tl2", "prompt": "Timeline of the French Revolution's key events.", "language": "en", "intent": "timeline", "dataAvailable": "model", "expectedChannel": "native", "expectedFamily": "Timeline" },
+    { "id": "v6-tl3", "prompt": "Vis prosjektets faser i rekkefølge: planlegging (uke 1), bygging (uke 2-3), testing (uke 4).", "language": "no", "intent": "timeline", "dataAvailable": "provided", "expectedChannel": "native", "expectedFamily": "Timeline" },
+
+    { "id": "v6-ga1", "prompt": "Show these two images as a gallery: /favicon.png with caption 'App icon', and /favicon.png with caption 'Logo'.", "language": "en", "intent": "images", "dataAvailable": "provided", "providedImageRefs": ["/favicon.png"], "expectedChannel": "native", "expectedFamily": "Gallery" },
+    { "id": "v6-ga2", "prompt": "Show the photos from yesterday's offsite.", "language": "en", "intent": "images", "dataAvailable": "unavailable", "expectedChannel": "native", "expectedFamily": "Gallery", "missingDataOk": true },
+    { "id": "v6-ga3", "prompt": "Vis bildene fra møtet.", "language": "no", "intent": "images", "dataAvailable": "unavailable", "expectedChannel": "native", "expectedFamily": "Gallery", "missingDataOk": true },
+    { "id": "v6-ga4", "prompt": "Display the attached product shots as a gallery.", "language": "en", "intent": "images", "dataAvailable": "unavailable", "expectedChannel": "native", "expectedFamily": "Gallery", "missingDataOk": true },
+
+    { "id": "v6-ca1", "prompt": "Build a loan calculator: amount slider 50000-500000, years 1-15, 5% interest.", "language": "en", "intent": "interactive", "dataAvailable": "provided", "providedNumbers": [5], "expectedChannel": "native", "expectedFamily": "Form" },
+    { "id": "v6-ca2", "prompt": "Lag en BMI-kalkulator med skyvere for høyde og vekt.", "language": "no", "intent": "interactive", "dataAvailable": "model", "expectedChannel": "native", "expectedFamily": "Form" },
+    { "id": "v6-ca3", "prompt": "Make a tip calculator.", "language": "en", "intent": "interactive", "dataAvailable": "model", "expectedChannel": "native", "expectedFamily": "Form" },
+    { "id": "v6-ca4", "prompt": "Pricing calculator: 49 kr per seat, volume discount from 20 seats.", "language": "en", "intent": "interactive", "dataAvailable": "provided", "providedNumbers": [49, 20], "expectedChannel": "native", "expectedFamily": "Form" },
+
+    { "id": "v6-qu1", "prompt": "Show my notes.", "language": "en", "intent": "query", "dataAvailable": "queryable", "expectedChannel": "native", "expectedFamily": "Query" },
+    { "id": "v6-qu2", "prompt": "List my files.", "language": "en", "intent": "query", "dataAvailable": "queryable", "expectedChannel": "native", "expectedFamily": "Query" },
+    { "id": "v6-qu3", "prompt": "How many knowledge collections do I have?", "language": "en", "intent": "query", "dataAvailable": "queryable", "expectedChannel": "native", "expectedFamily": "Query" },
+
+    { "id": "v6-mx1", "prompt": "Compare plans A (99 kr) and B (199 kr) and tell me which to pick.", "language": "en", "intent": "mixed", "dataAvailable": "provided", "providedNumbers": [99, 199], "expectedChannel": "native", "expectedFamily": "Comparison", "expectMixed": true },
+    { "id": "v6-mx2", "prompt": "Chart the signups 10, 20, 35, 50 and explain the trend.", "language": "en", "intent": "mixed", "dataAvailable": "provided", "providedNumbers": [10, 20, 35, 50], "expectedChannel": "native", "expectedFamily": "Chart", "expectMixed": true },
+    { "id": "v6-mx3", "prompt": "Sammenlign de to tilbudene — A: 120000 kr og 3 uker, B: 150000 kr og 2 uker — og anbefal ett.", "language": "no", "intent": "mixed", "dataAvailable": "provided", "providedNumbers": [120000, 150000], "expectedChannel": "native", "expectedFamily": "Comparison", "expectMixed": true },
+    { "id": "v6-mx4", "prompt": "Show my files and tell me which one is largest.", "language": "en", "intent": "mixed", "dataAvailable": "queryable", "expectedChannel": "native", "expectedFamily": "Query", "expectMixed": true },
+
+    { "id": "v6-ri1", "prompt": "Build a 3D spinning globe I can drag.", "language": "en", "intent": "custom", "dataAvailable": "model", "expectedChannel": "rich" },
+    { "id": "v6-ri2", "prompt": "Make a particle effect playground widget.", "language": "en", "intent": "custom", "dataAvailable": "model", "expectedChannel": "rich" },
+    { "id": "v6-ri3", "prompt": "Create a custom 3D bar chart you can rotate.", "language": "en", "intent": "custom", "dataAvailable": "model", "expectedChannel": "rich" }
+  ]
+}

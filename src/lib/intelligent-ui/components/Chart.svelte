@@ -113,7 +113,7 @@
 									color: textColor,
 									maxRotation: 0,
 									autoSkip: true,
-									callback: function (value: number) {
+									callback: function (this: any, value: number) {
 										const label = String(this.getLabelForValue(value) ?? '');
 										return label.length > 14 ? `${label.slice(0, 13)}…` : label;
 									}

@@ -25,9 +25,10 @@ Before doing anything, read, in order:
     ROUTING_BENCHMARK_V2.md + ROUTING_BENCHMARK_V3.md (routing/capability evals; cat-jam-free
     plateaus ~66–85%, deepseek-v4.1-flash v3 92.8%/clear 92.8%, new holdout 82.1%; M10 deferred/
     unnecessary; v1 not yet declared complete)
-11. docs/intelligent-ui/M9_11_STATUS.md (current audit matrix, streaming-runtime fix, evaluation
-    contract v6, P0/P1/P2 backlog, next milestone)
-10. docs/FRESH_MACHINE_SETUP.md
+11. docs/intelligent-ui/M9_11_STATUS.md (merged via PR #1, evaluation contract v8)
+12. docs/library/STATUS.md + DESIGN.md + SERVER_STATE_REVIEW.md (independent read-only Library;
+    PR #2 is a separate branch; no server sync or paid evaluation enabled)
+13. docs/FRESH_MACHINE_SETUP.md
 
 Then:
 - Inspect git history (git log --oneline -20) and the current branch/commit.
@@ -40,8 +41,10 @@ Then:
 - Confirm the Intelligent UI contract: with effective mode OFF, the request is unchanged;
   with AUTO/ON the catalog prompt is injected; the :::intelligent-ui block renders natively.
 
-Continue from the documented next milestone (Milestone 4) in HANDOFF.md:
-durability (output[]), catalog expansion, provider capability matrix, i18n, interaction.
+M9.11 was merged as 110008de6. Inspect current PRs before continuing: PR #2 contains the separate
+M9.12 safe-state/evaluation preparation, while feat/read-only-library adds an independently tested
+read-only Library over existing Files. Next useful slice: image-grid/Gallery binding using real
+authorized file ids. Server sync needs the reviewed atomic/privacy design; paid calls need approval.
 
 Constraints (unchanged):
 - Native Open WebUI styling only; no external visual layer.

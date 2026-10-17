@@ -4,7 +4,8 @@
 	import { chatId } from '$lib/stores';
 	import {
 		createIntelligentUIRuntime,
-		parseIntelligentUIPartial,
+		createIntelligentUIPartialRuntime,
+		type IntelligentUIPartialRuntime,
 		type IntelligentUIRuntime
 	} from '$lib/intelligent-ui/adapter';
 	import { dispatchAction, type ActionContext } from '$lib/intelligent-ui/actions';
@@ -25,24 +26,35 @@
 
 	let tree: UINode | null = null;
 	let runtime: IntelligentUIRuntime | undefined = undefined;
+	let partialRt: IntelligentUIPartialRuntime | undefined = undefined;
 	let fallbackReason: string | null = null;
 	let unsub: (() => void) | undefined;
 	let lastKey: string | null = null;
 
 	// Re-parse when the fence content (or completion) changes.
-	// - partial: progressive render via the streaming parser; keep last-good tree.
-	// - complete: full parse + live runtime (two-way binding).
+	// - partial: ONE persistent streaming runtime (parser + store reused across
+	//   chunks; user input survives between chunks) — keep last-good tree.
+	// - complete: full parse + live runtime, seeded with the user-touched values
+	//   from streaming so interactions survive the finalization.
 	$: key = `${partial ? 'p' : 'f'}:${token?.text ?? ''}`;
 	$: if (key !== lastKey) {
 		lastKey = key;
 		const input = { version: token?.attributes?.v, content: token?.text ?? '' };
 		if (partial) {
-			const p = parseIntelligentUIPartial(input);
-			if (p.ok) tree = p.node; // keep last-good tree on failure
+			if (!partialRt) partialRt = createIntelligentUIPartialRuntime();
+			const p = partialRt.update(input);
+			if (p.ok && p.node) tree = p.node; // keep last-good tree on failure
 		} else {
+			const persisted = partialRt?.touchedValues();
+			partialRt?.dispose();
+			partialRt = undefined;
 			unsub?.();
 			unsub = undefined;
-			const outcome = createIntelligentUIRuntime(input);
+			const outcome = createIntelligentUIRuntime(
+				input,
+				undefined,
+				persisted ? { persisted } : undefined
+			);
 			if (outcome.ok) {
 				tree = outcome.node;
 				runtime = outcome.runtime;
@@ -60,7 +72,10 @@
 		}
 	}
 
-	onDestroy(() => unsub?.());
+	onDestroy(() => {
+		unsub?.();
+		partialRt?.dispose();
+	});
 
 	// --- durable local state (comparison selection) ---
 	let uiState: Record<string, unknown> = loadState($chatId ?? '', id);
@@ -103,7 +118,24 @@
 		}
 	}
 
+	function refreshPartialTree() {
+		if (!partialRt) return false;
+		const r = partialRt.refresh();
+		if (r.ok && r.node) {
+			tree = r.node;
+			return true;
+		}
+		return false;
+	}
+
 	function handleBind(name: string, value: unknown) {
+		if (partialRt) {
+			// Live binding during streaming — recorded in the persistent store
+			// and carried into the final runtime at completion.
+			partialRt.setState(name, value);
+			refreshPartialTree();
+			return;
+		}
 		runtime?.setState(name, value);
 		tree = runtime?.evaluate() ?? tree;
 	}
@@ -114,9 +146,11 @@
 		const steps = Array.isArray(action) ? action : [action];
 		for (const step of steps) {
 			if (step.type === 'set') {
-				runtime?.setState(step.target, step.value);
+				if (partialRt) partialRt.setState(step.target, step.value);
+				else runtime?.setState(step.target, step.value);
 			} else if (step.type === 'reset') {
-				runtime?.resetState(step.targets);
+				if (partialRt) partialRt.resetState(step.targets);
+				else runtime?.resetState(step.targets);
 			} else if (step.type === 'send_prompt') {
 				window.postMessage(
 					{ type: 'input:prompt:submit', text: step.prompt },
@@ -156,7 +190,8 @@
 				}
 			}
 		}
-		tree = runtime?.evaluate() ?? tree;
+		if (partialRt) refreshPartialTree();
+		else tree = runtime?.evaluate() ?? tree;
 	}
 </script>
 

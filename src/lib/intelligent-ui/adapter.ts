@@ -10,7 +10,12 @@
 import { envelopeSchema } from './schema';
 import { SUPPORTED_VERSION } from './limits';
 import { isPayloadWithinLimits, validateNode } from './validation';
-import { createOpenUIRuntime, openuiEngine, parseOpenUIPartial } from './engines/openui';
+import {
+	createOpenUIRuntime,
+	createOpenUIPartialRuntime,
+	openuiEngine,
+	parseOpenUIPartial
+} from './engines/openui';
 import { jsonRenderEngine } from './engines/json-render';
 import type { IntelligentUIEngine, IntelligentUIEngineId, ParseOutcome, UINode } from './types';
 
@@ -94,6 +99,52 @@ export function parseIntelligentUIPartial(input: ParseInput): ParseOutcome {
 	}
 }
 
+/**
+ * Lifecycle-safe PARTIAL (streaming) runtime handle (M9.11): ONE streaming
+ * parser + ONE store reused across every update of a streaming block, so
+ * user interactions survive between chunks and the partial -> complete
+ * transition (`touchedValues()` seeds the final runtime).
+ */
+export interface IntelligentUIPartialRuntime {
+	/** Feed the accumulated token text. Keeps the last-good tree on failure. */
+	update(input: ParseInput): { ok: boolean; node?: UINode; reason?: string };
+	/** Record a user interaction (two-way binding / @Set) — no model call. */
+	setState(name: string, value: unknown): void;
+	/** Reset names to declared defaults. */
+	resetState(names: string[]): void;
+	/** Re-evaluate from the current store (after setState/resetState). */
+	refresh(): { ok: boolean; node?: UINode };
+	/** User-touched values only (seed for the complete runtime). */
+	touchedValues(): Record<string, unknown>;
+	dispose(): void;
+}
+
+export function createIntelligentUIPartialRuntime(): IntelligentUIPartialRuntime {
+	const rt = createOpenUIPartialRuntime();
+	const wrap = (node: UINode | null): { ok: boolean; node?: UINode; reason?: string } => {
+		if (!node) return { ok: false, reason: 'no renderable root yet' };
+		const validated = validateNode(node);
+		if (!validated.ok) return { ok: false, reason: `validation: ${validated.reason}` };
+		return { ok: true, node: validated.node };
+	};
+	return {
+		update(input) {
+			const resolved = resolvePayload(input);
+			if (!resolved.ok) return { ok: false, reason: resolved.reason };
+			try {
+				return wrap(rt.update(resolved.payload));
+			} catch (error) {
+				return { ok: false, reason: `parse error: ${(error as Error).message}` };
+			}
+		},
+		setState: (name, value) => rt.setState(name, value),
+		resetState: (names) => rt.resetState(names),
+		refresh: () => wrap(rt.refresh()),
+		touchedValues: () => rt.touchedValues(),
+		dispose: () => rt.dispose()
+	};
+}
+
 /** Live runtime handle for two-way binding (OpenUI engine). */
 export interface IntelligentUIRuntime {
 	getState(): Record<string, unknown>;
@@ -109,14 +160,15 @@ export type RuntimeOutcome =
 
 export function createIntelligentUIRuntime(
 	input: ParseInput,
-	engineId: IntelligentUIEngineId = DEFAULT_ENGINE
+	engineId: IntelligentUIEngineId = DEFAULT_ENGINE,
+	opts?: { persisted?: Record<string, unknown> }
 ): RuntimeOutcome {
 	const resolved = resolvePayload(input);
 	if (!resolved.ok) return { ok: false, reason: resolved.reason };
 
 	if (engineId === 'openui') {
 		try {
-			const rt = createOpenUIRuntime(resolved.payload);
+			const rt = createOpenUIRuntime(resolved.payload, { persisted: opts?.persisted });
 			const node = rt.evaluate();
 			const validated = validateNode(node);
 			if (!validated.ok) {

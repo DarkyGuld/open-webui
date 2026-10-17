@@ -227,3 +227,13 @@ existing `chart.js`; Gallery reuses the existing `Image` primitive. No new depen
 reuse the existing `svelte-sonner` dependency; charts reuse `chart.js`. No new dependency.
 
 **Cumulative M1–M9.5:** still ~20 core files, ~235 lines.
+
+## M9.12 safe implementation slice
+
+No upstream core files changed, no dependencies, no migration or server endpoints. The persistence
+policy is isolated in `src/lib/intelligent-ui/interaction-state.ts` and the custom
+`IntelligentUIBlock.svelte`. Only catalog-defined numeric/boolean/enumerated controls are stored
+locally. The chat-variable server prototype was removed after security review (model-context
+exposure and lost-update risk); cross-device sync is not enabled. Benchmark tooling adds explicit
+execution/paid-approval/overwrite guards; historical results and production prompts are unchanged.
+See `M9_12_STATUS.md` and `PERSISTENT_STATE_DESIGN.md`.

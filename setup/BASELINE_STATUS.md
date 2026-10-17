@@ -281,6 +281,20 @@ introduced here.
 
 ## Reproduce
 
+### M9.12 safe subset (from merged M9.11 `110008de6`)
+
+- Local-only filtered control restoration (`interaction-state.ts`): user/chat/block/program scope;
+  numeric/boolean/enumerated values only, no typed Input/Textarea storage. Cross-device server sync
+  is **not shipped**; variable-based prototype removed after privacy/concurrency review.
+- **194 Vitest**, **53 Intelligent UI pytest**; production build passed. Prompt generation has no
+  drift. No model/prompt/schema/dependency change. Real app Playwright: **23 checks**, no unexpected
+  console errors, no model calls. Focused type check must exclude no new errors; repository-wide
+  historical Svelte errors remain.
+- Independent 50-case holdout (26 EN / 24 NO) frozen before execution; checksum tests, read-only
+  preflight and paid-approval/overwrite guards added. **No evaluation calls run.**
+- See `docs/intelligent-ui/M9_12_STATUS.md`, `PERSISTENT_STATE_DESIGN.md`,
+  `m9-12-evaluation/PLAN.md` and `docs/PRODUCT_BACKLOG_CURRENT.md`.
+
 ```bash
 export PATH="/opt/homebrew/opt/node@22/bin:$PATH"
 cd /Users/adrian/OpenUI/workspace/open-webui

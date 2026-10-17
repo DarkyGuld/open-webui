@@ -44,8 +44,33 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - name: Install minimal test dependencies
-        run: python -m pip install pytest pytest-asyncio "pydantic>=2,<3"
+        run: python -m pip install pytest pytest-asyncio "pydantic>=2,<3" typer uvicorn httpx
       - name: Execute full Intelligent UI Python suite
         env:
           PYTHONPATH: backend
         run: python -m pytest -q tests/intelligent_ui
+
+  lang-core-1x-spike:
+    name: OpenUI Lang Core 1.0.1 compatibility (isolated)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install frozen baseline
+        run: npm ci --force
+      - name: Temporarily install 1.0.1 without committing manifest or lockfile
+        run: npm install --no-save --package-lock=false --force @openuidev/lang-core@1.0.1
+      - name: Verify installed major version
+        run: node -e "import('@openuidev/lang-core').then(() => console.log(require('./node_modules/@openuidev/lang-core/package.json').version))"
+      - name: Run all frontend tests against candidate
+        run: npm run test:frontend -- --run
+      - name: Generate candidate prompt into workspace
+        run: npx tsx scripts/intelligent-ui/generate-prompt.ts
+      - name: Build frontend against candidate
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192

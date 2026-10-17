@@ -259,6 +259,21 @@ introduced here.
 - **Level C; near-99% not reached; v1 NOT complete; M10 unnecessary.** Tests: `vitest` **144
   passed**, `pytest` **53 passed**, build **green**. See `MILESTONE_9_10_REPORT.md`.
 
+### Milestone 9.11 (correctness & reliability) addendum — branch feat/intelligent-ui-m9-11-reliability
+
+- Baseline re-verified after the upstream 0.12.3 merge + lang-core **1.0.1** upgrade: 146 Vitest,
+  53 pytest, prompt regen `git diff` clean, build green, 0 commits behind upstream main.
+- **Fixed**: lifecycle-safe streaming runtime (one parser+store per block; user input survives
+  chunks AND finalization); evaluation-contract fabrication false-positives (formatting-insensitive
+  number matching); `Chart.svelte` + `engines/openui.ts` typing errors (intelligent-ui module now
+  0 svelte-check errors); component-limit prompt rule (Table ≤ 50 rows; never-empty required
+  values) kept **within the size guard** (PROMPT 13 982 chars, +19 vs M9.10).
+- **New**: evaluation contract **v6** (`src/lib/intelligent-ui/evaluation.ts` + dataset 44 cases +
+  runner); free-model pilot: cat-jam-free **90.9 %/90.9 %** under fair scoring (old sets scored it
+  66–85 % by penalizing data-unavailability). Full deepseek runs pending cost approval.
+- Tests: `vitest` **164 passed** (+8 streaming-runtime, +10 evaluation-contract), `pytest` **53
+  passed**, build **green**. See `M9_11_STATUS.md`.
+
 ## Reproduce
 
 ```bash

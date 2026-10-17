@@ -25,6 +25,8 @@ Before doing anything, read, in order:
     ROUTING_BENCHMARK_V2.md + ROUTING_BENCHMARK_V3.md (routing/capability evals; cat-jam-free
     plateaus ~66–85%, deepseek-v4.1-flash v3 92.8%/clear 92.8%, new holdout 82.1%; M10 deferred/
     unnecessary; v1 not yet declared complete)
+11. docs/intelligent-ui/M9_11_STATUS.md (current audit matrix, streaming-runtime fix, evaluation
+    contract v6, P0/P1/P2 backlog, next milestone)
 10. docs/FRESH_MACHINE_SETUP.md
 
 Then:

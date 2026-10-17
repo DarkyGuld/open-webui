@@ -1,0 +1,51 @@
+name: Intelligent UI verification
+
+on:
+  push:
+    branches: [intelligent-ui-foundation]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Vitest, prompt generation and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install frozen dependencies
+        run: npm ci --force
+      - name: Verify all frontend unit tests
+        run: npm run test:frontend -- --run
+      - name: Rebuild generated Intelligent UI prompt
+        run: npx tsx scripts/intelligent-ui/generate-prompt.ts
+      - name: Verify generated prompt matches committed source
+        run: git diff --exit-code -- backend/open_webui/intelligent_ui/catalog_prompt.py
+      - name: Build production frontend
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+
+  backend:
+    name: Intelligent UI pytest (Python 3.12)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install minimal test dependencies
+        run: python -m pip install pytest pytest-asyncio "pydantic>=2,<3"
+      - name: Execute full Intelligent UI Python suite
+        env:
+          PYTHONPATH: backend
+        run: python -m pytest -q tests/intelligent_ui

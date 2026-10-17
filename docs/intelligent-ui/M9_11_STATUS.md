@@ -63,25 +63,41 @@ catalog prompt in sync (`git diff` clean), production build green.
 | Evaluation methodology | **REBUILT this milestone (contract v6)** | pilot: cat-jam-free 90.9% under fair scoring |
 | Map / external media | MISSING (deferred by design) | M9.4 report |
 
-## Evaluation contract v6 (methodology repair)
+## Evaluation contract v6 → v7 (methodology repair + review hardening)
 
-`src/lib/intelligent-ui/evaluation.ts` (pure, versioned, shared by runner + Vitest): separates
-**presentation intent**, **data availability** (`provided | model | queryable | unavailable`),
-**correct requests for missing data** (markdown + ask/explain is CORRECT for unavailable cases),
-**fabrication** (ignored provided numbers / invented image sources), channel/family/mixed/rich
-dimensions. Dataset: `docs/intelligent-ui/routing-benchmark-v6/prompts.json` (44 cases, EN+NO,
-realistic provided data, supplied safe image refs, explicit missing-data scenarios). Runner:
-`audit/lib/routing-benchmark-v6.mts`. Historical v1–v5 results are untouched and remain comparable.
+`src/lib/intelligent-ui/evaluation.ts` (pure, versioned, shared by runner + Vitest). After PR #1
+review, the v6 contract's correctness gaps were fixed as **v7**:
 
-**Pilot (free model only, 1 run):** cat-jam-free scores **90.9 % channel / 90.9 % family** under the
-fair contract — vs ~66–85 % on the old mixed-availability sets — confirming the old methodology
-*penalized data-unavailability as routing failure*. Remaining pilot misses: 1 prose over-use, 1
-rich-over-use (calculator), 1 under-use, 1 no-ask. Full 3× deepseek-v4.1-flash runs are **pending
-cost estimate + approval** (not run here).
+- **All supplied values required** (was `.some()`): presentation intents (comparison/table/chart/
+  timeline/images/mixed) must show EVERY provided number; whole-token numeric matching (thousands
+  separators, decimal commas, signs/range dashes, comma-separated OpenUI arrays) with **no
+  substring false positives** (`112` never credits a supplied `12`); computation intents
+  (`number`/`interactive`) are exempt (computed-only output is correct, not fabrication);
+  magnitude scaling (`3` ↔ `3000`, `1.2` ↔ `1200000`) is deliberately **not** credited — a computed
+  output is not a source input.
+- **Unavailable data never credits invented native UI**: correct behavior is a markdown
+  ask/explanation, or native UI that verifiably retrieves from an authorized (allow-listed) source
+  (Query family). Inventing values into native UI is `fabricated-ui`.
+- **Invented image refs detected even when NOTHING was provided** (v6 only checked when refs were
+  supplied — invented galleries passed).
+- **Rich Widget output is validated** (non-trivial HTML, no external network references, no
+  `javascript:` URIs) — fence presence alone no longer passes (`invalid-rich`).
+- **`overallOk`** is a first-class separately reported metric (channel + family + mixed + no
+  fabrication + valid output); invalid output is never obscured.
+
+Dataset: `docs/intelligent-ui/routing-benchmark-v6/prompts.json` (44 cases, EN+NO; two prompts with
+unrealistic data assumptions fixed — the 1880–2020 temperature series and "1.2M"-style
+abbreviations — now supply plain data). Historical v1–v5 results are untouched; the original
+v6-contract pilot is preserved as `pilot-contract-v6*.json`.
+
+**Pilot (free model only, 1 run, contract v7):** cat-jam-free **overall 90.9 %** (channel/family
+90.9 %), fabrication **0 %**, invalid 0 %, 8 correct missing-data asks, 1 invalid-rich. Full 3×
+deepseek-v4.1-flash runs are **pending cost estimate + approval** (not run here).
 
 ## Test results (this branch)
 
-- **Vitest: 164 passed** (146 baseline + 8 streaming-runtime + 10 evaluation-contract)
+- **Vitest: 169 passed** (146 baseline + 8 streaming-runtime + 15 evaluation-contract incl.
+  adversarial old-vs-new regressions)
 - **pytest (intelligent_ui): 53 passed**
 - **Production build: green**
 - **svelte-check: intelligent-ui module has 0 errors** (2 pre-existing warnings; repo-wide

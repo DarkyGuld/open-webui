@@ -3,6 +3,8 @@ name: Intelligent UI verification
 on:
   push:
     branches: [intelligent-ui-foundation]
+  pull_request:
+    branches: [intelligent-ui-foundation]
   workflow_dispatch:
 
 permissions:
@@ -52,6 +54,8 @@ jobs:
 
   lang-core-1x-spike:
     name: OpenUI Lang Core 1.0.1 compatibility (isolated)
+    # Redundant on PRs since 1.0.1 is pinned in package.json — kept for manual runs.
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:

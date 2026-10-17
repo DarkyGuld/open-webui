@@ -9,14 +9,15 @@
 	import { getContext } from 'svelte';
 	import FullHeightIframe from '$lib/components/common/FullHeightIframe.svelte';
 	import IntelligentUIFallback from '$lib/intelligent-ui/components/IntelligentUIFallback.svelte';
+	import { RICH_CSP, RICH_SANDBOX } from '$lib/intelligent-ui/rich-contract';
 
 	const i18n: any = getContext('i18n');
 
 	export let html: string = '';
 	export let title: string = 'Interactive widget';
 
-	const CSP =
-		"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; font-src data:; media-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'";
+	// CSP + sandbox flags come from the shared safety contract (rich-contract.ts).
+	const CSP = RICH_CSP;
 
 	// Built without literal <style>/<script> tags so Svelte's CSS preprocessor
 	// does not try to parse them out of this JS string.
@@ -75,12 +76,12 @@ html,body{margin:0;background:transparent;color:var(--viz-text);font-family:ui-s
 			{title}
 			initialHeight={240}
 			iframeClassName="w-full"
-			allowScripts={true}
-			allowSameOrigin={false}
-			allowForms={false}
-			allowDownloads={false}
-			allowFullscreen={false}
-			allowPopups={false}
+			allowScripts={RICH_SANDBOX.allowScripts}
+			allowSameOrigin={RICH_SANDBOX.allowSameOrigin}
+			allowForms={RICH_SANDBOX.allowForms}
+			allowDownloads={RICH_SANDBOX.allowDownloads}
+			allowFullscreen={RICH_SANDBOX.allowFullscreen}
+			allowPopups={RICH_SANDBOX.allowPopups}
 		/>
 	</div>
 {:else}

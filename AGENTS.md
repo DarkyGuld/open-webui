@@ -98,14 +98,20 @@ disabled. Inventory: `setup/mcp/MCP_INVENTORY.md`.
 
 ## Current phase
 
-Intelligent UI **research & architecture** phase complete. Read
-`docs/intelligent-ui/RECOMMENDATION.md` before implementing. **Do not start the full
-Intelligent UI implementation** until that recommendation is approved; a minimal
-prototype (metric/comparison/table behind an Auto|On|Off toggle) is the agreed first slice.
+Intelligent UI **v1 is implemented through Milestone 9.11** (27 native components, catalog_version 4,
+streaming runtime, Query/Mutation bindings, Rich Widgets, hardened security, UX polish, and a
+measured routing-quality record — see `HANDOFF.md` and `docs/intelligent-ui/M9_11_STATUS.md`).
+The **upstream sync (Open WebUI 0.12.3) and `@openuidev/lang-core` 1.0.1 migration are complete**.
+Active work is **correctness/reliability and evaluation-methodology hardening** on
+`feat/intelligent-ui-m9-11-reliability` (PR into `intelligent-ui-foundation`, never `main`).
 
-Research outputs: `docs/intelligent-ui/` (render pipeline, Functions capabilities,
-extension comparison, OSS research + matrix, architecture options, UI schema, security,
-upstream impact, recommendation) and `docs/INTELLIGENT_UI_SPIKE.md`.
+Source of truth for current state: `HANDOFF.md`, `docs/intelligent-ui/M9_11_STATUS.md` (audit
+matrix + P0/P1/P2 backlog), `docs/intelligent-ui/NATIVE_COMPONENT_CATALOG.md`,
+`docs/intelligent-ui/UX_GUIDELINES.md`. The research-era documents under `docs/intelligent-ui/`
+are historical. The **M10 planner is measured as unnecessary** (M9.6–M9.10 evidence: failures are
+conservative/data-bound, never harmful) — do not build it without new evidence.
 
-The **LIVE PRODUCT AUDIT** (compare A) live ChatGPT, B) this fork, C) upstream unmodified
-Open WebUI) is still pending and can run before or alongside implementation.
+Historical research outputs: `docs/intelligent-ui/` (render pipeline, Functions capabilities,
+extension comparison, OSS research, architecture options, UI schema, security, upstream impact,
+recommendation) and `docs/INTELLIGENT_UI_SPIKE.md`. The LIVE PRODUCT AUDIT (A) live ChatGPT,
+B) this fork, C) upstream) remains pending/optional alongside implementation.

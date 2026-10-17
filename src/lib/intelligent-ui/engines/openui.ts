@@ -144,7 +144,9 @@ function mapNode(element: ElementNode, store: Store | null): UINode {
 			} else {
 				action = normalizeAction(p.action, store);
 			}
-			return { type: 'button', label: String(p.label), ...(action ? { action } : {}) };
+			const node: any = { type: 'button', label: String(p.label) };
+			if (action) node.action = action;
+			return node as UINode;
 		}
 		case 'slider': {
 			const b = bound(p.value, store);
@@ -287,7 +289,16 @@ export interface OpenUIRuntime {
 	resetState(names: string[]): void;
 }
 
-export function createOpenUIRuntime(content: string): OpenUIRuntime {
+/**
+ * Create the live (complete-program) runtime. `opts.persisted` seeds the store
+ * with user-touched values carried over from a streaming session (see
+ * `createOpenUIPartialRuntime`): untouched declarations use the final model
+ * defaults, touched values survive the partial -> complete transition.
+ */
+export function createOpenUIRuntime(
+	content: string,
+	opts?: { persisted?: Record<string, unknown> }
+): OpenUIRuntime {
 	const result = parser.parse(content);
 	if (!result.root) throw new Error('no root component');
 	if (result.meta?.errors?.length) {
@@ -298,7 +309,7 @@ export function createOpenUIRuntime(content: string): OpenUIRuntime {
 
 	const store = createStore();
 	const state = (result.stateDeclarations ?? {}) as Record<string, unknown>;
-	store.initialize(state, {});
+	store.initialize(state, opts?.persisted ?? {});
 
 	const evalCtx = {
 		ctx: {
@@ -331,25 +342,41 @@ export const openuiEngine: IntelligentUIEngine = {
 };
 
 /**
- * Parse a possibly-incomplete program for progressive rendering (streaming).
- * Uses lang-core's streaming parser (statement cache, partial-safe). Returns
- * null when nothing renderable exists yet; throws only on a genuine error in a
- * COMPLETE program. Mid-stream "missing-required" noise is ignored while
- * `incomplete`.
+ * Lifecycle-safe PARTIAL (streaming) runtime — ONE StreamParser + ONE Store
+ * reused across every update of a streaming block (M9.11).
+ *
+ * - `update(content)` feeds the accumulated program text via
+ *   `sp.set(fullText)` (lang-core diffs against its internal buffer and pushes
+ *   only the delta; it auto-resets when the text is replaced, not appended).
+ * - Declarations are re-synced into the SAME store with
+ *   `store.initialize(declarations, touchedValues)`: untouched declarations
+ *   refresh to the latest model default; user-touched values survive.
+ * - Keeps the last-good tree across mid-stream failures (no flicker).
+ * - `touchedValues()` seeds the final (complete) runtime so user input entered
+ *   during streaming survives the partial -> complete transition.
  */
-export function parseOpenUIPartial(content: string): UINode | null {
-	const sp = createStreamingParser(openuiLibrary.toJSONSchema());
-	const result = sp.push(content);
-	if (!result.root) return null;
-	if (!result.meta?.incomplete && result.meta?.errors?.length) {
-		throw new Error(
-			'validation: ' + result.meta.errors.map((e) => `${e.code}:${e.component}`).join(',')
-		);
-	}
+export interface OpenUIPartialRuntime {
+	/** Feed the accumulated text; returns the last-good tree (null if none yet). */
+	update(content: string): UINode | null;
+	/** Record a user interaction (two-way binding / @Set) into the live store. */
+	setState(name: string, value: unknown): void;
+	/** Reset names to their declared defaults (or null when unknown). */
+	resetState(names: string[]): void;
+	/** Re-evaluate from the current store (after setState/resetState). */
+	refresh(): UINode | null;
+	/** User-touched values only (seed for the complete runtime). */
+	touchedValues(): Record<string, unknown>;
+	dispose(): void;
+}
 
+export function createOpenUIPartialRuntime(): OpenUIPartialRuntime {
+	const sp = createStreamingParser(openuiLibrary.toJSONSchema());
 	const store = createStore();
-	const state = (result.stateDeclarations ?? {}) as Record<string, unknown>;
-	store.initialize(state, {});
+	const touched = new Set<string>();
+	let lastRoot: any = null;
+	let lastGood: UINode | null = null;
+	let lastDecls: Record<string, unknown> = {};
+
 	const evalCtx = {
 		ctx: {
 			getState: (name: string) => store.get(name),
@@ -359,6 +386,67 @@ export function parseOpenUIPartial(content: string): UINode | null {
 		store,
 		errors: [] as any[]
 	};
-	const evaluated = evaluateElementProps(result.root, evalCtx as any);
-	return mapNode(evaluated, store);
+
+	function evaluateTree(): UINode | null {
+		if (!lastRoot) return lastGood;
+		try {
+			const evaluated = evaluateElementProps(lastRoot, evalCtx as any);
+			lastGood = mapNode(evaluated, store);
+		} catch {
+			// keep the last-good tree on a mid-stream evaluation error
+		}
+		return lastGood;
+	}
+
+	function apply(content: string): UINode | null {
+		const result = sp.set(content);
+		if (!result.root) return lastGood;
+		if (!result.meta?.incomplete && result.meta?.errors?.length) {
+			throw new Error(
+				'validation: ' + result.meta.errors.map((e) => `${e.code}:${e.component}`).join(',')
+			);
+		}
+		lastRoot = result.root;
+		lastDecls = (result.stateDeclarations ?? {}) as Record<string, unknown>;
+		// Re-sync declarations: untouched keys refresh to the latest defaults,
+		// user-touched keys are passed as `persisted` and win.
+		const persisted: Record<string, unknown> = {};
+		for (const k of touched) persisted[k] = store.get(k);
+		store.initialize(lastDecls, persisted);
+		return evaluateTree();
+	}
+
+	return {
+		update: apply,
+		setState: (name, value) => {
+			touched.add(name);
+			store.set(name, value);
+		},
+		resetState: (names) => {
+			for (const n of names ?? []) {
+				touched.delete(n);
+				store.set(n, n in lastDecls ? lastDecls[n] : null);
+			}
+		},
+		refresh: evaluateTree,
+		touchedValues: () => {
+			const out: Record<string, unknown> = {};
+			for (const k of touched) out[k] = store.get(k);
+			return out;
+		},
+		dispose: () => {
+			touched.clear();
+			store.dispose();
+		}
+	};
+}
+
+/**
+ * Parse a possibly-incomplete program for progressive rendering (streaming).
+ * One-shot wrapper over `createOpenUIPartialRuntime` — kept for compatibility
+ * (tests + one-shot callers). Returns null when nothing renderable exists
+ * yet; throws only on a genuine error in a COMPLETE program.
+ */
+export function parseOpenUIPartial(content: string): UINode | null {
+	return createOpenUIPartialRuntime().update(content);
 }

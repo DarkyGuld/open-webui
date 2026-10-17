@@ -69,17 +69,15 @@ Write the root assignment early so the UI shell appears immediately, even before
 
 ## Examples
 
-User: Compare three VPS plans: Basic (1 vCPU, 1 GB RAM), Pro (2 vCPU, 4 GB RAM), Team (4 vCPU, 8 GB RAM).
-
-Here is a quick comparison:
+User: Compare three VPS plans: Basic 1 vCPU/1 GB RAM, Pro 2 vCPU/4 GB RAM, Team 4 vCPU/8 GB RAM.
 
 :::intelligent-ui{v="1"}
 root = Comparison("VPS plans", [{name:"Basic",attributes:["1 vCPU","1 GB RAM"]},{name:"Pro",attributes:["2 vCPU","4 GB RAM"]},{name:"Team",attributes:["4 vCPU","8 GB RAM"]}])
 :::
 
-The Pro plan offers 4 GB RAM; the best value depends on prices and workload.
+The best value depends on prices and workload.
 
-User: Create an illustrative dashboard using revenue 1.2M kr, 8 420 users, churn 2.1%, and Q1–Q4 sample revenue 210/240/260/300.
+User: Dashboard from this data: revenue 1.2M kr, 8 420 users, churn 2.1%, Q1-Q4 revenue 210/240/260/300.
 
 :::intelligent-ui{v="1"}
 root = Stack([g1, c1])
@@ -152,7 +150,7 @@ Before finishing, walk your output and verify:
 - Only the documented components exist. Never invent components.
 - Compose with Stack (vertical), Row (horizontal), Grid (2-3 cols, peer items only), Section (titled group) and Card (titled surface). Do not nest Stack inside Stack.
 - Do not wrap every component in a Card; avoid nested bordered cards and empty sections. Use Grid only for peer items, Section to group related content, and avoid redundant titles.
-- Pick the most useful presentation: one dominant result value ("how much", "just the number", "how many") -> Metric with a short non-empty label, e.g. Metric("Total", "980 kr"); compare/vs/alternatives -> Comparison (Table for many exact fields); exact values/lookup -> Table; a trend or shape over time -> Chart (Chart for trend, Table for exact values; compose both if needed); chronological events -> Timeline (not unordered lists); images/photos the user asks to see -> Gallery (safe paths only; never invent URLs; if none are available, say so in text); interactive calculation/input -> native state/form. Do not force UI for ordinary prose.
+- Pick the most useful presentation: one dominant result value ("how much", "just the number", "how many") -> Metric with a short non-empty label, e.g. Metric("Total", "980 kr"); compare/vs/alternatives -> Comparison (Table for many exact fields); exact values/lookup -> Table; a trend or shape over time -> Chart (Table for exact values; compose both if needed); chronological events -> Timeline (not unordered lists); images/photos the user asks to see -> Gallery (safe paths only; never invent URLs; if none are available, say so in text); interactive calculation/input -> native state/form. Do not force UI for ordinary prose.
 - Charts: series is [{name, values:[...]}]; keep labels and every series the same length.
 - Interactive inputs: declare state with `$name = default`, pass `$name` as the value of a Slider/Select/Switch/Checkbox/Input/Textarea/Radio, and reference `$name` elsewhere. You may compute derived values (`total = $seats * 29`) or use a ternary (`$flag ? a : b`) in any prop.
 - Buttons: the 2nd argument is @Set($x, 20), @Reset($x), @ToAssistant("...") or @OpenUrl("..."), or a registered action id for an approved mutation, e.g. Button("Save note", "notes.create", {title:"Plan"}). Only registered ids run, and the user confirms. Actions run locally with no model call.
@@ -162,7 +160,7 @@ Before finishing, walk your output and verify:
 - Prefer native UI for calculators supported by available state, arithmetic and components (e.g. BMI, seats, pricing). Do not invent formulas; use Rich when native genuinely lacks the needed operations. Use a Rich Widget only when native cannot express the layout/interaction (e.g. 3D, canvas, a custom mini-app).
 - Recognize equivalent intent across languages (e.g. compare/sammenlign, total/totalt, chart/graf, images/bilder); use native UI only with sufficient data, never invented values.
 - When you use UI, wrap the OpenUI Lang in a fenced block on its own lines: :::intelligent-ui{v="1"} then the code then :::. The block must contain ONLY valid OpenUI Lang; Markdown may precede and follow it.
-- Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers. OpenUI expressions are declarative only — never use JavaScript methods or globals (.toFixed(), .map(), .filter(), .reduce(), Math.*, Date.*, eval, Function); pass plain values and let a component format them.
+- Keep values short and plain text. Never emit HTML, scripts, CSS, URLs or event handlers. OpenUI expressions are declarative only — never use JavaScript methods or globals (.toFixed(), .map(), .filter(), .reduce(), Math.*, Date.*, eval, Function); pass plain values and let a component format them. A Table holds at most 50 rows and 12 columns — for longer data show the most relevant rows; never leave a required value empty.
 - If unsure whether UI helps, answer with normal Markdown."""
 
 RICH_PROMPT = r"""You may also render a FULLY CUSTOM widget with HTML/CSS/JS when the native components are not enough (for example 3D scenes, custom canvas, maps, or bespoke mini-apps). Emit it in a fenced block:

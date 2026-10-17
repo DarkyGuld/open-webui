@@ -1,34 +1,41 @@
 /**
  * Versioned evaluation contract for Intelligent UI routing benchmarks.
  *
- * **v7 (post-review hardening of v6)** — fixes the v6 correctness gaps:
- *   1. `usedProvidedNumbers` requires ALL relevant supplied values (was `.some()`),
- *      matches whole numeric tokens with robust normalization (thousands separators,
- *      decimal commas, signs/range dashes, unit-scaled representations) and has NO
- *      substring false positives. Source inputs are distinguished from correctly
- *      computed outputs: presentation intents must show every supplied value; pure
- *      computation intents (a single number / an interactive calculator) may show
- *      only the computed result, and legitimate unit conversions (1.2M ↔ 1200000)
- *      are matches, not fabrication.
- *   2. Unavailable-data cases never credit fabricated native UI just because the
- *      expected channel is native: correct behavior is a markdown ask/explanation,
- *      or native UI that VERIFIABLY retrieves from an authorized (allow-listed)
- *      source (the Query family). Inventing values into a native UI is
- *      `fabricated-ui`.
- *   3. Invented image references are detected even when NO refs were provided —
- *      any gallery `src` emitted without supplied refs is fabrication.
- *   4. Rich Widget output is VALIDATED (non-trivial HTML, no external
- *      network references, no `javascript:`), not accepted on fence presence.
- *   5. `overallOk` (channel + family + mixed + no fabrication + no invalid
- *      output) is a first-class, separately reported metric; invalid output is
- *      never obscured.
+ * **v8 (final production-readiness hardening of v7)** — closes the v7 gaps
+ * found in adversarial review:
+ *   1. Sign-context numeric matching: a leading `-` is a SIGN only when not
+ *      preceded by a digit/separator; a range/minus dash (`50000-500500`) is
+ *      UNSIGNED only. A supplied negative value therefore never matches a
+ *      positive token and vice versa (v7 accepted both — a false pass).
+ *   2. Authorized retrieval credit requires the response's query sources to
+ *      validate against the REAL allow-list (`queries.ts` QUERY_IDS) — "the UI
+ *      references a query" is not enough, and an unknown source id is not
+ *      trusted data. Retrieval credit means an authorized retrieval PATH (the
+ *      load itself executes at render time, browser-verified).
+ *   3. Rich Widget validation uses the REAL production safety contract
+ *      (`rich-contract.ts`: CSP + sandbox flags shared with the renderer) —
+ *      forms/popups/downloads are sandbox-blocked, network is CSP-blocked —
+ *      not a regex approximation. Static validation still cannot prove a
+ *      widget *executes*; that is a separate browser-verified step.
+ *   4. `factCheck` is an explicit, separately reported dimension: `verified`
+ *      (all supplied facts were shown), `unverified` (computation arithmetic /
+ *      model-known facts / retrieved content cannot be statically verified) —
+ *      so numeric token matching is never presented as proof of factual
+ *      correctness.
  *
- * Pure functions — no dependencies — so the benchmark runners
- * (`audit/lib/routing-benchmark-v6.mts`) and Vitest use the SAME contract.
- * Historical benchmark results (v1–v5) stay untouched and comparable.
+ * v7 (post-review of v6): all-supplied matching, no substring false
+ * positives, unavailable-data rules, invented-src detection, rich presence
+ * validation, `overallOk`.
+ *
+ * Pure functions — the benchmark runners (`audit/lib/routing-benchmark-v6.mts`)
+ * and Vitest use the SAME contract. Historical benchmark results (v1–v5) stay
+ * untouched and comparable.
  */
 
-export const EVAL_CONTRACT_VERSION = 7;
+import { QUERY_IDS } from './queries';
+import { validateRichWidgetHtml } from './rich-contract';
+
+export const EVAL_CONTRACT_VERSION = 8;
 
 export type DataAvailability = 'provided' | 'model' | 'queryable' | 'unavailable';
 
@@ -77,6 +84,8 @@ export interface ResponseClassification {
 	families: string[];
 	/** Gallery `src` values when native Gallery content was emitted. */
 	srcs: string[];
+	/** `source` ids of Data (query) nodes emitted in a native response. */
+	querySources: string[];
 	/** The OpenUI Lang inside the native fence ('' when no fence). */
 	fenceContent: string;
 	/** The HTML inside the rich fence ('' when no rich fence). */
@@ -87,17 +96,26 @@ export interface ResponseClassification {
 }
 
 export interface V6Verdict {
-	/** Everything correct: channel + family + mixed + no fabrication + valid output. */
+	/** Everything verifiable is correct: channel + family + mixed + no
+	 *  fabrication + valid output + (when claimed) authorized retrieval. */
 	overallOk: boolean;
 	channelOk: boolean;
 	familyOk: boolean;
 	mixedOk: boolean;
 	/** Supplied numbers ignored, or image sources invented. */
 	fabricatedFacts: boolean;
+	/** Native answer claims authorized retrieval (Query present AND every
+	 *  source id is on the real allow-list). Retrieval PATH credit only — the
+	 *  load itself executes at render time (browser-verified), not here. */
+	authorizedRetrieval: boolean;
 	/** The response asked for / explained missing data (markdown path). */
 	askedForMissingData: boolean;
-	/** The rich widget failed validation (empty/trivial/external refs). */
+	/** The rich widget failed the REAL production safety contract. */
 	richInvalid: boolean;
+	/** Factual correctness: 'verified' (all supplied facts shown) or
+	 *  'unverified' (computation/model-known/retrieved content cannot be
+	 *  statically verified). Never presented as proof of correctness. */
+	factCheck: 'verified' | 'unverified';
 	errorCategory: string | null;
 }
 
@@ -111,17 +129,17 @@ export function asksOrExplainsMissing(content: string): boolean {
 
 // --- numeric token extraction / normalization (no substring matching) ---
 
-const NUM_TOKEN_RE = /-?\d+(?:[.,_]\d+)*(?:\s\d+(?:[.,_]\d+)*)*/g;
-
 /**
  * Parse one space-free numeric segment into its plausible values.
- * `120,000`/`120.000` (thousands), `1,2`/`1.2`/`1.20` (decimals), a leading
- * `-` that may be a range dash (`50000-500000`) → both signed and unsigned.
+ * `120,000`/`120.000` (thousands), `1,2`/`1.2`/`1.20` (decimals). The sign is
+ * decided by the CALLER (extractNumberTokens) from source context — a leading
+ * `-` is a sign only when not preceded by a digit/separator; otherwise it is a
+ * range/minus dash and the value is positive. A supplied negative therefore
+ * never matches a positive token and vice versa.
  */
-function segmentCandidates(segment: string): number[] {
+function segmentCandidates(segment: string, signed: boolean): number[] {
 	const token = segment.replace(/_/g, '');
-	const signed = token.startsWith('-');
-	const magnitude = signed ? token.slice(1) : token;
+	const magnitude = token.startsWith('-') ? token.slice(1) : token;
 	const groups = magnitude.split(/[.,]/).filter((g) => g.length > 0);
 	const out = new Set<number>();
 	const add = (s: string) => {
@@ -140,8 +158,6 @@ function segmentCandidates(segment: string): number[] {
 			add([...groups.slice(0, -1).join(''), '.', last].join(''));
 		}
 	}
-	// a leading `-` may be a range dash, so the unsigned value is also plausible
-	if (signed) for (const n of [...out]) out.add(-n);
 	return [...out];
 }
 
@@ -150,23 +166,35 @@ function segmentCandidates(segment: string): number[] {
  * `120 000` (thousands) vs `112 12 1200` (separate numbers), and crucially
  * `values:[120,135,150]` (an OpenUI array) vs `120,000` (thousands) — so BOTH
  * interpretations are returned: the whole run AND each comma/space sub-segment.
+ * `signContext` ('sign' | 'range') decides whether a leading `-` negates.
  */
-export function numericCandidates(rawToken: string): number[] {
+export function numericCandidates(rawToken: string, signContext: 'sign' | 'range' = 'sign'): number[] {
 	const out = new Set<number>();
-	// whole-run interpretation (spaces removed): thousands / decimal groups
-	for (const n of segmentCandidates(rawToken.replace(/[\s]/g, ''))) out.add(n);
-	// list interpretation: each comma/space sub-segment is its own number
+	const hasDash = rawToken.startsWith('-');
+	for (const n of segmentCandidates(rawToken.replace(/[\s]/g, ''), hasDash && signContext === 'sign'))
+		out.add(n);
 	for (const seg of rawToken.split(/[\s,]+/)) {
 		if (!seg || !/\d/.test(seg)) continue;
-		for (const n of segmentCandidates(seg)) out.add(n);
+		for (const n of segmentCandidates(seg, seg.startsWith('-') && signContext === 'sign')) out.add(n);
 	}
 	return [...out];
 }
 
-/** All plausible numeric values appearing in the text (whole tokens only). */
+/**
+ * All plausible numeric values appearing in the text (whole tokens only), with
+ * sign decided from source context: a `-` directly after a DIGIT
+ * (`50000-500500`, `5-10`) is a range/minus dash (unsigned); after anything
+ * else (space, comma, bracket, colon) it is a sign, so `values:[-0.16,-0.05]`
+ * keeps its negative array values negative.
+ */
 export function extractNumberTokens(text: string): number[] {
 	const out: number[] = [];
-	for (const m of text.matchAll(NUM_TOKEN_RE)) out.push(...numericCandidates(m[0]));
+	for (const m of text.matchAll(/-?\d+(?:[.,_]\d+)*(?:\s\d+(?:[.,_]\d+)*)*/g)) {
+		const dash = m[0].startsWith('-');
+		const prev = dash ? text[m.index! - 1] : '';
+		const signContext: 'sign' | 'range' = dash && prev && /\d/.test(prev) ? 'range' : 'sign';
+		out.push(...numericCandidates(m[0], signContext));
+	}
 	return out;
 }
 
@@ -211,22 +239,28 @@ export function imageRefsAreProvided(srcs: string[], provided: string[]): boolea
 	return srcs.every((s) => provided.includes(s));
 }
 
-// --- Rich Widget validation (not just fence presence) ---
+/**
+ * Every query `source` id emitted in the response is on the REAL allow-list
+ * (`queries.ts` QUERY_IDS). "The UI references a query" alone is not enough —
+ * an unknown source id is not trusted data. At least one source must exist.
+ * (Retrieval PATH credit: the load itself executes at render time.)
+ */
+export function authorizedQuerySources(sources: string[]): boolean {
+	if (!sources?.length) return false;
+	return sources.every((s) => (QUERY_IDS as readonly string[]).includes(s));
+}
 
-const EXTERNAL_REF_RE =
-	/(?:\b(?:src|href)\s*=\s*["']?\s*https?:\/\/|url\(\s*["']?\s*https?:\/\/)/i;
-const NETWORK_API_RE = /\b(fetch\s*\(|XMLHttpRequest|new\s+EventSource|WebSocket\s*\()/i;
-const JS_URI_RE = /["']\s*javascript:/i;
+// --- Rich Widget validation (the REAL production safety contract) ---
 
-/** Validate a rich-widget body: non-trivial HTML, self-contained, no JS URIs. */
+/**
+ * Validate a rich-widget body against the REAL safety contract shared with the
+ * production renderer (`rich-contract.ts`: CSP + sandbox flags) — forms,
+ * popups, downloads and network are all blocked there, so a widget needing
+ * them is broken. STATIC validation: it cannot prove the widget executes —
+ * functional verification is a separate, browser-verified step.
+ */
 export function validateRichWidget(html: string): { valid: boolean; reason: string } {
-	const body = (html ?? '').trim();
-	if (body.length < 20) return { valid: false, reason: 'empty-or-trivial' };
-	if (!/<[a-z][^>]*>/i.test(body)) return { valid: false, reason: 'no-html-content' };
-	if (EXTERNAL_REF_RE.test(body) || NETWORK_API_RE.test(body))
-		return { valid: false, reason: 'external-network-reference' };
-	if (JS_URI_RE.test(body)) return { valid: false, reason: 'javascript-uri' };
-	return { valid: true, reason: '' };
+	return validateRichWidgetHtml(html);
 }
 
 // --- verdict ---
@@ -235,6 +269,11 @@ export function evaluateV6(c: EvaluationCase, r: ResponseClassification): V6Verd
 	const asked = r.channel === 'markdown' && asksOrExplainsMissing(r.prose);
 	const richCheck = r.channel === 'rich' ? validateRichWidget(r.richHtml) : { valid: true, reason: '' };
 	const richInvalid = r.channel === 'rich' && !richCheck.valid;
+	// Authorized retrieval: a Query component is present AND every emitted
+	// source id is on the real allow-list (retrieval PATH credit — the load
+	// executes at render time, browser-verified there, not here).
+	const authorizedRetrieval =
+		r.channel === 'native' && r.families.includes('Query') && authorizedQuerySources(r.querySources);
 
 	let channelOk: boolean;
 	if (c.expectedChannel === 'markdown') {
@@ -247,9 +286,11 @@ export function evaluateV6(c: EvaluationCase, r: ResponseClassification): V6Verd
 		channelOk = !!c.missingDataOk && asked;
 	} else if (r.channel === 'native') {
 		// Never credit fabricated UI just because the channel is native: when the
-		// required data are unavailable, a native answer is correct ONLY if it
-		// verifiably retrieves from an authorized (allow-listed) source.
-		channelOk = c.dataAvailable !== 'unavailable' || r.families.includes('Query');
+		// required data are unavailable, a native answer is correct ONLY with a
+		// verified authorized retrieval path (allow-listed sources, no invention).
+		channelOk =
+			c.dataAvailable !== 'unavailable' ||
+			(authorizedRetrieval && !r.srcs.length && !c.providedNumbers?.length);
 	} else {
 		channelOk = false;
 	}
@@ -275,7 +316,23 @@ export function evaluateV6(c: EvaluationCase, r: ResponseClassification): V6Verd
 
 	const fabricated = numbersFabricated || srcsFabricated;
 
-	// Overall success: channel + family + mixed + no fabrication + valid output.
+	// Factual correctness, honestly labeled. 'verified' only when the supplied
+	// facts were all shown (presentation) — computation arithmetic, model-known
+	// facts and retrieved content CANNOT be statically verified and are labeled
+	// 'unverified' rather than pretending token matching proves correctness.
+	const factCheck: 'verified' | 'unverified' = numbersFabricated
+		? 'unverified'
+		: r.channel === 'native' &&
+				PRESENTATION_INTENTS.includes(c.intent) &&
+				!!c.providedNumbers?.length &&
+				usedProvidedNumbers(r.fenceContent, c.providedNumbers)
+			? 'verified'
+			: 'unverified';
+
+	// Overall success: every VERIFIABLE dimension correct (channel + family +
+	// mixed + no fabrication + valid output + honest retrieval claim). Factual
+	// correctness of computation/model-known/retrieved content is reported
+	// separately via factCheck and is never silently claimed.
 	const overallOk =
 		channelOk && familyOk && mixedOk && !fabricated && !richInvalid && r.channel !== 'invalid';
 
@@ -301,8 +358,10 @@ export function evaluateV6(c: EvaluationCase, r: ResponseClassification): V6Verd
 		familyOk,
 		mixedOk,
 		fabricatedFacts: fabricated,
+		authorizedRetrieval,
 		askedForMissingData: asked,
 		richInvalid,
+		factCheck,
 		errorCategory
 	};
 }

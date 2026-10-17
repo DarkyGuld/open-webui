@@ -4,18 +4,21 @@ import {
 	asksOrExplainsMissing,
 	usedProvidedNumbers,
 	imageRefsAreProvided,
+	authorizedQuerySources,
 	validateRichWidget,
 	extractNumberTokens,
 	PRESENTATION_INTENTS,
 	type EvaluationCase,
 	type ResponseClassification
 } from '../evaluation';
+import { QUERY_IDS } from '../queries';
 
 function cls(partial: Partial<ResponseClassification>): ResponseClassification {
 	return {
 		channel: 'markdown',
 		families: [],
 		srcs: [],
+		querySources: [],
 		fenceContent: '',
 		richHtml: '',
 		prose: '',
@@ -57,8 +60,8 @@ const oldFabricatedSrcs = (c: EvaluationCase, r: ResponseClassification): boolea
 
 const oldRichOk = (r: ResponseClassification): boolean => r.channel === 'rich';
 
-describe('M9.11 — evaluation contract v7: adversarial regressions (old v6 false verdicts)', () => {
-	it('OLD .some(): partial data use was credited; v7 requires ALL supplied values', () => {
+describe('M9.11 — evaluation contract v8: adversarial regressions (old v6/v7 false verdicts)', () => {
+	it('OLD (v6) .some(): partial data use was credited; v8 requires ALL supplied values', () => {
 		const fence = 'root = Comparison("Plans", [{name:"Basic",attributes:["99 kr"]}])'; // 199 never shown
 		expect(oldUsedProvidedNumbers(fence, [99, 199])).toBe(true); // OLD false positive
 		expect(usedProvidedNumbers(fence, [99, 199])).toBe(false); // v7: fabrication
@@ -68,21 +71,21 @@ describe('M9.11 — evaluation contract v7: adversarial regressions (old v6 fals
 		expect(v.overallOk).toBe(false); // fabrication is never overall-successful
 	});
 
-	it('OLD substring matching: "112" credited a supplied 12; v7 matches whole tokens', () => {
+	it('OLD (v6) substring matching: "112" credited a supplied 12; v8 matches whole tokens', () => {
 		const fence = 'root = Table("T", ["n"], [["112"]])'; // 112 — not 12
 		expect(oldUsedProvidedNumbers(fence, [12])).toBe(true); // OLD false positive ("112".includes("12"))
 		expect(usedProvidedNumbers(fence, [12])).toBe(false); // v7
 		expect(extractNumberTokens('112 12 1200')).toEqual(expect.arrayContaining([112, 12, 1200]));
 	});
 
-	it('OLD substring matching: a computed output was credited as a source; v7 is not fooled', () => {
+	it('OLD (v6) substring matching: a computed output was credited as a source; v8 is not fooled', () => {
 		// supplied 3 (source), the UI shows only the computed 3000
 		const fence = 'root = Metric("Total", "3000")';
 		expect(oldUsedProvidedNumbers(fence, [3])).toBe(true); // OLD false positive
 		expect(usedProvidedNumbers(fence, [3])).toBe(false); // v7: source never shown
 	});
 
-	it('OLD flagged correct unit-scaled outputs as fabrication; v7 accepts same-digit normalizations only', () => {
+	it('OLD (v6) flagged correct unit-scaled outputs as fabrication; v8 accepts same-digit normalizations only', () => {
 		// Separator normalization (same digits) IS a match:
 		expect(usedProvidedNumbers('attributes:["120 000 kr"]', [120000])).toBe(true);
 		expect(usedProvidedNumbers('attributes:["120,000 kr"]', [120000])).toBe(true);
@@ -95,7 +98,7 @@ describe('M9.11 — evaluation contract v7: adversarial regressions (old v6 fals
 		expect(usedProvidedNumbers('root = Metric("Total", "3000")', [3])).toBe(false);
 	});
 
-	it('OLD credited invented native UI for UNAVAILABLE data; v7 never does', () => {
+	it('OLD (v6) credited invented native UI for UNAVAILABLE data; v8 never does', () => {
 		const c: EvaluationCase = {
 			id: 't3', prompt: 'Show the photos from the offsite.', language: 'en',
 			intent: 'images', dataAvailable: 'unavailable',
@@ -111,7 +114,7 @@ describe('M9.11 — evaluation contract v7: adversarial regressions (old v6 fals
 		expect(v.overallOk).toBe(false);
 	});
 
-	it('OLD credited markdown asks (correct) — v7 still does (no regression)', () => {
+	it('OLD (v6) credited markdown asks (correct) — v8 still does (no regression)', () => {
 		const c: EvaluationCase = {
 			id: 't3b', prompt: 'Show the photos from the offsite.', language: 'en',
 			intent: 'images', dataAvailable: 'unavailable',
@@ -123,20 +126,38 @@ describe('M9.11 — evaluation contract v7: adversarial regressions (old v6 fals
 		expect(v.overallOk).toBe(true);
 	});
 
-	it('v7 credits native UI for unavailable data ONLY via authorized retrieval (Query)', () => {
+	it('v8 credits native UI for unavailable data ONLY via an authorized retrieval path', () => {
 		const c: EvaluationCase = {
 			id: 't3c', prompt: 'Show my notes.', language: 'en',
 			intent: 'query', dataAvailable: 'unavailable',
 			expectedChannel: 'native', expectedFamily: 'Query', missingDataOk: true
 		};
-		const viaQuery = evaluateV6(c, cls({ channel: 'native', families: ['Query', 'Composed'] }));
-		expect(viaQuery.channelOk).toBe(true); // verified authorized retrieval
+		// Query present AND the source is on the REAL allow-list:
+		const viaQuery = evaluateV6(c, cls({ channel: 'native', families: ['Query', 'Composed'], querySources: ['conversation.notes'] }));
+		expect(viaQuery.channelOk).toBe(true);
+		expect(viaQuery.authorizedRetrieval).toBe(true);
+		expect(viaQuery.overallOk).toBe(true);
+		// Query present but the source is NOT on the allow-list (invented id):
+		const inventedSource = evaluateV6(c, cls({ channel: 'native', families: ['Query', 'Composed'], querySources: ['my.private.database'] }));
+		expect(inventedSource.channelOk).toBe(false); // v7 wrongly credited this
+		expect(inventedSource.errorCategory).toBe('fabricated-ui');
+		// Query present but no source id at all:
+		const noSource = evaluateV6(c, cls({ channel: 'native', families: ['Query', 'Composed'] }));
+		expect(noSource.channelOk).toBe(false);
+		// no Query at all:
 		const invented = evaluateV6(c, cls({ channel: 'native', families: ['Table', 'Composed'], fenceContent: 'root = Table("Notes", ["x"], [["made up"]])' }));
 		expect(invented.channelOk).toBe(false);
 		expect(invented.errorCategory).toBe('fabricated-ui');
+		// an invented literal alongside an authorized query does not get src credit:
+		const mixedInvention = evaluateV6(
+			{ ...c, intent: 'images' },
+			cls({ channel: 'native', families: ['Query', 'Composed'], querySources: ['conversation.notes'], srcs: ['/made/up.jpg'] })
+		);
+		expect(mixedInvention.fabricatedFacts).toBe(true);
+		expect(mixedInvention.overallOk).toBe(false);
 	});
 
-	it('OLD missed invented image refs when NOTHING was provided; v7 detects them', () => {
+	it('OLD (v6) missed invented image refs when NOTHING was provided; v8 detects them', () => {
 		const c: EvaluationCase = {
 			id: 't4', prompt: 'Show the product shots.', language: 'en',
 			intent: 'images', dataAvailable: 'unavailable',
@@ -148,7 +169,7 @@ describe('M9.11 — evaluation contract v7: adversarial regressions (old v6 fals
 		expect(v.fabricatedFacts).toBe(true); // v7: refs emitted, none supplied → invented
 	});
 
-	it('OLD accepted ANY :::intelligent-ui-html fence as valid Rich; v7 validates the body', () => {
+	it('OLD (v6) accepted ANY :::intelligent-ui-html fence as valid Rich; v8 validates the body via the REAL contract', () => {
 		const validBody = '<div style="padding:12px;color:var(--viz-text)">Custom canvas playground.</div>';
 		expect(validateRichWidget('')).toEqual({ valid: false, reason: 'empty-or-trivial' });
 		expect(validateRichWidget('   \n  ')).toEqual({ valid: false, reason: 'empty-or-trivial' });
@@ -172,7 +193,7 @@ describe('M9.11 — evaluation contract v7: adversarial regressions (old v6 fals
 	});
 });
 
-describe('M9.11 — evaluation contract v7: correct behavior preserved', () => {
+describe('M9.11 — evaluation contract v8: correct behavior preserved', () => {
 	it('native with ALL provided numbers and the right family is fully correct', () => {
 		const fence = 'root = Comparison("Plans", [{name:"Basic",attributes:["99 kr"]},{name:"Pro",attributes:["199 kr"]}])';
 		const v = evaluateV6(providedComparison, cls({ channel: 'native', families: ['Composed', 'Comparison'], fenceContent: fence }));
@@ -181,20 +202,60 @@ describe('M9.11 — evaluation contract v7: correct behavior preserved', () => {
 		expect(v.errorCategory).toBeNull();
 	});
 
-	it('robust numeric normalization: thousands separators, decimal commas, signs, space-ambiguous runs', () => {
-		expect(usedProvidedNumbers('attributes:["120 000 kr"]', [120000])).toBe(true);
-		expect(usedProvidedNumbers('values:[1,2]', [1.2])).toBe(true);
-		expect(usedProvidedNumbers('range: 50000-500500', [50000, 500500])).toBe(true); // range dash
-		expect(usedProvidedNumbers('anomaly: -0.16', [-0.16])).toBe(true); // negative value
-		expect(usedProvidedNumbers('values:[1.200]', [1200])).toBe(true); // European thousands
-		expect(usedProvidedNumbers('attributes:["149 000 kr"]', [120000, 150000])).toBe(false);
-		// space-ambiguous runs: both the whole run and the segments are plausible
-		expect(extractNumberTokens('112 12 1200')).toEqual(expect.arrayContaining([112121200, 112, 12, 1200]));
-		expect(usedProvidedNumbers('n: 112 12 1200', [12, 1200])).toBe(true);
-		// comma-separated OpenUI arrays are lists, not one thousands-separator number
-		expect(usedProvidedNumbers('values:[120,135,150,180,210,240]', [120, 135, 150, 180, 210, 240])).toBe(true);
-		expect(usedProvidedNumbers('values:[-0.16,0.45]', [-0.16, 0.45])).toBe(true);
-		expect(usedProvidedNumbers('values:[120]', [120, 135])).toBe(false); // supplied 135 missing → fabrication
+	it('OLD (v7) matched a negative value with its positive equivalent; v8 uses sign context', () => {
+		// v7 accepted BOTH signs for a leading '-' — a supplied 5 matched "-5".
+		expect(extractNumberTokens('x: -5')).toContain(-5);
+		expect(extractNumberTokens('x: -5')).not.toContain(5); // v8: sign, not range
+		expect(usedProvidedNumbers('values:[-5]', [5])).toBe(false); // v7: true (false pass)
+		expect(usedProvidedNumbers('values:[-5]', [-5])).toBe(true);
+		expect(usedProvidedNumbers('values:[5]', [-5])).toBe(false);
+		// a '-' after a DIGIT is a range/minus dash — unsigned (v8 keeps ranges working):
+		expect(usedProvidedNumbers('range: 50000-500500', [50000, 500500])).toBe(true);
+		expect(extractNumberTokens('range: 50000-500500')).not.toContain(-500500);
+		// negative ARRAY values (dash after comma/bracket) stay negative:
+		expect(usedProvidedNumbers('values:[-0.16,-0.05]', [-0.16, -0.05])).toBe(true);
+	});
+
+	it('OLD (v7) credited any Query-family presence as authorized retrieval; v8 validates the source', () => {
+		expect(authorizedQuerySources(['conversation.notes'])).toBe(true);
+		expect(authorizedQuerySources(['library.files', 'knowledge.collections'])).toBe(true);
+		expect(authorizedQuerySources([])).toBe(false); // no source referenced
+		expect(authorizedQuerySources(['my.private.database'])).toBe(false); // invented id
+		expect(authorizedQuerySources(['conversation.notes', 'bogus'])).toBe(false);
+		// the contract checks the REAL production allow-list:
+		expect([...QUERY_IDS].sort()).toEqual(['conversation.notes', 'knowledge.collections', 'library.files']);
+	});
+
+	it('OLD (v7) rich validation missed sandbox-blocked capabilities; v8 uses the REAL contract', () => {
+		// forms are sandbox-disabled in production (RICH_SANDBOX.allowForms=false):
+		expect(validateRichWidget('<div><form><input name="x"></form></div>').valid).toBe(false);
+		expect(validateRichWidget('<div><form><input name="x"></form></div>').reason).toBe('form-in-sandboxed-widget');
+		// popups / downloads are sandbox-disabled:
+		expect(validateRichWidget('<div><button onclick="window.open(\'https://x.example\')">open</button></div>').valid).toBe(false);
+		expect(validateRichWidget('<a href="/file" download="x">save</a>').valid).toBe(false);
+		// network APIs are CSP-blocked (connect-src none):
+		expect(validateRichWidget('<script>fetch(\'/api/x\')</script>').valid).toBe(false);
+		expect(validateRichWidget('<div>ok widget body here</div>').valid).toBe(true);
+	});
+
+	it('v8 labels factual correctness honestly (factCheck) instead of pretending token matching proves it', () => {
+		// computation intent: arithmetic cannot be statically verified → unverified
+		const c: EvaluationCase = {
+			id: 't6', prompt: 'What is 18% of 2400?', language: 'en',
+			intent: 'number', dataAvailable: 'provided',
+			providedNumbers: [2400], expectedChannel: 'native', expectedFamily: 'Metric'
+		};
+		const v = evaluateV6(c, cls({ channel: 'native', families: ['Metric'], fenceContent: 'root = Metric("Result", "432")' }));
+		expect(v.factCheck).toBe('unverified'); // shown number may be arithmetically wrong
+		expect(v.overallOk).toBe(true); // all verifiable dimensions correct
+		// presentation intent with all supplied facts shown → verified
+		const fence = 'root = Comparison("Plans", [{name:"Basic",attributes:["99 kr"]},{name:"Pro",attributes:["199 kr"]}])';
+		const p = evaluateV6(providedComparison, cls({ channel: 'native', families: ['Comparison'], fenceContent: fence }));
+		expect(p.factCheck).toBe('verified');
+		// fabricated → unverified
+		const f = evaluateV6(providedComparison, cls({ channel: 'native', families: ['Comparison'], fenceContent: 'root = Comparison("Plans", [{name:"Basic",attributes:["149 kr"]}])' }));
+		expect(f.factCheck).toBe('unverified');
+		expect(f.overallOk).toBe(false);
 	});
 
 	it('computation intents are exempt from all-provided (computed output only is fine)', () => {

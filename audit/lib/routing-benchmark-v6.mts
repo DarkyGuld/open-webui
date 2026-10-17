@@ -73,11 +73,12 @@ function classify(content: string): ResponseClassification {
 	const richHtml = richM ? richM[1] : '';
 	const prose = content.replace(fenceRe, '').replace(richRe, '').trim();
 	const srcs: string[] = [];
+	const querySources: string[] = [];
 	if (content.includes(':::intelligent-ui-html'))
-		return { channel: 'rich', families: [], srcs, fenceContent, richHtml, prose, jsLeaks };
-	if (!fenceM) return { channel: 'markdown', families: [], srcs, fenceContent, richHtml, prose, jsLeaks };
+		return { channel: 'rich', families: [], srcs, querySources, fenceContent, richHtml, prose, jsLeaks };
+	if (!fenceM) return { channel: 'markdown', families: [], srcs, querySources, fenceContent, richHtml, prose, jsLeaks };
 	const out = parseIntelligentUI({ version: '1', content: fenceM[1].trim() });
-	if (!out.ok) return { channel: 'invalid', families: [], srcs, fenceContent, richHtml, prose, jsLeaks };
+	if (!out.ok) return { channel: 'invalid', families: [], srcs, querySources, fenceContent, richHtml, prose, jsLeaks };
 	const families: string[] = [];
 	collect(out.node, (n) => {
 		const t = n.type as string;
@@ -93,8 +94,9 @@ function classify(content: string): ResponseClassification {
 		else if (['stack', 'row', 'grid', 'section', 'card'].includes(t)) families.push('Composed');
 		if (t === 'gallery' && Array.isArray(n.items))
 			srcs.push(...n.items.map((i: any) => String(i?.src ?? '')).filter(Boolean));
+		if (t === 'data' && typeof n.source === 'string' && n.source) querySources.push(n.source);
 	});
-	return { channel: 'native', families, srcs, fenceContent, richHtml, prose, jsLeaks };
+	return { channel: 'native', families, srcs, querySources, fenceContent, richHtml, prose, jsLeaks };
 }
 
 async function call(prompt: string) {
@@ -125,6 +127,7 @@ async function runOnce(run: number) {
 	const results: any[] = [];
 	const dims = {
 		overallOk: 0, channelOk: 0, familyOk: 0, mixedOk: 0, asked: 0, fabricated: 0,
+		factUnverified: 0, authorizedRetrieval: 0,
 		fabricatedUi: 0, invalidRich: 0, invalid: 0, errors: 0,
 		underUse: 0, overUse: 0, noAsk: 0, wrongFamily: 0, richOver: 0, richUnder: 0, notMixed: 0
 	};
@@ -146,6 +149,8 @@ async function runOnce(run: number) {
 		if (v.mixedOk) dims.mixedOk++;
 		if (v.askedForMissingData) dims.asked++;
 		if (v.fabricatedFacts) dims.fabricated++;
+		if (v.factCheck === 'unverified') dims.factUnverified++;
+		if (v.authorizedRetrieval) dims.authorizedRetrieval++;
 		if (v.errorCategory === 'fabricated-ui') dims.fabricatedUi++;
 		if (v.richInvalid) dims.invalidRich++;
 		if (cls.channel === 'invalid') dims.invalid++;
@@ -163,11 +168,11 @@ async function runOnce(run: number) {
 			id: c.id, prompt: c.prompt, language: c.language, intent: c.intent,
 			dataAvailable: c.dataAvailable, expectedChannel: c.expectedChannel,
 			expectedFamily: c.expectedFamily, missingDataOk: !!c.missingDataOk,
-			actualChannel: cls.channel, families: cls.families, srcs: cls.srcs,
+			actualChannel: cls.channel, families: cls.families, srcs: cls.srcs, querySources: cls.querySources,
 			richValid: cls.channel === 'rich' ? richCheck.valid : null,
 			richReason: cls.channel === 'rich' ? richCheck.reason : null,
 			channelOk: v.channelOk, familyOk: v.familyOk, mixedOk: v.mixedOk,
-			overallOk: v.overallOk,
+			overallOk: v.overallOk, authorizedRetrieval: v.authorizedRetrieval, factCheck: v.factCheck,
 			askedForMissingData: v.askedForMissingData, fabricatedFacts: v.fabricatedFacts,
 			errorCategory: v.errorCategory, jsLeaks: cls.jsLeaks,
 			latencyMs: r.latency, totalTokens: r.usage?.total_tokens ?? 0,
@@ -188,6 +193,8 @@ async function runOnce(run: number) {
 		invalidRichRate: +(100 * dims.invalidRich / n).toFixed(1),
 		askedForMissingData: dims.asked,
 		fabricationRate: +(100 * dims.fabricated / n).toFixed(1),
+		factUnverifiedRate: +(100 * dims.factUnverified / n).toFixed(1),
+		authorizedRetrievals: dims.authorizedRetrieval,
 		dimensions: dims,
 		avgLatencyMs: Math.round(lat.reduce((a, b) => a + b, 0) / n),
 		medianLatencyMs: lat[Math.floor(lat.length / 2)] ?? 0,

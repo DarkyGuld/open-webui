@@ -19,6 +19,7 @@ import { parseIntelligentUI } from '../../src/lib/intelligent-ui/adapter';
 import {
 	evaluateV6,
 	EVAL_CONTRACT_VERSION,
+	validateRichWidget,
 	type EvaluationCase,
 	type ResponseClassification
 } from '../../src/lib/intelligent-ui/evaluation';
@@ -64,16 +65,19 @@ function collect(node: any, fn: (n: any) => void): void {
 
 function classify(content: string): ResponseClassification {
 	const jsLeaks = [...content.matchAll(JS_LEAK_RE)].map((m) => m[0]);
-	const richRe = /:::intelligent-ui-html[\s\S]*?:::/;
+	const richRe = /:::intelligent-ui-html(?:\{[^}]*\})?\s*\n?([\s\S]*?)\n?:::/;
 	const fenceRe = /:::intelligent-ui(?:\{[^}]*\})?\s*\n([\s\S]*?)\n:::/;
 	const fenceM = fenceRe.exec(content);
 	const fenceContent = fenceM ? fenceM[1] : '';
+	const richM = richRe.exec(content);
+	const richHtml = richM ? richM[1] : '';
 	const prose = content.replace(fenceRe, '').replace(richRe, '').trim();
 	const srcs: string[] = [];
-	if (content.includes(':::intelligent-ui-html')) return { channel: 'rich', families: [], srcs, fenceContent, prose, jsLeaks };
-	if (!fenceM) return { channel: 'markdown', families: [], srcs, fenceContent, prose, jsLeaks };
+	if (content.includes(':::intelligent-ui-html'))
+		return { channel: 'rich', families: [], srcs, fenceContent, richHtml, prose, jsLeaks };
+	if (!fenceM) return { channel: 'markdown', families: [], srcs, fenceContent, richHtml, prose, jsLeaks };
 	const out = parseIntelligentUI({ version: '1', content: fenceM[1].trim() });
-	if (!out.ok) return { channel: 'invalid', families: [], srcs, fenceContent, prose, jsLeaks };
+	if (!out.ok) return { channel: 'invalid', families: [], srcs, fenceContent, richHtml, prose, jsLeaks };
 	const families: string[] = [];
 	collect(out.node, (n) => {
 		const t = n.type as string;
@@ -87,9 +91,10 @@ function classify(content: string): ResponseClassification {
 		else if (['slider', 'select', 'switch', 'checkbox', 'input', 'textarea', 'radio', 'button', 'form', 'field'].includes(t)) families.push('Form');
 		else if (t === 'tabs' || t === 'tab') families.push('Tabs');
 		else if (['stack', 'row', 'grid', 'section', 'card'].includes(t)) families.push('Composed');
-		if (t === 'gallery' && typeof n.items?.[0]?.src === 'string') srcs.push(...n.items.map((i: any) => String(i.src)));
+		if (t === 'gallery' && Array.isArray(n.items))
+			srcs.push(...n.items.map((i: any) => String(i?.src ?? '')).filter(Boolean));
 	});
-	return { channel: 'native', families, srcs, fenceContent, prose, jsLeaks };
+	return { channel: 'native', families, srcs, fenceContent, richHtml, prose, jsLeaks };
 }
 
 async function call(prompt: string) {
@@ -119,7 +124,8 @@ async function call(prompt: string) {
 async function runOnce(run: number) {
 	const results: any[] = [];
 	const dims = {
-		channelOk: 0, familyOk: 0, mixedOk: 0, asked: 0, fabricated: 0, invalid: 0, errors: 0,
+		overallOk: 0, channelOk: 0, familyOk: 0, mixedOk: 0, asked: 0, fabricated: 0,
+		fabricatedUi: 0, invalidRich: 0, invalid: 0, errors: 0,
 		underUse: 0, overUse: 0, noAsk: 0, wrongFamily: 0, richOver: 0, richUnder: 0, notMixed: 0
 	};
 	let totalTokens = 0;
@@ -132,12 +138,16 @@ async function runOnce(run: number) {
 			continue;
 		}
 		const cls = classify(r.content);
+		const richCheck = cls.channel === 'rich' ? validateRichWidget(cls.richHtml) : { valid: true, reason: '' };
 		const v = evaluateV6(c, cls);
+		if (v.overallOk) dims.overallOk++;
 		if (v.channelOk) dims.channelOk++;
 		if (v.familyOk) dims.familyOk++;
 		if (v.mixedOk) dims.mixedOk++;
 		if (v.askedForMissingData) dims.asked++;
 		if (v.fabricatedFacts) dims.fabricated++;
+		if (v.errorCategory === 'fabricated-ui') dims.fabricatedUi++;
+		if (v.richInvalid) dims.invalidRich++;
 		if (cls.channel === 'invalid') dims.invalid++;
 		switch (v.errorCategory) {
 			case 'under-use': dims.underUse++; break;
@@ -154,23 +164,28 @@ async function runOnce(run: number) {
 			dataAvailable: c.dataAvailable, expectedChannel: c.expectedChannel,
 			expectedFamily: c.expectedFamily, missingDataOk: !!c.missingDataOk,
 			actualChannel: cls.channel, families: cls.families, srcs: cls.srcs,
+			richValid: cls.channel === 'rich' ? richCheck.valid : null,
+			richReason: cls.channel === 'rich' ? richCheck.reason : null,
 			channelOk: v.channelOk, familyOk: v.familyOk, mixedOk: v.mixedOk,
+			overallOk: v.overallOk,
 			askedForMissingData: v.askedForMissingData, fabricatedFacts: v.fabricatedFacts,
 			errorCategory: v.errorCategory, jsLeaks: cls.jsLeaks,
 			latencyMs: r.latency, totalTokens: r.usage?.total_tokens ?? 0,
 			model: MODEL, raw: r.content.slice(0, 4000)
 		});
 		process.stdout.write(
-			`${v.channelOk ? (v.familyOk && !v.fabricatedFacts ? '✓' : '~') : '✗'} ${cls.channel} [${c.intent}/${c.dataAvailable}] ${c.id}\n`
+			`${v.overallOk ? '✓' : '✗'} ${cls.channel} [${c.intent}/${c.dataAvailable}] ${c.id}\n`
 		);
 	}
 	const n = CASES.length;
 	const lat = results.map((r) => r.latencyMs || 0).sort((a, b) => a - b);
 	const summary = {
 		run, contractVersion: EVAL_CONTRACT_VERSION, model: MODEL, total: n, errors: dims.errors,
+		overallSuccessRate: +(100 * dims.overallOk / n).toFixed(1),
 		channelAccuracy: +(100 * dims.channelOk / n).toFixed(1),
 		familyAccuracy: +(100 * dims.familyOk / n).toFixed(1),
 		invalidRate: +(100 * dims.invalid / n).toFixed(1),
+		invalidRichRate: +(100 * dims.invalidRich / n).toFixed(1),
 		askedForMissingData: dims.asked,
 		fabricationRate: +(100 * dims.fabricated / n).toFixed(1),
 		dimensions: dims,

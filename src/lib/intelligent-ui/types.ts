@@ -6,6 +6,8 @@
  * engine-agnostic content; the engine is selected internally (system-controlled).
  */
 
+import type { Tone } from './tone';
+
 export type IntelligentUIEngineId = 'openui' | 'json-render';
 
 /** Allow-listed component actions (no arbitrary callbacks or code). */
@@ -23,6 +25,7 @@ export interface MetricNode {
 	label: string;
 	value: string;
 	description?: string;
+	tone?: Tone;
 	action?: UIAction;
 }
 
@@ -47,12 +50,13 @@ export interface TableNode {
 	action?: UIAction;
 }
 
-export type BadgeTone = 'neutral' | 'positive' | 'warning' | 'negative';
+export type { Tone } from './tone';
+export type BadgeTone = Tone;
 
 export interface BadgeNode {
 	type: 'badge';
 	label: string;
-	tone?: BadgeTone;
+	tone?: Tone;
 	action?: UIAction;
 }
 

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { actionSchema } from './action-schema';
+import { toneSchema } from './tone';
 import { CATALOG_VERSION, LIMITS, SUPPORTED_VERSION } from './limits';
 
 const str = () => z.string().min(1).max(LIMITS.MAX_STRING_LENGTH);
@@ -10,6 +11,7 @@ export const metricSchema = z
 		label: str(),
 		value: str(),
 		description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		tone: toneSchema.optional(),
 		action: actionSchema.optional()
 	})
 	.strict();
@@ -47,7 +49,7 @@ export const badgeSchema = z
 	.object({
 		type: z.literal('badge'),
 		label: str(),
-		tone: z.enum(['neutral', 'positive', 'warning', 'negative']).optional(),
+		tone: toneSchema.optional(),
 		action: actionSchema.optional()
 	})
 	.strict();

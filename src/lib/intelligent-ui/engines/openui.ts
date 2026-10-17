@@ -94,6 +94,7 @@ function mapNode(element: ElementNode, store: Store | null): UINode {
 				label: String(p.label),
 				value: String(p.value),
 				...(p.description != null ? { description: String(p.description) } : {}),
+				...(p.tone != null ? { tone: String(p.tone) as any } : {}),
 				...(p.action != null ? { action: p.action } : {})
 			};
 		case 'comparison':

@@ -51,6 +51,7 @@
 		label={node.label}
 		value={node.value}
 		description={node.description}
+		tone={node.tone}
 		action={node.action}
 		{onAction}
 	/>

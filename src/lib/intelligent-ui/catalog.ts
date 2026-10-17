@@ -12,6 +12,7 @@
 import { createLibrary, defineComponent, markReactive, tagSchemaId } from '@openuidev/lang-core';
 import { z } from 'zod';
 import { actionSchema } from './action-schema';
+import { toneSchema } from './tone';
 import { CATALOG_VERSION, LIMITS } from './limits';
 
 export const CATALOG_VERSION_ID = CATALOG_VERSION;
@@ -29,11 +30,12 @@ const placeholder = { component: 'intelligent-ui' };
 const MetricDef = defineComponent({
 	name: 'Metric',
 	description:
-		'A single important number (cost, total, count). The label is required and must be non-empty — use a short semantic label like "Total" or "Monthly cost".',
+		'A single important number (cost, total, count). The label is required and must be non-empty — use a short semantic label like "Total" or "Monthly cost". Optional 4th argument is a tone: "neutral", "positive", "warning" or "negative" (e.g. Metric("Total", "980 kr", "", "positive")).',
 	props: z.object({
 		label: str().describe('Short label, e.g. "Monthly cost"'),
 		value: str().describe('The value, e.g. "5 294 kr"'),
 		description: z.string().max(LIMITS.MAX_STRING_LENGTH).optional(),
+		tone: toneSchema.optional(),
 		action: actionSchema.optional()
 	}),
 	...placeholder
@@ -79,7 +81,7 @@ const BadgeDef = defineComponent({
 		'A small inline label/tag (status, category). The 2nd argument is an optional tone: "neutral", "positive", "warning" or "negative" (e.g. Badge("Save 17%", "positive")).',
 	props: z.object({
 		label: str(),
-		tone: z.enum(['neutral', 'positive', 'warning', 'negative']).optional(),
+		tone: toneSchema.optional(),
 		action: actionSchema.optional()
 	}),
 	...placeholder

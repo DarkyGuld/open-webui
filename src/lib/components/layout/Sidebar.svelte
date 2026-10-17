@@ -1,4 +1,5 @@
 <script lang="ts">
+	import LibraryLink from '$lib/components/library/LibraryLink.svelte';
 	import { toast } from 'svelte-sonner';
 	import { v4 as uuidv4 } from 'uuid';
 	import Sortable from 'sortablejs';
@@ -1034,6 +1035,7 @@
 						</Tooltip>
 					</div>
 
+					<LibraryLink compact={true} />
 					{#each pinnedItems as itemId (itemId)}
 						{@const meta = getMenuItemMeta(itemId)}
 						{#if meta && isMenuItemVisible(itemId)}
@@ -1259,6 +1261,7 @@
 							</button>
 						</div>
 
+						<div class="px-1"><LibraryLink /></div>
 						<div id="pinned-menu-items-list">
 							{#each pinnedItems as itemId (itemId)}
 								{@const meta = getMenuItemMeta(itemId)}

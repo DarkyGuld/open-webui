@@ -63,48 +63,69 @@ catalog prompt in sync (`git diff` clean), production build green.
 | Evaluation methodology | **REBUILT this milestone (contract v6)** | pilot: cat-jam-free 90.9% under fair scoring |
 | Map / external media | MISSING (deferred by design) | M9.4 report |
 
-## Evaluation contract v6 → v7 (methodology repair + review hardening)
+## Evaluation contract v6 → v7 → v8 (methodology repair + review hardening)
 
-`src/lib/intelligent-ui/evaluation.ts` (pure, versioned, shared by runner + Vitest). After PR #1
-review, the v6 contract's correctness gaps were fixed as **v7**:
+`src/lib/intelligent-ui/evaluation.ts` (pure, versioned, shared by runner + Vitest). After the PR #1
+review rounds, the contract was hardened twice:
 
-- **All supplied values required** (was `.some()`): presentation intents (comparison/table/chart/
-  timeline/images/mixed) must show EVERY provided number; whole-token numeric matching (thousands
-  separators, decimal commas, signs/range dashes, comma-separated OpenUI arrays) with **no
-  substring false positives** (`112` never credits a supplied `12`); computation intents
-  (`number`/`interactive`) are exempt (computed-only output is correct, not fabrication);
-  magnitude scaling (`3` ↔ `3000`, `1.2` ↔ `1200000`) is deliberately **not** credited — a computed
-  output is not a source input.
-- **Unavailable data never credits invented native UI**: correct behavior is a markdown
-  ask/explanation, or native UI that verifiably retrieves from an authorized (allow-listed) source
-  (Query family). Inventing values into native UI is `fabricated-ui`.
-- **Invented image refs detected even when NOTHING was provided** (v6 only checked when refs were
-  supplied — invented galleries passed).
-- **Rich Widget output is validated** (non-trivial HTML, no external network references, no
-  `javascript:` URIs) — fence presence alone no longer passes (`invalid-rich`).
-- **`overallOk`** is a first-class separately reported metric (channel + family + mixed + no
-  fabrication + valid output); invalid output is never obscured.
+**v7** — all supplied values required (was `.some()`); whole-token numeric matching (no substring
+false positives; thousands separators, decimal commas, comma-separated OpenUI arrays); unavailable
+data never credits invented native UI; invented image refs detected even with nothing provided;
+Rich presence alone no longer passes; `overallOk` first-class.
+
+**v8 (final hardening)** — closes the v7 gaps found in adversarial review:
+- **Sign-context numeric matching**: a leading `-` after a digit is a range/minus dash (unsigned);
+  after anything else it is a sign — a supplied negative never matches a positive token and vice
+  versa (v7 accepted both), while `50000-500500` ranges and `values:[-0.16,-0.05]` negative arrays
+  keep working.
+- **Authorized retrieval credit**: a Query component alone is not enough — every emitted query
+  `source` id must be on the REAL allow-list (`queries.ts` QUERY_IDS). Credit is a retrieval PATH
+  (the load executes at render, browser-verified); invented source ids are `fabricated-ui`.
+- **Rich validation uses the REAL production safety contract** (`rich-contract.ts`, shared with
+  `RichWidget.svelte` — CSP + sandbox flags are a single source of truth): forms / popups /
+  downloads / network / `javascript:` URIs are all blocked by the actual sandbox+CSP, so widgets
+  needing them are `invalid-rich`. Static validation cannot prove execution — that is a separate
+  browser-verified step.
+- **`factCheck` is an explicit, separately reported dimension** (`verified` / `unverified`):
+  computation arithmetic, model-known facts and retrieved content are honestly labeled
+  `unverified` — numeric token matching is never presented as proof of factual correctness
+  (`factUnverifiedRate` reported; v8 pilot: 75 % honestly unverified).
 
 Dataset: `docs/intelligent-ui/routing-benchmark-v6/prompts.json` (44 cases, EN+NO; two prompts with
-unrealistic data assumptions fixed — the 1880–2020 temperature series and "1.2M"-style
-abbreviations — now supply plain data). Historical v1–v5 results are untouched; the original
-v6-contract pilot is preserved as `pilot-contract-v6*.json`.
+unrealistic data assumptions fixed in v7). Historical v1–v5 results are untouched; the original
+v6- and v7-contract pilots are preserved as `pilot-contract-v6*.json` / `pilot-contract-v7*.json`.
 
-**Pilot (free model only, 1 run, contract v7):** cat-jam-free **overall 90.9 %** (channel/family
-90.9 %), fabrication **0 %**, invalid 0 %, 8 correct missing-data asks, 1 invalid-rich. Full 3×
-deepseek-v4.1-flash runs are **pending cost estimate + approval** (not run here).
+**Pilots (free model, 1 run each):** v6 84.1 % overall → v7 90.9 % (channel 90.9 %, fabrication
+0 %) → **v8 86.4 % overall / 86.4 % channel, fabrication 0 %, invalid 0 %, invalid-rich 0 %** —
+the v8 drop vs v7 is run-to-run variance on the free model (all 6 v8 misses are genuine model
+routing misses: markdown under-use, rich over-use, prose over-use — none are contract artifacts).
+Full 3× deepseek-v4.1-flash runs are **pending cost estimate + approval** (not run here).
+
+## Browser verification (real app, Playwright — `audit/lib/milestone9_11-browser.mjs`)
+
+31/31 checks passed, **0 console errors**, deterministic (seeded chats, no model calls):
+native Metric/Comparison rendering; complete-runtime calculator (live derived update, `@Set`,
+`@Reset`, keyboard ArrowRight on the slider); **live interaction during PARTIAL/streaming mode
+(the new capability — slider drag updates the derived metric mid-stream, `@Set` works mid-stream)**;
+invalid program → safe fallback; unknown query source → error state; mutation
+confirmation → cancel (no POST) → confirm (POST) → **reload (no replay POST)**; Rich iframe
+renders with sandbox blocking same-origin/forms/downloads (interactive inside the sandbox);
+mixed response (prose + UI + prose); cross-chat state isolation; reload of completed conversations;
+global OFF flag (documented design: generation gated server-side, persisted fences still render —
+no data loss); light theme + mobile viewport. Screenshots in
+`audit/local/intelligent-ui/milestone-9.11/`.
 
 ## Test results (this branch)
 
-- **Vitest: 169 passed** (146 baseline + 8 streaming-runtime + 15 evaluation-contract incl.
-  adversarial old-vs-new regressions)
+- **Vitest: 175 passed** (146 baseline + 11 streaming-runtime incl. lifecycle regressions + 18
+  evaluation-contract v8 incl. adversarial old-vs-new demos)
 - **pytest (intelligent_ui): 53 passed**
 - **Production build: green**
 - **svelte-check: intelligent-ui module has 0 errors** (2 pre-existing warnings; repo-wide
   pre-existing baseline otherwise unchanged — 5 713 errors in 316 files, all outside our module)
-- Playwright browser runs: **not executed this session** (no running app in this environment) —
-  the M9.5 capture suite remains the visual baseline; re-run recommended on a machine with the
-  dev servers up.
+- **Playwright (real app): 31/31 checks passed, 0 console errors** — see "Browser verification"
+  above and `audit/lib/milestone9_11-browser.mjs` (deterministic; no model calls). The M9.5 capture
+  suite remains the broader visual baseline.
 
 ## P0 — correctness, security, data integrity (next)
 

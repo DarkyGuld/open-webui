@@ -3,7 +3,6 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
@@ -60,7 +59,7 @@ function pdf() {
 	result += 'xref\n0 6\n0000000000 65535 f \n' + offsets.slice(1).map((n) => String(n).padStart(10, '0') + ' 00000 n \n').join('');
 	return result + `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
 }
-const videoPath = path.join(os.tmpdir(), `library-test-${randomUUID()}.webm`);
+const videoPath = path.join(OUT, `fixture-${randomUUID()}.webm`);
 
 try {
 	const a = await account('A');

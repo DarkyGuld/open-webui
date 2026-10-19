@@ -63,6 +63,11 @@ Versions remain Open WebUI **0.12.3**, pinned OpenUI Lang Core **1.0.1**, catalo
 - **No paid or free model evaluation calls in M9.12.** Three-run DeepSeek/free-model comparison is
   prepared, pending explicit approval and gateway/billing/policy confirmation. See
   `m9-12-evaluation/PLAN.md` for official source, formula and caveats.
+- A stacked follow-up branch (`feat/intelligent-ui-m9-12-free-eval`) adds a **zero-cost
+  free-endpoint** evaluation path: a reviewed model registry, a separate free acknowledgment that
+  is never interchangeable with paid approval, and recording of the response model id. It is
+  prepared and unexecuted; see `m9-12-evaluation/FREE_MODEL_NOTES.md`. A free-endpoint result is a
+  standalone measurement, never an update of the paid series.
 - Published token-rate estimate: **USD 0.51–1.02 allowance-equivalent** for 282 DeepSeek calls at
   4k input + 2k output/call; allow about **USD 1.02–2.03** for 2× usage. Not an invoice guarantee.
   Proposed provisional cap **USD 3**, conditional on current account/provider validation.

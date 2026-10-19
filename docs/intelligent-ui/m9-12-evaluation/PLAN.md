@@ -27,6 +27,26 @@ of a fresh `BENCH_OUTDIR`. Existing results cannot be overwritten. Execution req
 `BENCH_EXECUTE=1`; paid execution also requires an explicitly approved run and
 `BENCH_PAID_APPROVED=1`. That flag is an accidental-spend guard, not a substitute for approval.
 
+### Free-endpoint path (no paid spend)
+
+Free OpenCode endpoints (unlimited monthly allowance) can measure the same frozen holdout at zero
+cost, so the spend approval is no longer the only path to a measurement. It does **not** replace
+the paid run: a free-endpoint result is a standalone measurement, not an update of the paid
+series, because free endpoints are limited-time and may be withdrawn or re-pointed. The runner
+therefore requires a separate `BENCH_FREE_ACKNOWLEDGED=1` (never interchangeable with
+`BENCH_PAID_APPROVED=1`), records the **response model id** in addition to the requested model, and
+marks the result as not comparable with the historical series. Model registry and guards:
+`scripts/intelligent-ui/bench-models.ts`. Full notes, endpoints, privacy and commands:
+`FREE_MODEL_NOTES.md`.
+
+Example **free preflight** (does not send a request):
+
+```bash
+BENCH_MODEL=minimax-m3.1-flash-free BENCH_RUNS=3 \
+  BENCH_DATASET=docs/intelligent-ui/m9-12-evaluation/holdout.json \
+  npx tsx audit/lib/routing-benchmark-v6.mts
+```
+
 Example **safe preflight** (does not send a request):
 
 ```bash

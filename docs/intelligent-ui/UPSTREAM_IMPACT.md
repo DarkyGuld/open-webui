@@ -227,3 +227,11 @@ existing `chart.js`; Gallery reuses the existing `Image` primitive. No new depen
 reuse the existing `svelte-sonner` dependency; charts reuse `chart.js`. No new dependency.
 
 **Cumulative M1–M9.5:** still ~20 core files, ~235 lines.
+
+## Read-only Library first slice (after M9.11)
+
+Sidebar core impact: one import + a link in expanded and collapsed navigation. English/Norwegian
+locale dictionaries gain isolated Library keys. All functionality is in new custom library modules,
+components and `/library`; native Modal/Spinner/PDFViewer/file icons and existing Files endpoints
+are reused. No backend/auth/schema/storage/model-prompt changes and no dependencies. See
+`docs/library/STATUS.md` for verified permission tests and exact preview/loaded-filter limits.

@@ -17,6 +17,12 @@ A customized Open WebUI product aiming for:
 
 ## Current status
 
+**Read-only Library branch:** `feat/read-only-library`, based independently on M9.11 merge
+`110008de6` (does not include or merge PR #2). New `/library` uses existing authenticated Files
+APIs, filename search, loaded-file type filters and read-only image/video/audio/PDF/text previews.
+See `docs/library/STATUS.md`, `DESIGN.md` and `SERVER_STATE_REVIEW.md` for tests, limits and
+security decisions. No paid calls, dependencies, new storage or server sync. PR #2 remains separate.
+
 | Milestone | Status | Summary |
 |---|---|---|
 | 1 — gating & settings | ✅ complete | global/user/chat/model toggles + resolver; OFF = stock no-op |
@@ -38,7 +44,7 @@ A customized Open WebUI product aiming for:
 | 9.8 — targeted reliability hardening | ✅ complete (eval + guidance) | Badge tone + Metric-label contract; Metric/Gallery/Mixed/Chart-Table/Timeline guidance + native-first + multilingual (PROMPT +4.65%); v3 re-run channel **81.1%**/family 78.9%/invalid 0%, holdout **65.6%**/61.6%; **99% target not reached (cheap-model plateau ~66–85%)**; M10 unnecessary. See `MILESTONE_9_8_REPORT.md` |
 | 9.9 — strong-model ceiling benchmark | ✅ complete (eval only) | deepseek-v4.1-flash, frozen system, 279 calls: v3 channel **91.7%**/family 90.6%/clear 92.7%, holdout **82.8%**/80.8%, invalid 0.6%; **Level C — architecture strong, model-bound; near-99% not reached; v1 NOT declared complete; M10 unnecessary**. See `MODEL_CEILING_DEEPSEEK_V4_1_FLASH.md` |
 | 9.10 — deepseek targeted hardening | ✅ complete (contract + guidance + eval) | **Metric tone** contract (shared with Badge); native-first calculators / Gallery intent / multilingual / mixed guidance (PROMPT +3.9%); deepseek v3 channel **92.8%**/family 90.0%, legacy holdout 83.8%/82.8%, **NEW holdout 82.1%/79.8% (clear 87.8%)**; invalid 1.1–2.4% (model errors); **Level C — near-99% not reached; v1 NOT complete; M10 unnecessary**. See `MILESTONE_9_10_REPORT.md` |
-| 9.11 — correctness & reliability | ✅ complete (on `feat/intelligent-ui-m9-11-reliability`, PR into this branch) | upstream 0.12.3 + **lang-core 1.0.1** synced (post-M9.10 commits); **lifecycle-safe streaming runtime** (one parser+store per block; user input survives chunks AND finalization); component-limit prompt rule (within guard); evaluation **contract v8** (intent vs data availability vs fabrication vs authorized retrieval; REAL rich safety contract; honest factCheck); Chart/engine typing fixes. Vitest **175** / pytest **53** / build green; **browser e2e 31/31, 0 console errors**. See `M9_11_STATUS.md` |
+| 9.11 — correctness & reliability | ✅ merged via PR #1 (`110008de6`) | upstream 0.12.3 + **lang-core 1.0.1**; lifecycle-safe streaming; evaluation contract v8; 175 Vitest / 53 pytest, build/CI green. See `M9_11_STATUS.md` |
 
 Reports: `docs/intelligent-ui/MILESTONE_1_REPORT.md` … `MILESTONE_9_10_REPORT.md` (see each row),
 plus benchmarks `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`,
@@ -46,9 +52,8 @@ plus benchmarks `ROUTING_BENCHMARK_V2.md`, `ROUTING_BENCHMARK_V3.md`,
 `UX_GUIDELINES.md`, `PARITY_VISUAL_AUDIT.md`. Actions: `ACTIONS.md`. Persistence:
 `OUTPUT_PERSISTENCE.md`.
 
-Milestone tags: `intelligent-ui-m3` … `intelligent-ui-m9.10`. Latest: `intelligent-ui-m9.10` (M9.11
-sits on `feat/intelligent-ui-m9-11-reliability` pending PR into `intelligent-ui-foundation`). Each
-milestone's report carries its own SHAs.
+Milestone tags: `intelligent-ui-m3` … `intelligent-ui-m9.10`. M9.11 merged as `110008de6` via PR #1.
+PR #2 and the independent Library branch are pending review, not automatically merged.
 
 ## Intelligent UI architecture (current path)
 

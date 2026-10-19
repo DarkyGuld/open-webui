@@ -10,7 +10,9 @@
  * Default: preflight only (no model requests). BENCH_DATASET selects frozen
  * cases independently of a fresh BENCH_OUTDIR. BENCH_EXECUTE=1 explicitly
  * enables requests; paid models additionally need user approval before setting
- * BENCH_PAID_APPROVED=1. Historical output files are never overwritten.
+ * BENCH_PAID_APPROVED=1, and free (limited-time) endpoints need
+ * BENCH_FREE_ACKNOWLEDGED=1 because their results are not comparable with the
+ * paid historical series. Historical output files are never overwritten.
  */
 import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
@@ -24,6 +26,7 @@ import {
 	type EvaluationCase,
 	type ResponseClassification
 } from '../../src/lib/intelligent-ui/evaluation';
+import { decideBenchRun } from '../../scripts/intelligent-ui/bench-models';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..', '..');
@@ -34,13 +37,18 @@ const OUT = process.env.BENCH_OUTDIR
 const KEY = process.env.OPENCODE_KEY || '';
 const MODEL = process.env.BENCH_MODEL || 'cat-jam-free';
 const RUNS = Number(process.env.BENCH_RUNS || 1);
-const URL = 'https://opencode.ai/zen/go/v1/chat/completions';
 const EXECUTE = process.env.BENCH_EXECUTE === '1';
-if (!Number.isInteger(RUNS) || RUNS < 1 || RUNS > 3) throw new Error('BENCH_RUNS must be 1–3');
-if (!['cat-jam-free', 'deepseek-v4.1-flash'].includes(MODEL)) throw new Error('Unapproved benchmark model');
-if (EXECUTE && MODEL !== 'cat-jam-free' && process.env.BENCH_PAID_APPROVED !== '1')
-	throw new Error('Paid calls require explicit user approval before setting BENCH_PAID_APPROVED=1');
-if (EXECUTE && !KEY) throw new Error('Missing OPENCODE_KEY');
+const decision = decideBenchRun({
+	model: MODEL,
+	runs: RUNS,
+	execute: EXECUTE,
+	paidApproved: process.env.BENCH_PAID_APPROVED === '1',
+	freeAcknowledged: process.env.BENCH_FREE_ACKNOWLEDGED === '1',
+	key: KEY,
+	baseUrl: process.env.BENCH_BASE_URL
+});
+if (!decision.ok) throw new Error(decision.error);
+const { model: MODEL_SPEC, endpoint: URL } = decision;
 if (EXECUTE && existsSync(path.join(OUT, 'results-run1.json')))
 	throw new Error('Refusing to overwrite existing results; choose a fresh BENCH_OUTDIR');
 if (EXECUTE) mkdirSync(OUT, { recursive: true });
@@ -109,14 +117,15 @@ function classify(content: string): ResponseClassification {
 	return { channel: 'native', families, srcs, querySources, fenceContent, richHtml, prose, jsLeaks };
 }
 
-async function call(prompt: string) {
+async function call(prompt: string, sessionKey: string) {
 	const t0 = Date.now();
 	const res = await fetch(URL, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${KEY}`,
 			'content-type': 'application/json',
-			'x-opencode-session': `bench6-${Math.random().toString(36).slice(2)}`
+			'user-agent': 'openwebui-intelligent-ui-eval/1.0',
+			'x-opencode-session': `bench6-${sessionKey}`
 		},
 		body: JSON.stringify({
 			model: MODEL,
@@ -129,8 +138,11 @@ async function call(prompt: string) {
 	});
 	const latency = Date.now() - t0;
 	const data = await res.json();
-	if (!res.ok) return { error: data?.error?.message || res.status, latency, content: '', usage: {} };
-	return { error: null as string | null, latency, content: data?.choices?.[0]?.message?.content ?? '', usage: data?.usage ?? {} };
+	// The provider may answer with a different model id than requested (stealth
+	// aliases). Record what actually answered, never only what was requested.
+	const responseModel = typeof data?.model === 'string' ? data.model : null;
+	if (!res.ok) return { error: data?.error?.message || res.status, latency, content: '', usage: {}, responseModel };
+	return { error: null as string | null, latency, content: data?.choices?.[0]?.message?.content ?? '', usage: data?.usage ?? {}, responseModel };
 }
 
 async function runOnce(run: number) {
@@ -142,11 +154,13 @@ async function runOnce(run: number) {
 		underUse: 0, overUse: 0, noAsk: 0, wrongFamily: 0, richOver: 0, richUnder: 0, notMixed: 0
 	};
 	let totalTokens = 0;
+	const responseModels = new Set<string>();
 	for (const c of CASES) {
-		const r = await call(c.prompt);
+		const r = await call(c.prompt, `${MODEL}-r${run}-${c.id}`);
+		if (r.responseModel) responseModels.add(r.responseModel);
 		if (r.error) {
 			dims.errors++;
-			results.push({ id: c.id, error: r.error, latencyMs: r.latency, model: MODEL });
+			results.push({ id: c.id, error: r.error, latencyMs: r.latency, model: MODEL, responseModel: r.responseModel });
 			process.stdout.write(`! error ${c.id}\n`);
 			continue;
 		}
@@ -186,7 +200,7 @@ async function runOnce(run: number) {
 			askedForMissingData: v.askedForMissingData, fabricatedFacts: v.fabricatedFacts,
 			errorCategory: v.errorCategory, jsLeaks: cls.jsLeaks,
 			latencyMs: r.latency, totalTokens: r.usage?.total_tokens ?? 0,
-			model: MODEL, raw: r.content.slice(0, 4000)
+			model: MODEL, responseModel: r.responseModel, raw: r.content.slice(0, 4000)
 		});
 		process.stdout.write(
 			`${v.overallOk ? '✓' : '✗'} ${cls.channel} [${c.intent}/${c.dataAvailable}] ${c.id}\n`
@@ -196,6 +210,13 @@ async function runOnce(run: number) {
 	const lat = results.map((r) => r.latencyMs || 0).sort((a, b) => a - b);
 	const summary = {
 		run, contractVersion: EVAL_CONTRACT_VERSION, model: MODEL, total: n, errors: dims.errors,
+		requestedModel: MODEL,
+		responseModels: [...responseModels].sort(),
+		modelTier: MODEL_SPEC.tier,
+		modelSeries: MODEL_SPEC.series,
+		comparableToHistoricalSeries: MODEL_SPEC.series !== 'new-free',
+		modelNote: MODEL_SPEC.note,
+		endpoint: URL,
 		overallSuccessRate: +(100 * dims.overallOk / n).toFixed(1),
 		channelAccuracy: +(100 * dims.channelOk / n).toFixed(1),
 		familyAccuracy: +(100 * dims.familyOk / n).toFixed(1),
@@ -216,6 +237,8 @@ async function runOnce(run: number) {
 
 const runs: any[] = [];
 if (!EXECUTE) console.log(JSON.stringify({ mode: 'PREFLIGHT_NO_API_CALLS', model: MODEL,
+	modelTier: MODEL_SPEC.tier, modelSeries: MODEL_SPEC.series,
+	comparableToHistoricalSeries: MODEL_SPEC.series !== 'new-free', modelNote: MODEL_SPEC.note, endpoint: URL,
 	cases: CASES.length, runs: RUNS, callsPlanned: CASES.length * RUNS,
 	contractVersion: EVAL_CONTRACT_VERSION, systemChars: SYSTEM.length, outdir: OUT }, null, 2));
 if (EXECUTE) {

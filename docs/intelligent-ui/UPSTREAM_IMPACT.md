@@ -237,3 +237,12 @@ locally. The chat-variable server prototype was removed after security review (m
 exposure and lost-update risk); cross-device sync is not enabled. Benchmark tooling adds explicit
 execution/paid-approval/overwrite guards; historical results and production prompts are unchanged.
 See `M9_12_STATUS.md` and `PERSISTENT_STATE_DESIGN.md`.
+
+## M9.12 free-endpoint evaluation path
+
+No upstream core files changed, no dependencies, no production prompt/catalog/schema change and no
+model call. The model registry and execution guards live in `scripts/intelligent-ui/bench-models.ts`;
+the benchmark runner (`audit/lib/routing-benchmark-v6.mts`) now resolves its model, tier, endpoint
+and acknowledgments from that registry, records the response model id and the comparability flag
+alongside every result, and defaults to a configurable endpoint. The frozen holdout, its checksum
+and all historical results are untouched. See `m9-12-evaluation/FREE_MODEL_NOTES.md`.

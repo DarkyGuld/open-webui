@@ -4,7 +4,8 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { describe, it, expect } from 'vitest';
 
-const file = (relative: string) => readFileSync(new URL(`../../../../${relative}`, import.meta.url), 'utf8');
+const file = (relative: string) =>
+	readFileSync(new URL(`../../../../${relative}`, import.meta.url), 'utf8');
 const path = 'docs/intelligent-ui/m9-12-evaluation/holdout.json';
 const raw = file(path);
 const dataset = JSON.parse(raw);
@@ -19,7 +20,8 @@ describe('M9.12 frozen evaluation design (offline)', () => {
 			expect(['markdown', 'native', 'rich']).toContain(c.expectedChannel);
 			if (c.expectedChannel === 'native') expect(c.expectedFamily).toBeTruthy();
 			if (c.dataAvailable === 'unavailable') expect(c.missingDataOk).toBe(true);
-			if (c.intent === 'images' && c.dataAvailable === 'provided') expect(c.providedImageRefs?.length).toBeGreaterThan(0);
+			if (c.intent === 'images' && c.dataAvailable === 'provided')
+				expect(c.providedImageRefs?.length).toBeGreaterThan(0);
 		}
 	});
 	it('does not duplicate any old evaluation or tuning prompt exactly', () => {
@@ -38,21 +40,92 @@ describe('M9.12 frozen evaluation design (offline)', () => {
 	});
 	it('blocks paid execution before any API request without explicit approval', () => {
 		const root = fileURLToPath(new URL('../../../../', import.meta.url));
-		const result = spawnSync(process.execPath, ['node_modules/tsx/dist/cli.mjs', 'audit/lib/routing-benchmark-v6.mts'], {
-			cwd: root, encoding: 'utf8', timeout: 15000,
-			env: { ...process.env, BENCH_EXECUTE: '1', BENCH_MODEL: 'deepseek-v4.1-flash', BENCH_PAID_APPROVED: '', OPENCODE_KEY: '' }
-		});
+		const result = spawnSync(
+			process.execPath,
+			['node_modules/tsx/dist/cli.mjs', 'audit/lib/routing-benchmark-v6.mts'],
+			{
+				cwd: root,
+				encoding: 'utf8',
+				timeout: 15000,
+				env: {
+					...process.env,
+					BENCH_EXECUTE: '1',
+					BENCH_MODEL: 'deepseek-v4.1-flash',
+					BENCH_PAID_APPROVED: '',
+					OPENCODE_KEY: ''
+				}
+			}
+		);
 		expect(result.status).not.toBe(0);
 		expect(result.stderr).toContain('Paid calls require explicit user approval');
 	});
+	it('blocks free-endpoint execution until the free acknowledgment is given', () => {
+		const root = fileURLToPath(new URL('../../../../', import.meta.url));
+		const result = spawnSync(
+			process.execPath,
+			['node_modules/tsx/dist/cli.mjs', 'audit/lib/routing-benchmark-v6.mts'],
+			{
+				cwd: root,
+				encoding: 'utf8',
+				timeout: 15000,
+				env: {
+					...process.env,
+					BENCH_EXECUTE: '1',
+					BENCH_MODEL: 'minimax-m3.1-flash-free',
+					BENCH_FREE_ACKNOWLEDGED: '',
+					BENCH_OUTDIR: 'docs/intelligent-ui/m9-12-evaluation/free-run',
+					OPENCODE_KEY: 'synthetic-test-key'
+				}
+			}
+		);
+		expect(result.status).not.toBe(0);
+		expect(result.stderr).toContain('BENCH_FREE_ACKNOWLEDGED=1');
+	});
 	it('refuses to overwrite historical results before sending a request', () => {
 		const root = fileURLToPath(new URL('../../../../', import.meta.url));
-		const result = spawnSync(process.execPath, ['node_modules/tsx/dist/cli.mjs', 'audit/lib/routing-benchmark-v6.mts'], {
-			cwd: root, encoding: 'utf8', timeout: 15000,
-			env: { ...process.env, BENCH_EXECUTE: '1', BENCH_MODEL: 'cat-jam-free',
-				BENCH_OUTDIR: 'docs/intelligent-ui/routing-benchmark-v6', OPENCODE_KEY: 'synthetic-test-key' }
-		});
+		const result = spawnSync(
+			process.execPath,
+			['node_modules/tsx/dist/cli.mjs', 'audit/lib/routing-benchmark-v6.mts'],
+			{
+				cwd: root,
+				encoding: 'utf8',
+				timeout: 15000,
+				env: {
+					...process.env,
+					BENCH_EXECUTE: '1',
+					BENCH_MODEL: 'cat-jam-free',
+					BENCH_FREE_ACKNOWLEDGED: '1',
+					BENCH_OUTDIR: 'docs/intelligent-ui/routing-benchmark-v6',
+					OPENCODE_KEY: 'synthetic-test-key'
+				}
+			}
+		);
 		expect(result.status).not.toBe(0);
 		expect(result.stderr).toContain('Refusing to overwrite existing results');
+	});
+	it('preflights a free endpoint without any API call and reports its comparability', () => {
+		const root = fileURLToPath(new URL('../../../../', import.meta.url));
+		const result = spawnSync(
+			process.execPath,
+			['node_modules/tsx/dist/cli.mjs', 'audit/lib/routing-benchmark-v6.mts'],
+			{
+				cwd: root,
+				encoding: 'utf8',
+				timeout: 30000,
+				env: {
+					...process.env,
+					BENCH_EXECUTE: '',
+					BENCH_MODEL: 'minimax-m3.1-flash-free',
+					BENCH_RUNS: '3',
+					BENCH_DATASET: 'docs/intelligent-ui/m9-12-evaluation/holdout.json'
+				}
+			}
+		);
+		expect(result.status).toBe(0);
+		const preflight = JSON.parse(result.stdout);
+		expect(preflight.mode).toBe('PREFLIGHT_NO_API_CALLS');
+		expect(preflight.modelTier).toBe('free');
+		expect(preflight.comparableToHistoricalSeries).toBe(false);
+		expect(preflight.callsPlanned).toBe(150);
 	});
 });

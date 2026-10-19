@@ -61,12 +61,24 @@ function pyString(module: string, name: string): string {
 		env: pyEnv
 	}).toString();
 }
-const AUTO_HEADER = pyString('open_webui.intelligent_ui.filter', 'AUTO_HEADER');
-const PROMPT = pyString('open_webui.intelligent_ui.catalog_prompt', 'PROMPT');
-const RICH_HEADER = pyString('open_webui.intelligent_ui.filter', 'RICH_HEADER');
-const RICH_PROMPT = pyString('open_webui.intelligent_ui.catalog_prompt', 'RICH_PROMPT');
-const richAuto = `${RICH_HEADER} Use it only when it is clearly better than the native components.`;
-const SYSTEM = `${AUTO_HEADER}\n\n${PROMPT}\n\n${richAuto}\n\n${RICH_PROMPT}`;
+// Preflight must never crash: without the local Python environment the production
+// prompt cannot be read, which is a missing prerequisite to report, not a crash.
+let SYSTEM = '';
+let promptSource = 'production-auto-and-rich';
+try {
+	const AUTO_HEADER = pyString('open_webui.intelligent_ui.filter', 'AUTO_HEADER');
+	const PROMPT = pyString('open_webui.intelligent_ui.catalog_prompt', 'PROMPT');
+	const RICH_HEADER = pyString('open_webui.intelligent_ui.filter', 'RICH_HEADER');
+	const RICH_PROMPT = pyString('open_webui.intelligent_ui.catalog_prompt', 'RICH_PROMPT');
+	const richAuto = `${RICH_HEADER} Use it only when it is clearly better than the native components.`;
+	SYSTEM = `${AUTO_HEADER}\n\n${PROMPT}\n\n${richAuto}\n\n${RICH_PROMPT}`;
+} catch (error) {
+	promptSource = 'unavailable';
+	if (EXECUTE)
+		throw new Error(
+			`Production prompt unavailable (${(error as Error).message.split('\n')[0]}); refusing to execute`
+		);
+}
 
 const CASES: EvaluationCase[] = JSON.parse(
 	readFileSync(process.env.BENCH_DATASET ? path.resolve(REPO, process.env.BENCH_DATASET) :
@@ -239,8 +251,12 @@ const runs: any[] = [];
 if (!EXECUTE) console.log(JSON.stringify({ mode: 'PREFLIGHT_NO_API_CALLS', model: MODEL,
 	modelTier: MODEL_SPEC.tier, modelSeries: MODEL_SPEC.series,
 	comparableToHistoricalSeries: MODEL_SPEC.series !== 'new-free', modelNote: MODEL_SPEC.note, endpoint: URL,
+	promptSource, systemChars: promptSource === 'unavailable' ? null : SYSTEM.length,
+	warning: promptSource === 'unavailable'
+		? 'Local Python environment missing: the production prompt was not read. This is a preflight only; execution needs .venv.'
+		: null,
 	cases: CASES.length, runs: RUNS, callsPlanned: CASES.length * RUNS,
-	contractVersion: EVAL_CONTRACT_VERSION, systemChars: SYSTEM.length, outdir: OUT }, null, 2));
+	contractVersion: EVAL_CONTRACT_VERSION, outdir: OUT }, null, 2));
 if (EXECUTE) {
 	for (let i = 1; i <= RUNS; i++) {
 		console.log(`\n===== v6 RUN ${i}/${RUNS} (${MODEL}) =====`);

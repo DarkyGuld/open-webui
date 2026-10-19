@@ -127,5 +127,12 @@ describe('M9.12 frozen evaluation design (offline)', () => {
 		expect(preflight.modelTier).toBe('free');
 		expect(preflight.comparableToHistoricalSeries).toBe(false);
 		expect(preflight.callsPlanned).toBe(150);
+		// Preflight must not crash, with or without the local Python environment.
+		if (preflight.promptSource === 'unavailable') {
+			expect(preflight.systemChars).toBeNull();
+			expect(preflight.warning).toBeTruthy();
+		} else {
+			expect(preflight.systemChars).toBeGreaterThan(1000);
+		}
 	});
 });

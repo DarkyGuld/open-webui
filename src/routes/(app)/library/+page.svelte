@@ -6,6 +6,12 @@
 </script>
 
 <svelte:head><title>{$i18n.t('library.title')} · {$WEBUI_NAME}</title></svelte:head>
-<div class="h-screen max-h-[100dvh] w-full min-w-0 overflow-y-auto {$showSidebar ? 'md:max-w-[calc(100%-var(--sidebar-width))]' : ''}">
-	<Library />
+<div
+	class="flex flex-col w-full h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
+		? 'md:max-w-[calc(100%-var(--sidebar-width))]'
+		: ''} max-w-full"
+>
+	<div class="flex-1 max-h-full overflow-y-auto">
+		<Library />
+	</div>
 </div>

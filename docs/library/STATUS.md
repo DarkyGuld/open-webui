@@ -14,6 +14,8 @@ benchmark calls, dependencies, database changes, mutations or new backend endpoi
 
 - Discoverable `/library` page inside authenticated native app navigation (expanded/mobile and
   collapsed desktop), English + Norwegian labels, native light/dark surfaces and responsive rows.
+  The navigation entry and the page shell reuse the native Sidebar item markup, high-contrast
+  state, text scaling, width transition and scroll container.
 - Existing Files metadata across chats: paginated list and server-side filename search, loaded-file
   type filters and sorting. The page explicitly labels the loaded-only semantics, rather than
   claiming type filters cover unseen pages. Upstream administrator bypass policy is preserved.
@@ -43,15 +45,17 @@ route. Existing Files/RAG/chat/Intelligent UI rendering and feature-OFF behavior
 
 ## Verified results
 
-- **195 Vitest tests passed**, including **20 new Library tests**: pagination/envelope handling,
+- **198 Vitest tests passed**, including **23 new Library tests**: pagination/envelope handling,
   auth headers, abort/redirect policy, validated ids, metadata isolation, MIME policy, no mutation
   methods, empty vs denied/server/malformed cases and actual-byte caps (not just declared size).
-  Counts use this branch's M9.11 base, not the unmerged PR #2 branch.
+  "More files" is derived from the server total and the rows already consumed, never from an
+  assumed page size. Counts use this branch's M9.11 base, not the unmerged PR #2 branch.
 - **53 Intelligent UI pytest passed**, two existing deprecation warnings.
 - **Production build passed**, generated prompt has no drift; dependencies/prompts/schemas unchanged.
 - Focused new-file Svelte/TS check: **0 errors and 0 warnings**. Repository-wide existing baseline
   remains **5,712 errors / 190 warnings / 315 files**; that global check is not a passing check.
-- **Real application Playwright: 30 checks passed**, **0 unexpected browser errors**, **0 model
+  The same baseline was measured on the M9.11 base commit, so this branch adds no type errors.
+- **Real application Playwright: 31 checks passed**, **0 unexpected browser errors**, **0 model
   calls**. Used two freshly created non-admin accounts and synthetic files only; fixture files and
   accounts deleted in teardown. Actual private file metadata and bytes were denied across users
   (404); unauthenticated requests were denied (401); listing did not leak the other user's file.
@@ -64,9 +68,12 @@ route. Existing Files/RAG/chat/Intelligent UI rendering and feature-OFF behavior
 Run QA against local app:
 
 ```bash
-# From audit/; provide PAW_TEST_TOKEN for a local test administrator, or use the existing
-# local cached /tmp/token. The script never prints credentials or model calls.
-node lib/library-browser.mjs
+# From the repository root, with the local stack running (scripts/audit/start-local)
+# and an admin token in PAW_TEST_TOKEN or the local cached /tmp/token.
+scripts/audit/library
+
+# Equivalent manual invocation:
+cd audit && node lib/library-browser.mjs
 ```
 
 The script needs installed Playwright Chromium and system `ffmpeg` solely to generate a tiny
@@ -74,10 +81,11 @@ synthetic video fixture. Neither is a new application dependency. No paid provid
 
 ## Visual review
 
-Seven captures in `audit/local/library-first-slice/`: real empty, image/PDF preview, populated
-desktop dark/light, populated Norwegian mobile and recoverable list error. All data synthetic.
-Inspected the screenshots; fixed the initial mobile-loading capture and unnecessary upscaling of a
-tiny image, and widened sort controls so text is not clipped. Recaptured and retested.
+Eight captures in `audit/local/library-first-slice/`: real empty, image/PDF preview, populated
+desktop dark/light, populated Norwegian mobile, expanded native navigation and recoverable list
+error. All data synthetic. Inspected the screenshots; fixed the initial mobile-loading capture and
+unnecessary upscaling of a tiny image, and widened sort controls so text is not clipped. Recaptured
+and retested.
 
 This is a **new route**, so no prior like-for-like route baseline/similarity percentage exists;
 do not manufacture a pixel-regression score. The inspected native files/modal patterns are the

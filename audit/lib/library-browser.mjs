@@ -212,6 +212,21 @@ try {
 	check('Norwegian labels loaded', await page.getByRole('searchbox', { name: 'Søk etter filnavn' }).isVisible());
 	check('mobile does not overflow horizontally', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
 	await page.screenshot({ path: path.join(OUT, '06-library-mobile-norwegian.png'), fullPage: true });
+	// Expanded native navigation: the Library entry must match the surrounding nav items.
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.evaluate(() => {
+		localStorage.setItem('theme', 'dark');
+		localStorage.setItem('locale', 'en-US');
+		localStorage.setItem('sidebar', 'true');
+	});
+	await page.reload();
+	await rows.getByRole('listitem').first().waitFor({ timeout: 30000 });
+	await page.locator('#sidebar-library-button').waitFor({ timeout: 30000 });
+	check(
+		'expanded native navigation shows the Library entry',
+		await page.locator('#sidebar-library-button').isVisible()
+	);
+	await page.screenshot({ path: path.join(OUT, '08-library-expanded-sidebar.png'), fullPage: true });
 	check('no unexpected browser errors', errors.length === 0);
 	console.log(JSON.stringify({ status: 'PASS', checks, expectedFaultErrors, unexpectedErrors: errors, modelCalls: 0 }, null, 2));
 } catch (error) {

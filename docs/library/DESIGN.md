@@ -11,10 +11,12 @@ toolbar and keeps the row name inside a shrinking column; no horizontal page scr
 use existing gray surfaces, borders and rounded-xl controls, not another design system.
 
 Loading: Spinner + status. Empty: "No files yet" (uploads happen in Chat). Search/filter empty:
-no matches in loaded results. Errors: calm safe message and Retry. Pagination is 50 files per
-page; type filters and sort apply to **loaded results**, explicitly labeled. Filename search uses
-the existing paginated server filename search (wildcards supported by that API). Do not imply
-that a local type filter scans all unloaded pages.
+no matches in loaded results. Errors: calm safe message and Retry. The metadata list endpoint owns
+its page size; the client derives "more" from the server total and the rows it has already
+consumed, never from an assumed page size. The filename search endpoint honours the client's own
+`skip`/`limit`. Type filters and sort apply to **loaded results**, explicitly labeled. Filename
+search uses the existing paginated server filename search (wildcards supported by that API). Do not
+imply that a local type filter scans all unloaded pages.
 
 ## Reuse evidence
 
@@ -29,7 +31,9 @@ Notes page layout and sidebar patterns. Storybook is not running/configured for 
   PDFViewer and FileTypeIcon, but authenticate original-byte fetches explicitly and show text as
   escaped text, never uploaded HTML/Intelligent UI/actions.
 - No new button/modal/menu primitive, packages, file store, backend index, mutation endpoint or
-  model call. Sidebar changes are limited to a link in expanded and collapsed navigation.
+  model call. Sidebar changes are limited to a link in expanded and collapsed navigation, rendered
+  with the native nav item markup (active/high-contrast state, app text scaling, drag and click
+  handling) and the native page shell (width transition and scroll container).
 
 ## Security and boundaries
 

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Run the read-only Library browser audit against the real local app.
+# Prereqs: scripts/audit/start-local (fork backend :8080, frontend :5173) and an
+# administrator token in PAW_TEST_TOKEN or /tmp/token. Synthetic accounts and files
+# only; the script deletes them in teardown and never prints credentials.
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
+export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
+cd "$REPO_ROOT/audit"
+exec node lib/library-browser.mjs

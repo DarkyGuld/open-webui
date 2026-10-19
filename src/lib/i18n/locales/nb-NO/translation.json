@@ -4096,7 +4096,7 @@
 	"library.kind.document": "Dokumenter",
 	"library.kind.audio": "Lyd",
 	"library.kind.other": "Andre filer",
-	"library.loadedCount": "{{count}} filer lastet inn",
+	"library.loadedCount": "Filer lastet inn: {{count}}",
 	"library.loadedPolicy": "Filtypefilter og sortering gjelder innlastede filer.",
 	"library.fileList": "Opplastede filer",
 	"library.previewFile": "Forhåndsvis {{name}}",

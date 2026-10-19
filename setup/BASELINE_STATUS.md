@@ -283,9 +283,9 @@ introduced here.
 
 ### Read-only Library branch (`feat/read-only-library`, independent M9.11 base)
 
-- **195 Vitest** (175 baseline + 20 Library), **53 Intelligent UI pytest**, production build passed,
+- **198 Vitest** (175 baseline + 23 Library), **53 Intelligent UI pytest**, production build passed,
   prompt generation no drift. No dependency, backend, model-prompt or catalog change.
-- Real local-app browser QA: **30 passed**, no unexpected console errors, zero model calls;
+- Real local-app browser QA: **31 passed**, no unexpected console errors, zero model calls;
   two temporary non-admin users prove list/content isolation and unauthenticated denials; actual
   image/video/audio/PDF/text preview. Failure injection is explicitly separated from normal flows.
 - New Library files: zero Svelte/TS errors/warnings. Repo-wide check still fails on the existing
